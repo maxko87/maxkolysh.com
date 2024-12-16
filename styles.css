@@ -8,7 +8,22 @@
     border-radius: 50%;
     cursor: pointer;
     z-index: 1000;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.trigger-circle.red-circle {
+    background-color: #ff4444;
+    top: 32px;
+    opacity: 0;
+}
+
+.trigger-circle.show {
+    opacity: 1;
+}
+
+.trigger-circle.hide {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .trigger-circle:hover {
@@ -18,17 +33,34 @@
 a {
     display: inline-block;
     transform-origin: right center;
+    transition: transform 0.5s ease;
+    position: relative;
+    z-index: 1;
 }
 
 .swing-animation {
     animation: swingEffect 4s cubic-bezier(0.5, 0, 0.1, 1) forwards;
 }
 
+.vertical-drop {
+    animation: dropEffect 2s ease-in forwards;
+    transform: rotate(-90deg);
+}
+
 @keyframes swingEffect {
     0% { transform: rotate(0deg); }
-    30% { transform: rotate(-150deg); }  /* Moved later in time */
-    55% { transform: rotate(-45deg); }   /* Adjusted timing */
+    30% { transform: rotate(-150deg); }
+    55% { transform: rotate(-45deg); }
     75% { transform: rotate(-105deg); }
     90% { transform: rotate(-85deg); }
     100% { transform: rotate(-90deg); }
+}
+
+@keyframes dropEffect {
+    0% { 
+        transform: rotate(-90deg) translateX(0) rotate(0deg);
+    }
+    100% { 
+        transform: rotate(-90deg) translateX(-200vh) rotate(20deg);
+    }
 }
