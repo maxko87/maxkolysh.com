@@ -9,8 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Array.from(links).forEach((link, index) => {
             link.classList.remove('swing-animation');
             void link.offsetWidth;
-            const delay = index === 0 ? 0 : Math.random() * 1.5;
-            link.style.animationDelay = `${delay}s`;
+            link.style.animationDelay = '0s';
             link.classList.add('swing-animation');
         });
 
@@ -20,15 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
             secondButton.id = 'dropTrigger';
             document.body.appendChild(secondButton);
 
+            secondButton.click();
+
             secondButton.addEventListener('click', function() {
                 const links = document.querySelectorAll('a');
                 links.forEach((link, index) => {
                     link.style.transform = 'rotate(-90deg)';
                     link.classList.remove('swing-animation');
                     void link.offsetWidth;
-                    setTimeout(() => {
-                        link.classList.add('vertical-drop');
-                    }, index * 100);
+                    link.classList.add('vertical-drop');
                 });
                 
                 this.classList.add('hide');
@@ -39,15 +38,165 @@ document.addEventListener('DOMContentLoaded', () => {
                     thirdButton.id = 'snakeTrigger';
                     document.body.appendChild(thirdButton);
                     
+                    thirdButton.click();
+                    
                     thirdButton.addEventListener('click', initSnakeGame);
-                }, 2000);
+                }, 0);
             });
-        }, 4000);
+        }, 0);
     });
 });
 
 function initSnakeGame() {
     this.classList.add('hide');
+    
+    const whoCareContainer = document.createElement('div');
+    whoCareContainer.className = 'who-care-container';
+    
+    const blankSpacesContainer = document.createElement('div');
+    blankSpacesContainer.className = 'blank-spaces';
+    for (let i = 0; i < 7; i++) {
+        const blank = document.createElement('div');
+        blank.className = 'blank-space';
+        if (i === 3) blank.style.marginLeft = '20px';
+        blank.dataset.index = i;
+        blankSpacesContainer.appendChild(blank);
+    }
+    whoCareContainer.appendChild(blankSpacesContainer);
+    document.body.appendChild(whoCareContainer);
+    
+    const headers = Array.from(document.getElementsByTagName('h3'));
+    const reachOutText = headers.find(h => h.textContent.toLowerCase() === 'reach out');
+    const workText = headers.find(h => h.textContent.toLowerCase() === 'work');
+    
+    function makeLetterDraggable(letterDiv) {
+        letterDiv.draggable = true;
+        letterDiv.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', letterDiv.dataset.letter);
+            letterDiv.classList.add('dragging');
+        });
+        
+        letterDiv.addEventListener('dragend', () => {
+            letterDiv.classList.remove('dragging');
+        });
+    }
+
+    function convertTextToDraggableLetters(element) {
+        if (!element) return;
+        
+        const text = element.textContent;
+        element.textContent = '';
+        
+        [...text].forEach(char => {
+            if (char === ' ') {
+                element.appendChild(document.createTextNode(' '));
+                return;
+            }
+            
+            const letterDiv = document.createElement('span');
+            letterDiv.textContent = char;
+            letterDiv.className = 'draggable-letter header-letter';
+            letterDiv.dataset.letter = char.toUpperCase();
+            letterDiv.classList.add('letter-color');
+            
+            makeLetterDraggable(letterDiv);
+            element.appendChild(letterDiv);
+        });
+    }
+    
+    convertTextToDraggableLetters(workText);
+    convertTextToDraggableLetters(reachOutText);
+    
+    const blanks = blankSpacesContainer.querySelectorAll('.blank-space');
+    blanks.forEach(blank => {
+        blank.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            blank.classList.add('drag-over');
+        });
+        
+        blank.addEventListener('dragleave', () => {
+            blank.classList.remove('drag-over');
+        });
+        
+        blank.addEventListener('drop', (e) => {
+            e.preventDefault();
+            blank.classList.remove('drag-over');
+            const letter = e.dataTransfer.getData('text/plain');
+            const draggedElement = document.querySelector('.draggable-letter.dragging');
+            
+            if (draggedElement) {
+                // If there's already a letter in this blank, swap it
+                if (blank.children.length > 0) {
+                    const existingLetter = blank.children[0];
+                    if (draggedElement.parentElement.classList.contains('blank-space')) {
+                        // If dragged from another blank, swap positions
+                        draggedElement.parentElement.appendChild(existingLetter);
+                    } else {
+                        // If dragged from header, move existing letter back to closest matching header
+                        const headers = Array.from(document.getElementsByTagName('h3'));
+                        const targetHeader = headers.find(h => 
+                            h.textContent.toLowerCase().includes(existingLetter.textContent.toLowerCase()));
+                        if (targetHeader) targetHeader.appendChild(existingLetter);
+                    }
+                }
+                
+                blank.appendChild(draggedElement);
+                checkWhoCareWin();
+            }
+        });
+    });
+    
+    let snakeGameWon = false;
+    let whoCareWon = false;
+    
+    function checkWhoCareWin() {
+        const filledBlanks = Array.from(blanks).map(blank => 
+            blank.children[0]?.dataset.letter || '');
+        const currentWord = filledBlanks.join('');
+        
+        if (currentWord === 'WHOCARE') {
+            whoCareWon = true;
+            
+            // Turn all letters green and make them non-draggable
+            blanks.forEach(blank => {
+                if (blank.children[0]) {
+                    blank.children[0].classList.remove('letter-color');
+                    blank.children[0].classList.add('success-color');
+                    blank.children[0].draggable = false;
+                }
+            });
+            
+            checkFinalVictory();
+        }
+    }
+    
+    const originalVictory = victory;
+    victory = function() {
+        snakeGameWon = true;
+        checkFinalVictory();
+    }
+    
+    function checkFinalVictory() {
+        if (snakeGameWon && whoCareWon) {
+            document.body.style.animation = 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both';
+            
+            const fourthButton = document.createElement('div');
+            fourthButton.className = 'trigger-circle fourth-circle show';
+            fourthButton.id = 'secretButton';
+            document.body.appendChild(fourthButton);
+            
+            fourthButton.addEventListener('click', () => {
+                window.open('https://www.youtube.com/watch?v=LWOVdKVVh3M', '_blank');
+            });
+            
+            document.body.removeChild(gameContainer);
+            document.body.removeChild(whoCareContainer);
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 500);
+        }
+    }
     
     const targetWord = 'maksim';
     let currentIndex = 1;

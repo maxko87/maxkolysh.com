@@ -97,6 +97,7 @@ a {
     font-family: monospace;
     font-size: 24px;
     border: 2px solid #333;
+    margin-top: 150px;
 }
 
 .snake-container {
@@ -138,4 +139,105 @@ a {
     40%, 60% {
         transform: translate3d(4px, 0, 0);
     }
+}
+
+.who-care-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.blank-spaces {
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.blank-space {
+    width: 40px;
+    height: 40px;
+    border: 2px dashed #666;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.blank-space.drag-over {
+    border-color: #4444ff;
+    border-style: solid;
+}
+
+.letters-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.draggable-letter {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: move;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.letter-color {
+    background-color: #4444ff;
+    color: white;
+}
+
+.header-letter {
+    display: inline-flex;
+    padding: 0.1em 0.2em;
+    border-radius: 4px;
+    vertical-align: baseline;
+    cursor: move;
+}
+
+.dragging {
+    opacity: 0.5;
+}
+
+.who-color {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.care-color {
+    background-color: #4ecdc4;
+    color: white;
+}
+
+.who-care-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+h3 {
+    position: relative;
+    margin: 1em 0 0.5em;
+}
+
+.success-color {
+    background-color: #44ff44;
+    color: white;
+    cursor: default;
 }
