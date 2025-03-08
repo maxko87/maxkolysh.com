@@ -3,30 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting to LearnedLeague Kit</title>
-    <meta http-equiv="refresh" content="0; URL=https://learnedleague.kit.com/d452a34d47">
-    <link rel="canonical" href="https://learnedleague.kit.com/d452a34d47">
+    <title>LearnedLeague - Max Kolysh</title>
     <style>
-        body {
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .fallback {
+            display: none;
             text-align: center;
             padding: 50px;
             line-height: 1.6;
         }
-        a {
+        .fallback a {
             color: #0066cc;
             text-decoration: none;
         }
-        a:hover {
+        .fallback a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Redirecting...</h1>
-    <p>If you are not redirected automatically, <a href="https://learnedleague.kit.com/d452a34d47">click here</a>.</p>
+    <iframe src="https://learnedleague.kit.com/d452a34d47" class="iframe-container" id="content-frame" allowfullscreen></iframe>
+    
+    <div class="fallback" id="fallback-content">
+        <h1>BECOME A TRIVIA GOD</h1>
+        <p>The embedded content couldn't be displayed.</p>
+        <p><a href="https://learnedleague.kit.com/d452a34d47" target="_blank">Click here to visit LearnedLeague Kit directly</a></p>
+    </div>
+
     <script>
-        window.location.href = "https://learnedleague.kit.com/d452a34d47";
+        // Check if iframe loaded correctly
+        document.getElementById('content-frame').addEventListener('error', function() {
+            document.getElementById('fallback-content').style.display = 'block';
+            document.getElementById('content-frame').style.display = 'none';
+        });
     </script>
 </body>
 </html> 
