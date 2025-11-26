@@ -1,6 +1,152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    line-height: 1.6;
-    padding: 20px;
-    max-width: 800px;
+    line-height: 1.7;
+    color: #1a1a1a;
+    background-color: #ffffff;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+section:last-child {
+    margin-bottom: 0;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+a {
+    color: #0066cc;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-size: 18px;
+}
+
+a:hover {
+    color: #0052a3;
+    text-decoration: underline;
+}
+
+.back-link {
+    margin-bottom: 48px;
+}
+
+.back-link a {
+    color: #666;
+    font-size: 16px;
+}
+
+.back-link a:hover {
+    color: #1a1a1a;
+}
+
+.blog-post {
+    max-width: 680px;
+}
+
+.blog-post h3 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+.post-date {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 32px;
+}
+
+.blog-post h4 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: #1a1a1a;
+}
+
+.blog-post p {
+    margin-bottom: 20px;
+}
+
+.blog-post ul,
+.blog-post ol {
+    margin-bottom: 20px;
+    padding-left: 24px;
+}
+
+.blog-post li {
+    margin-bottom: 8px;
+}
+
+.blog-post blockquote {
+    border-left: 3px solid #e6e6e6;
+    padding-left: 20px;
+    margin: 24px 0;
+    color: #666;
+}
+
+.blog-post code {
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+}
+
+.post-footer {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid #e6e6e6;
+    color: #666;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 48px 20px;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    body {
+        font-size: 17px;
+    }
 }
