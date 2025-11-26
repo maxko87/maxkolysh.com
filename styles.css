@@ -17,7 +17,7 @@ body {
 .container {
     max-width: 680px;
     margin: 0 auto;
-    padding: 24px;
+    padding: 80px 24px 24px 24px;
 }
 
 h2 {
