@@ -25,6 +25,9 @@ jobs:
       - name: Copy CNAME
         run: cp CNAME dist/ || echo "No CNAME file"
 
+      - name: Add .nojekyll file
+        run: touch dist/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
