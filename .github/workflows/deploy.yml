@@ -4,11 +4,15 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -23,9 +27,9 @@ jobs:
         run: npm run build
 
       - name: Copy CNAME
-        run: cp CNAME dist/ || echo "No CNAME file"
+        run: cp CNAME dist/CNAME
 
-      - name: Add .nojekyll file
+      - name: Add .nojekyll
         run: touch dist/.nojekyll
 
       - name: Deploy to GitHub Pages
@@ -33,3 +37,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
