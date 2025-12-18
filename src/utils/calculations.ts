@@ -3,7 +3,8 @@ import type { Fund, CellData, FundBreakdown, VintageBreakdown } from '../types/c
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
   if (isNaN(multiple) || isNaN(years) || years <= 0) return '0.0';
-  if (multiple <= 0) return '-100.0';
+  if (multiple < 0) return '-100.0';
+  if (multiple === 0) return '-100.0';
   const irr = Math.pow(multiple, 1 / years) - 1;
   return (irr * 100).toFixed(1);
 }
@@ -51,12 +52,15 @@ export function calculateVesting(
 }
 
 // Get realization percentage at a given year
-export function getRealizationAtYear(year: number, realizationCurve: number[]): number {
+// The curve has 11 points (0-10) which are scaled to match the fund's actual life
+export function getRealizationAtYear(year: number, realizationCurve: number[], fundYears: number): number {
   if (year <= 0) return 0;
-  if (year >= 10) return 1;
+  if (year >= fundYears) return 1;
 
-  const index = Math.floor(year);
-  const fraction = year - index;
+  // Scale the year to curve position (curve goes from 0-10)
+  const curvePosition = (year / fundYears) * 10;
+  const index = Math.floor(curvePosition);
+  const fraction = curvePosition - index;
 
   const r1 = realizationCurve[index] || 0;
   const r2 = realizationCurve[index + 1] || 1;
@@ -70,7 +74,8 @@ export function calculateWeightedRealization(
   yearsFromToday: number,
   fundCycle: number,
   vestingPeriod: number,
-  realizationCurve: number[]
+  realizationCurve: number[],
+  fundYears: number
 ): number {
   let weightedRealization = 0;
   let fundStartYear = 0;
@@ -82,7 +87,7 @@ export function calculateWeightedRealization(
 
     if (vestingProgress > 0) {
       const yearsSinceFundStart = yearsFromToday - fundStartYear;
-      const realizationPercent = getRealizationAtYear(yearsSinceFundStart, realizationCurve);
+      const realizationPercent = getRealizationAtYear(yearsSinceFundStart, realizationCurve, fundYears);
       weightedRealization += vestingProgress * realizationPercent;
     }
 
@@ -136,7 +141,7 @@ export function calculateCell(
 
       if (vestingProgress > 0 && yearsIntoThisVintage >= fund.cliffPeriod) {
         const yearsSinceVintageStart = yearsFromToday - fundStartYear;
-        const realizationPercent = getRealizationAtYear(yearsSinceVintageStart, fund.realizationCurve);
+        const realizationPercent = getRealizationAtYear(yearsSinceVintageStart, fund.realizationCurve, fund.years);
         const vintageCarry = vestingProgress * realizationPercent * perGPShare;
 
         if (vintageCarry > 0.01) {

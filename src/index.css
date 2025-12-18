@@ -220,9 +220,9 @@ body {
 }
 
 .sidebar {
-    width: 380px;
-    min-width: 320px;
-    max-width: 420px;
+    width: 390px;
+    min-width: 330px;
+    max-width: 430px;
     background: var(--bg-primary);
     border-right: 1px solid var(--border-color);
     overflow-y: auto;

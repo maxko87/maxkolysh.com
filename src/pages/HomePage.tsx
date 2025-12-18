@@ -40,7 +40,7 @@ function HomePage() {
         </section>
 
         <section>
-          <h2>Connect</h2>
+          <h2>Contact</h2>
           <div className="links">
             <a
               href="mailto:maxkolysh@gmail.com"
