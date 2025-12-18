@@ -179,6 +179,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.size}
               onChange={(e) => handleFieldChange('size', parseFloat(e.target.value))}
+              placeholder="200"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>$M</span>
@@ -194,6 +195,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.carryPercent}
               onChange={(e) => handleFieldChange('carryPercent', parseFloat(e.target.value))}
+              placeholder="20"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
@@ -210,6 +212,7 @@ function FundCard({ fund, index }: FundCardProps) {
               value={fund.fundCycle}
               onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
               step="0.5"
+              placeholder="2"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -225,6 +228,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.years}
               onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
+              placeholder="10"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -239,6 +243,7 @@ function FundCard({ fund, index }: FundCardProps) {
             type="number"
             value={fund.numGPs}
             onChange={(e) => handleFieldChange('numGPs', parseInt(e.target.value))}
+            placeholder="15"
           />
         </div>
         <div className="form-group">
@@ -251,6 +256,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.carryPoolPercent}
               onChange={(e) => handleFieldChange('carryPoolPercent', parseFloat(e.target.value))}
+              placeholder="80"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
@@ -267,6 +273,7 @@ function FundCard({ fund, index }: FundCardProps) {
               value={fund.vestingPeriod}
               onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
               step="0.5"
+              placeholder="4"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -283,6 +290,7 @@ function FundCard({ fund, index }: FundCardProps) {
               value={fund.cliffPeriod}
               onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
               step="0.5"
+              placeholder="1"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -347,7 +355,9 @@ function FundCard({ fund, index }: FundCardProps) {
           return (
             <div key={scenario.id} className="scenario-card">
               <div className="scenario-card-header">
-                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>{scenario.grossReturnMultiple}x</h4>
+                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>
+                  {isNaN(scenario.grossReturnMultiple) ? '—' : `${scenario.grossReturnMultiple}x`}
+                </h4>
                 {idx > 0 && (
                   <button
                     className="btn btn-danger"
@@ -362,13 +372,17 @@ function FundCard({ fund, index }: FundCardProps) {
                 <input
                   type="number"
                   value={scenario.grossReturnMultiple}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    // Use default of 5 if empty/invalid, but allow any positive number including < 1
                     dispatch({
                       type: 'UPDATE_SCENARIO',
-                      payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: parseFloat(e.target.value) }
-                    })
-                  }
+                      payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: isNaN(value) ? 5 : value }
+                    });
+                  }}
                   step="0.1"
+                  placeholder="5"
+                  min="0"
                 />
               </div>
               <div className="scenario-field">

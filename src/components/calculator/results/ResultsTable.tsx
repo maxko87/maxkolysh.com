@@ -18,6 +18,25 @@ function ResultsTable() {
   const maxYears = 20;
   const currentYear = new Date().getFullYear();
 
+  const formatCurrency = (value: number): string => {
+    if (value < 100) {
+      // Less than $100M: show 1 decimal
+      return `$${value.toFixed(1)}M`;
+    } else if (value < 1000) {
+      // $100M-$999M: no decimal
+      return `$${Math.round(value)}M`;
+    } else if (value < 10000) {
+      // $1B-$9.99B: 2 decimals
+      return `$${(value / 1000).toFixed(2)}B`;
+    } else if (value < 100000) {
+      // $10B-$99.9B: 1 decimal
+      return `$${(value / 1000).toFixed(1)}B`;
+    } else {
+      // $100B+: no decimal
+      return `$${Math.round(value / 1000)}B`;
+    }
+  };
+
   useEffect(() => {
     if (tooltipRef.current && cellRef.current) {
       const tooltip = tooltipRef.current;
@@ -73,7 +92,7 @@ function ResultsTable() {
         <table>
           <thead>
             <tr>
-              <th>Years Worked</th>
+              <th>Years at Fund</th>
               {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
                 <th key={year}>{currentYear + year}</th>
               ))}
@@ -99,7 +118,7 @@ function ResultsTable() {
                     onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                     onMouseLeave={handleCellMouseLeave}
                   >
-                    ${cellData.total.toFixed(1)}M
+                    {formatCurrency(cellData.total)}
 
                     {isHovered && tooltipData && (
                       <div

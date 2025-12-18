@@ -659,6 +659,7 @@ body {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.88em;
+    table-layout: fixed;
 }
 
 .results-table th,
@@ -666,12 +667,12 @@ body {
     padding: 10px 8px;
     text-align: center;
     border: 1px solid var(--border-color);
-    min-width: 70px;
+    width: 80px;
 }
 
 .results-table th:first-child,
 .results-table td:first-child {
-    min-width: 50px;
+    width: 90px;
     background: var(--bg-secondary);
     font-weight: 600;
     color: var(--text-secondary);
@@ -852,12 +853,18 @@ body {
 
     .results-table table {
         font-size: 0.77em;
+        table-layout: fixed;
     }
 
     .results-table th,
     .results-table td {
         padding: var(--spacing-sm) var(--spacing-xs);
-        width: 50px;
+        width: 65px;
+    }
+
+    .results-table th:first-child,
+    .results-table td:first-child {
+        width: 70px;
     }
 }
 
