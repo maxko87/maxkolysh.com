@@ -32,8 +32,8 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
         <div className="modal-body">
           <section className="modal-section">
             <p>
-              This app helps you model your potential GP compensation from venture capital funds over time.
-              It accounts for fund structure, hurdle rates, vesting schedules, and different return scenarios.
+              See how much a general partner can make from venture capital funds over time.
+              This model accounts for fund structure, hurdle rates, vesting schedules, and multiple return scenarios.
             </p>
           </section>
 
