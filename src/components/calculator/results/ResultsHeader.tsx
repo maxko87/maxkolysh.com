@@ -1,9 +1,10 @@
 import { compressState } from '../../../utils/stateCompression';
 import { useCalculator } from '../../../hooks/useCalculator';
+import { formatCurrency } from '../../../utils/formatCurrency';
 import { useState } from 'react';
 
 function ResultsHeader() {
-  const { state } = useCalculator();
+  const { state, calculations } = useCalculator();
   const [showToast, setShowToast] = useState(false);
 
   const handleShare = () => {
@@ -16,9 +17,15 @@ function ResultsHeader() {
     });
   };
 
+  // Get the value for 5 years worked and 11 years from today (indices [4][10])
+  const fiveYearEleven = calculations[4]?.[10];
+  const fiveYearValue = fiveYearEleven?.total || 0;
+
   return (
     <div className="results-header">
-      <h2>Total Projected Returns (All Funds)</h2>
+      <div className="tooltip-label" style={{ fontSize: '0.875rem', marginBottom: '8px' }}>
+        If you vest into these funds for 5 years starting today, in 11 years you'll have {formatCurrency(fiveYearValue)}
+      </div>
       <button className="btn btn-share" onClick={handleShare}>
         Share
       </button>
