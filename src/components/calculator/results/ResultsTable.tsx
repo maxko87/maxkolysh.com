@@ -26,19 +26,16 @@ function ResultsTable() {
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
 
-      // Determine vertical position
       const spaceBelow = viewportHeight - cellRect.bottom;
       const spaceAbove = cellRect.top;
 
       const position: any = { left: '50%', transform: 'translateX(-50%)' };
 
       if (spaceBelow >= tooltipRect.height || spaceBelow > spaceAbove) {
-        // Position below cell
         position.top = '100%';
         position.bottom = 'auto';
         position.marginTop = '8px';
       } else {
-        // Position above cell
         position.bottom = '100%';
         position.top = 'auto';
         position.marginBottom = '8px';
@@ -46,7 +43,6 @@ function ResultsTable() {
 
       setTooltipPosition(position);
 
-      // Check horizontal overflow after initial render
       setTimeout(() => {
         const tooltipRectAfter = tooltip.getBoundingClientRect();
         if (tooltipRectAfter.left < 0) {
@@ -71,42 +67,27 @@ function ResultsTable() {
   };
 
   return (
-    <div className="results-table-container">
-      <table className="results-table w-full">
+    <div>
+      <table>
         <thead>
           <tr>
-            <th className="empty-corner"></th>
-            <th className="header-label" colSpan={maxYears}>
-              Years from Today
-            </th>
+            <th></th>
+            <th colSpan={maxYears}>Years from Today</th>
           </tr>
           <tr>
-            <th className="header-label">
-              Years Worked
-            </th>
+            <th>Years Worked</th>
             {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
-              <th key={year}>
-                {year}
-              </th>
+              <th key={year}>{year}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {calculations.map((row, rowIdx) => (
             <tr key={rowIdx}>
-              <td>
-                {rowIdx + 1}
-              </td>
+              <td>{rowIdx + 1}</td>
               {row.map((cellData, colIdx) => {
                 if (!cellData || cellData.total < 0.01) {
-                  return (
-                    <td
-                      key={colIdx}
-                      className="empty"
-                    >
-                      -
-                    </td>
-                  );
+                  return <td key={colIdx}>-</td>;
                 }
 
                 const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
@@ -114,7 +95,6 @@ function ResultsTable() {
                 return (
                   <td
                     key={colIdx}
-                    className="value"
                     style={{ position: 'relative' }}
                     ref={isHovered ? cellRef : null}
                     onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
@@ -125,21 +105,28 @@ function ResultsTable() {
                     {isHovered && tooltipData && (
                       <div
                         ref={tooltipRef}
-                        className="cell-tooltip"
                         style={{
                           ...tooltipPosition,
                           position: 'absolute',
                           minWidth: '300px',
-                          zIndex: 1000
+                          zIndex: 1000,
+                          background: '#111827',
+                          color: 'white',
+                          padding: '16px',
+                          borderRadius: '8px',
+                          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                          fontSize: '13px',
+                          lineHeight: 1.6,
+                          pointerEvents: 'none'
                         }}
                       >
-                        <div className="tooltip-row" style={{ borderBottom: '2px solid rgba(255,255,255,0.4)', marginBottom: '10px', paddingBottom: '8px' }}>
-                          <span className="tooltip-label">Years Worked:</span>
-                          <span className="tooltip-value">{tooltipData.yearsWorked}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', borderBottom: '2px solid rgba(255,255,255,0.4)', marginBottom: '10px', paddingBottom: '8px' }}>
+                          <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Years Worked:</span>
+                          <span style={{ color: 'white', fontWeight: 600 }}>{tooltipData.yearsWorked}</span>
                         </div>
-                        <div className="tooltip-row" style={{ borderBottom: '2px solid rgba(255,255,255,0.4)', marginBottom: '12px', paddingBottom: '8px' }}>
-                          <span className="tooltip-label">Years from Today:</span>
-                          <span className="tooltip-value">{tooltipData.yearsFromToday}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', borderBottom: '2px solid rgba(255,255,255,0.4)', marginBottom: '12px', paddingBottom: '8px' }}>
+                          <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Years from Today:</span>
+                          <span style={{ color: 'white', fontWeight: 600 }}>{tooltipData.yearsFromToday}</span>
                         </div>
 
                         {tooltipData.fundBreakdowns.map((fb, idx) => (
@@ -150,29 +137,28 @@ function ResultsTable() {
                               ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
                             }}
                           >
-                            <div style={{ fontWeight: '700', color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em' }}>
+                            <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em' }}>
                               {fb.name}
                             </div>
                             {fb.vintages.map((v, vIdx) => (
                               <div
                                 key={vIdx}
-                                className="tooltip-row"
-                                style={{ fontSize: '0.85em', marginBottom: '4px', paddingLeft: '10px' }}
+                                style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '10px' }}
                               >
-                                <span className="tooltip-label">Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
-                                <span className="tooltip-value">${v.amount.toFixed(1)}M</span>
+                                <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
+                                <span style={{ color: 'white', fontWeight: 600 }}>${v.amount.toFixed(1)}M</span>
                               </div>
                             ))}
-                            <div className="tooltip-row" style={{ marginTop: '6px', paddingLeft: '10px', fontWeight: '600' }}>
-                              <span className="tooltip-label">{fb.name} Total:</span>
-                              <span className="tooltip-value">${fb.amount.toFixed(1)}M</span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '6px', paddingLeft: '10px', fontWeight: 600 }}>
+                              <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{fb.name} Total:</span>
+                              <span style={{ color: 'white', fontWeight: 600 }}>${fb.amount.toFixed(1)}M</span>
                             </div>
                           </div>
                         ))}
 
-                        <div className="tooltip-row" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
-                          <span className="tooltip-label" style={{ fontWeight: '700' }}>Grand Total:</span>
-                          <span className="tooltip-value" style={{ fontWeight: '700', color: '#a5b4fc' }}>${tooltipData.total.toFixed(1)}M</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
+                          <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
+                          <span style={{ fontWeight: 700, color: '#a5b4fc' }}>${tooltipData.total.toFixed(1)}M</span>
                         </div>
                       </div>
                     )}

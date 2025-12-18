@@ -7,7 +7,7 @@ function CalculatorInner() {
   useUrlState(); // Sync state with URL hash
 
   return (
-    <div className="calculator-app flex h-screen overflow-hidden">
+    <div>
       <Sidebar />
       <MainContent />
     </div>
