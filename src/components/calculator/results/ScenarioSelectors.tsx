@@ -3,7 +3,7 @@ import { useCalculator } from '../../../hooks/useCalculator';
 import { compressState } from '../../../utils/stateCompression';
 
 function ScenarioSelectors() {
-  const { state, dispatch } = useCalculator();
+  const { state, dispatch, calculations } = useCalculator();
   const [showToast, setShowToast] = useState(false);
 
   const handleShare = () => {
@@ -14,6 +14,40 @@ function ScenarioSelectors() {
     }).catch(err => {
       console.error('Failed to copy:', err);
     });
+  };
+
+  const handleExportCSV = () => {
+    const maxYears = 20;
+    const currentYear = new Date().getFullYear();
+
+    // Create CSV header
+    const headers = ['Years at Fund', ...Array.from({ length: maxYears }, (_, i) => (currentYear + i + 1).toString())];
+    const csvRows = [headers.join(',')];
+
+    // Create CSV rows
+    calculations.slice(0, maxYears).forEach((row, rowIdx) => {
+      const rowData = [rowIdx + 1]; // Years at fund
+      row.forEach((cellData) => {
+        if (!cellData || cellData.total < 0.01) {
+          rowData.push('-');
+        } else {
+          rowData.push(cellData.total.toFixed(1));
+        }
+      });
+      csvRows.push(rowData.join(','));
+    });
+
+    // Create blob and download
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `fund-calculator-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (state.funds.length === 0) return null;
@@ -41,6 +75,9 @@ function ScenarioSelectors() {
           </select>
         </div>
       ))}
+      <button className="btn btn-share" onClick={handleExportCSV}>
+        Export to CSV
+      </button>
       <button className="btn btn-share" onClick={handleShare}>
         Share
       </button>
