@@ -25,14 +25,14 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>How to Use This Calculator</h2>
+          <h2>How to Use the GP Comp Calculator</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         <div className="modal-body">
           <section className="modal-section">
             <p>
-              This calculator helps you model your potential GP compensation from venture capital funds over time.
+              This app helps you model your potential GP compensation from venture capital funds over time.
               It accounts for fund structure, hurdle rates, vesting schedules, and different return scenarios.
             </p>
           </section>
@@ -47,7 +47,7 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
               <li><strong>Hurdles</strong> - Performance thresholds that affect carry percentage at different return levels</li>
               <li><strong>Gross Return Multiple</strong> - Total return on the fund before fees (e.g., 3x means $300M returned on a $100M fund)</li>
               <li><strong>Vesting Period</strong> - Time required for GPs to fully earn their carry allocation, typically 4 years</li>
-              <li><strong>Cliff Period</strong> - Minimum time before any carry vests, typically 1 year</li>
+              <li><strong>Cliff</strong> - Minimum time before any carry vests, typically 1 year</li>
               <li><strong>Realization Curve</strong> - Pattern of when fund returns are distributed over time</li>
             </ul>
           </section>
@@ -65,7 +65,7 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
 
           <section className="modal-section modal-footer-section">
             <p className="made-with-love">
-              Made with ❤️ by a VC who wanted better GP compensation modeling
+              Made by Max Kolysh and Claude Code.
             </p>
           </section>
         </div>

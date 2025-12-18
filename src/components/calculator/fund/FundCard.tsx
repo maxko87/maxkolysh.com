@@ -285,7 +285,7 @@ function FundCard({ fund, index }: FundCardProps) {
         </div>
         <div className="form-group">
           <label>
-            <span>Cliff Period</span>
+            <span>Cliff</span>
             <Tooltip text="Years before any carry vests (all-or-nothing threshold)"><span className="tooltip-icon">?</span></Tooltip>
           </label>
           <div style={{ position: 'relative' }}>
@@ -359,9 +359,12 @@ function FundCard({ fund, index }: FundCardProps) {
           return (
             <div key={scenario.id} className="scenario-card">
               <div className="scenario-card-header">
-                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e', flex: 1 }}>
+                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>
                   {isNaN(scenario.grossReturnMultiple) ? '—' : `${scenario.grossReturnMultiple}x`}
                 </h4>
+                <span style={{ fontSize: '0.9em', color: '#92400e', fontWeight: 600 }}>
+                  Gross IRR: {irr}%
+                </span>
                 <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
                   {idx > 0 && (
                     <button
@@ -390,10 +393,6 @@ function FundCard({ fund, index }: FundCardProps) {
                   placeholder="5"
                   min="0"
                 />
-              </div>
-              <div className="scenario-field">
-                <label>Gross IRR</label>
-                <div className="calculated">{irr}%</div>
               </div>
             </div>
           );
