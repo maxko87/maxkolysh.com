@@ -4,7 +4,7 @@ import ResultsTable from '../results/ResultsTable';
 
 function MainContent() {
   return (
-    <div>
+    <div className="main-content">
       <ResultsHeader />
       <ScenarioSelectors />
       <ResultsTable />

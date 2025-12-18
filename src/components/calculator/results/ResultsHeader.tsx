@@ -17,14 +17,14 @@ function ResultsHeader() {
   };
 
   return (
-    <div>
+    <div className="results-header">
       <h2>Total Projected Returns (All Funds)</h2>
-      <button onClick={handleShare}>
+      <button className="btn btn-share" onClick={handleShare}>
         📋 Share
       </button>
 
       {showToast && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: '#16a34a', color: 'white', padding: '16px 24px', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontWeight: 600, fontSize: '14px', zIndex: 1000 }}>
+        <div className="toast">
           Link copied to clipboard!
         </div>
       )}
