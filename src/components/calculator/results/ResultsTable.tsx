@@ -16,6 +16,7 @@ function ResultsTable() {
   const cellRef = useRef<HTMLTableCellElement>(null);
 
   const maxYears = 20;
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     if (tooltipRef.current && cellRef.current) {
@@ -72,13 +73,9 @@ function ResultsTable() {
         <table>
           <thead>
             <tr>
-              <th className="empty-corner"></th>
-              <th className="years-from-today-header" colSpan={maxYears}>Years from Today</th>
-            </tr>
-            <tr>
-              <th className="years-worked-header">Years Worked</th>
+              <th>Years Worked</th>
               {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
-                <th key={year}>{year}</th>
+                <th key={year}>{currentYear + year}</th>
               ))}
             </tr>
           </thead>

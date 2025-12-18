@@ -20,7 +20,7 @@ function ResultsHeader() {
     <div className="results-header">
       <h2>Total Projected Returns (All Funds)</h2>
       <button className="btn btn-share" onClick={handleShare}>
-        📋 Share
+        Share
       </button>
 
       {showToast && (
