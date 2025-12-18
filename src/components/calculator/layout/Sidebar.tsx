@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { createDefaultFund } from '../../../types/calculator';
 import FundCard from '../fund/FundCard';
+import HowToUseModal from '../common/HowToUseModal';
 
 function Sidebar() {
   const { state, dispatch } = useCalculator();
+  const [showModal, setShowModal] = useState(false);
 
   const handleAddFund = () => {
-    const fundName = `Fund ${String.fromCharCode(65 + state.funds.length)}`;
+    const fundName = state.funds.length === 0 ? 'My Fund' : `My Fund ${state.funds.length + 1}`;
     const templateFund = state.funds[0];
     const newFund = createDefaultFund(
       state.funds.length,
@@ -18,7 +21,12 @@ function Sidebar() {
 
   return (
     <div className="sidebar">
-      <h1>Fund Carry Calculator</h1>
+      <div style={{ marginBottom: 'var(--spacing-2xl)' }}>
+        <h1 style={{ marginBottom: 'var(--spacing-md)' }}>Fund GP Comp Calculator</h1>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          How to Use
+        </button>
+      </div>
 
       <div className="section">
         {state.funds.map((fund, index) => (
@@ -29,6 +37,8 @@ function Sidebar() {
           + Add Fund
         </button>
       </div>
+
+      <HowToUseModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

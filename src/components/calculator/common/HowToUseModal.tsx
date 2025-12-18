@@ -1,0 +1,81 @@
+import { useEffect } from 'react';
+
+interface HowToUseModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>How to Use This Calculator</h2>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="modal-body">
+          <section className="modal-section">
+            <p>
+              This calculator helps you model your potential GP compensation from venture capital funds over time.
+              It accounts for fund structure, hurdle rates, vesting schedules, and different return scenarios.
+            </p>
+          </section>
+
+          <section className="modal-section">
+            <h3>Key Terms</h3>
+            <ul className="simple-list">
+              <li><strong>Carried Interest (Carry)</strong> - The share of a fund's profits that GPs receive as performance-based compensation, typically 20%</li>
+              <li><strong>Fund Size</strong> - Total capital committed to the fund in millions of dollars</li>
+              <li><strong>Fund Cycle</strong> - Time between raising consecutive funds, typically 2-3 years</li>
+              <li><strong>Fund Life</strong> - Duration of the fund before full realization, typically 10 years</li>
+              <li><strong>Hurdles</strong> - Performance thresholds that affect carry percentage at different return levels</li>
+              <li><strong>Gross Return Multiple</strong> - Total return on the fund before fees (e.g., 3x means $300M returned on a $100M fund)</li>
+              <li><strong>Vesting Period</strong> - Time required for GPs to fully earn their carry allocation, typically 4 years</li>
+              <li><strong>Cliff Period</strong> - Minimum time before any carry vests, typically 1 year</li>
+              <li><strong>Realization Curve</strong> - Pattern of when fund returns are distributed over time</li>
+            </ul>
+          </section>
+
+          <section className="modal-section">
+            <h3>Quick Start</h3>
+            <ul className="simple-list">
+              <li>Enter your fund parameters (size, carry %, fees, etc.)</li>
+              <li>Add return scenarios to model different outcomes</li>
+              <li>Adjust vesting terms to match your carry allocation</li>
+              <li>Add multiple funds to see how compensation compounds over time</li>
+              <li>Use the Share button to save and share your model</li>
+            </ul>
+          </section>
+
+          <section className="modal-section modal-footer-section">
+            <p className="made-with-love">
+              Made with ❤️ by a VC who wanted better GP compensation modeling
+            </p>
+          </section>
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={onClose}>Got it!</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default HowToUseModal;
