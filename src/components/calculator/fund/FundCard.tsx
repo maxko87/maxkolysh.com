@@ -35,6 +35,10 @@ function FundCard({ fund, index }: FundCardProps) {
 
   const handleAddScenario = () => {
     if (fund.scenarios.length < 5) {
+      const lastScenario = fund.scenarios[fund.scenarios.length - 1];
+      const lastMultiple = isNaN(lastScenario.grossReturnMultiple) ? 5 : lastScenario.grossReturnMultiple;
+      const newMultiple = lastMultiple * 2;
+
       dispatch({
         type: 'ADD_SCENARIO',
         payload: {
@@ -42,7 +46,7 @@ function FundCard({ fund, index }: FundCardProps) {
           scenario: {
             id: Date.now(),
             name: `Scenario ${fund.scenarios.length + 1}`,
-            grossReturnMultiple: 5
+            grossReturnMultiple: newMultiple
           }
         }
       });
@@ -340,7 +344,7 @@ function FundCard({ fund, index }: FundCardProps) {
             </button>
           </div>
         ))}
-        <button className="btn btn-small add-hurdle-btn" onClick={handleAddHurdle}>
+        <button className="btn add-btn" onClick={handleAddHurdle}>
           + Add Hurdle
         </button>
       </div>
@@ -355,17 +359,19 @@ function FundCard({ fund, index }: FundCardProps) {
           return (
             <div key={scenario.id} className="scenario-card">
               <div className="scenario-card-header">
-                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>
+                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e', flex: 1 }}>
                   {isNaN(scenario.grossReturnMultiple) ? '—' : `${scenario.grossReturnMultiple}x`}
                 </h4>
-                {idx > 0 && (
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
-                  >
-                    ✕
-                  </button>
-                )}
+                <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
+                  {idx > 0 && (
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="scenario-field">
                 <label>Expected Gross Multiple</label>
@@ -393,7 +399,7 @@ function FundCard({ fund, index }: FundCardProps) {
           );
         })}
         {fund.scenarios.length < 5 && (
-          <button className="btn btn-primary btn-small" onClick={handleAddScenario}>
+          <button className="btn add-btn" onClick={handleAddScenario}>
             + Add Scenario
           </button>
         )}
