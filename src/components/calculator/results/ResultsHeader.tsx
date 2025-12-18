@@ -17,20 +17,14 @@ function ResultsHeader() {
   };
 
   return (
-    <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800">
-        Total Projected Returns (All Funds)
-      </h2>
-      <button
-        onClick={handleShare}
-        className="calc-btn calc-btn-share px-4 py-2 text-white rounded-lg flex items-center gap-2"
-      >
-        <span>📋</span>
-        <span>Share</span>
+    <div>
+      <h2>Total Projected Returns (All Funds)</h2>
+      <button onClick={handleShare}>
+        📋 Share
       </button>
 
       {showToast && (
-        <div className="calc-toast">
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: '#16a34a', color: 'white', padding: '16px 24px', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontWeight: 600, fontSize: '14px', zIndex: 1000 }}>
           Link copied to clipboard!
         </div>
       )}
