@@ -17,15 +17,15 @@ function Sidebar() {
   };
 
   return (
-    <div>
+    <div className="sidebar">
       <h1>Fund Carry Calculator</h1>
 
-      <div>
+      <div className="section">
         {state.funds.map((fund, index) => (
           <FundCard key={fund.id} fund={fund} index={index} />
         ))}
 
-        <button onClick={handleAddFund}>
+        <button className="btn btn-primary" onClick={handleAddFund}>
           + Add Fund
         </button>
       </div>

@@ -7,7 +7,7 @@ function CalculatorInner() {
   useUrlState(); // Sync state with URL hash
 
   return (
-    <div>
+    <div className="app-layout">
       <Sidebar />
       <MainContent />
     </div>

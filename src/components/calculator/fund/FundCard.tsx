@@ -1,14 +1,22 @@
+import { useState, useEffect, useRef } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
 import { calculateIRR } from '../../../utils/calculations';
+import Tooltip from '../common/Tooltip';
 
 interface FundCardProps {
   fund: Fund;
   index: number;
 }
 
+type PresetType = 'standard' | 'aggressive' | 'linear' | null;
+
 function FundCard({ fund, index }: FundCardProps) {
   const { state, dispatch } = useCalculator();
+  const [hoveredPreset, setHoveredPreset] = useState<PresetType>(null);
+  const [tooltipAlign, setTooltipAlign] = useState<'center' | 'left' | 'right'>('center');
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleRemove = () => {
     if (state.funds.length > 1) {
@@ -43,95 +51,277 @@ function FundCard({ fund, index }: FundCardProps) {
     }
   };
 
+  const handlePresetHover = (preset: 'standard' | 'aggressive' | 'linear', event: React.MouseEvent<HTMLButtonElement>) => {
+    setHoveredPreset(preset);
+
+    // Check if tooltip would go off-screen
+    const button = event.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const tooltipWidth = 300;
+    const tooltipHalfWidth = tooltipWidth / 2;
+
+    if (rect.left < tooltipHalfWidth) {
+      setTooltipAlign('left');
+    } else if (rect.right + tooltipHalfWidth > window.innerWidth) {
+      setTooltipAlign('right');
+    } else {
+      setTooltipAlign('center');
+    }
+  };
+
+  const getCurveData = (preset: 'standard' | 'aggressive' | 'linear') => {
+    if (preset === 'standard') {
+      return [0, 0.02, 0.05, 0.10, 0.15, 0.20, 0.35, 0.50, 0.75, 1.0];
+    } else if (preset === 'aggressive') {
+      return [0, 0.15, 0.30, 0.50, 0.70, 0.85, 0.93, 0.97, 0.99, 1.0];
+    } else {
+      return [0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90];
+    }
+  };
+
+  useEffect(() => {
+    if (!hoveredPreset || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const curve = getCurveData(hoveredPreset);
+    const width = 300;
+    const height = 160;
+    const padding = 30;
+    const topPadding = 20;
+    const fundYears = fund.years;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const chartWidth = width - 2 * padding;
+    const chartHeight = height - padding - topPadding;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw axes
+    ctx.strokeStyle = '#cbd5e0';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(padding, topPadding);
+    ctx.lineTo(padding, height - padding);
+    ctx.lineTo(width - padding, height - padding);
+    ctx.stroke();
+
+    // Draw grid and labels
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = '#718096';
+    ctx.textAlign = 'center';
+
+    const numLabels = 5;
+    const step = Math.ceil(fundYears / numLabels);
+    for (let i = 0; i <= fundYears; i += step) {
+      const x = padding + (i / fundYears) * chartWidth;
+      const y = height - padding;
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, topPadding);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+
+      ctx.fillText(`Y${i}`, x, y + 15);
+    }
+
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 10; i += 5) {
+      const y = height - padding - (i / 10) * chartHeight;
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(width - padding, y);
+      ctx.stroke();
+
+      ctx.fillText(`${i * 10}%`, padding - 5, y + 3);
+    }
+
+    // Draw curve
+    ctx.strokeStyle = '#667eea';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+
+    for (let i = 0; i <= 10; i++) {
+      const yearPosition = (i / 10) * fundYears;
+      const x = padding + (yearPosition / fundYears) * chartWidth;
+      const y = height - padding - (curve[i] || 0) * chartHeight;
+
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+
+    // Draw control points
+    for (let i = 0; i <= 10; i++) {
+      const yearPosition = (i / 10) * fundYears;
+      const x = padding + (yearPosition / fundYears) * chartWidth;
+      const y = height - padding - (curve[i] || 0) * chartHeight;
+
+      ctx.fillStyle = '#667eea';
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }, [hoveredPreset, fund.years]);
+
   return (
-    <div>
-      <div>
+    <div className="fund-card">
+      <div className="fund-card-header">
         <input
           type="text"
           value={fund.name}
           onChange={(e) => handleFieldChange('name', e.target.value)}
         />
         {index > 0 && (
-          <button onClick={handleRemove}>
+          <button className="btn btn-danger" onClick={handleRemove}>
             Remove
           </button>
         )}
       </div>
 
-      <div>
-        <div>
-          <label>Fund Size ($M)</label>
-          <input
-            type="number"
-            value={fund.size}
-            onChange={(e) => handleFieldChange('size', parseFloat(e.target.value))}
-          />
+      <div className="form-grid">
+        <div className="form-group">
+          <label>
+            <span>Fund Size</span>
+            <Tooltip text="Total fund size in millions of dollars">
+              <span className="tooltip-icon">?</span>
+            </Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.size}
+              onChange={(e) => handleFieldChange('size', parseFloat(e.target.value))}
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>$M</span>
+          </div>
         </div>
-        <div>
-          <label>Carry (%)</label>
-          <input
-            type="number"
-            value={fund.carryPercent}
-            onChange={(e) => handleFieldChange('carryPercent', parseFloat(e.target.value))}
-          />
+        <div className="form-group">
+          <label>
+            <span>Carry</span>
+            <Tooltip text="Base carried interest percentage before any hurdles"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.carryPercent}
+              onChange={(e) => handleFieldChange('carryPercent', parseFloat(e.target.value))}
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
+          </div>
         </div>
-        <div>
-          <label>Fund Cycle (Yrs)</label>
-          <input
-            type="number"
-            value={fund.fundCycle}
-            onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
-            step="0.5"
-          />
+        <div className="form-group">
+          <label>
+            <span>Fund Cycle</span>
+            <Tooltip text="Time between raising consecutive funds"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.fundCycle}
+              onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
+              step="0.5"
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+          </div>
         </div>
-        <div>
-          <label>Fund Life (Yrs)</label>
-          <input
-            type="number"
-            value={fund.years}
-            onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
-          />
+        <div className="form-group">
+          <label>
+            <span>Fund Life</span>
+            <Tooltip text="Expected lifespan of the fund before full realization"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.years}
+              onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+          </div>
         </div>
-        <div>
-          <label># of GPs</label>
+        <div className="form-group">
+          <label>
+            <span># of Equal GPs</span>
+            <Tooltip text="Number of equal General Partners sharing carry"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
           <input
             type="number"
             value={fund.numGPs}
             onChange={(e) => handleFieldChange('numGPs', parseInt(e.target.value))}
           />
         </div>
-        <div>
-          <label>GP Pool (%)</label>
-          <input
-            type="number"
-            value={fund.carryPoolPercent}
-            onChange={(e) => handleFieldChange('carryPoolPercent', parseFloat(e.target.value))}
-          />
+        <div className="form-group">
+          <label>
+            <span>Carry Pool to GPs</span>
+            <Tooltip text="Percentage of carry allocated to GP pool vs other stakeholders"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.carryPoolPercent}
+              onChange={(e) => handleFieldChange('carryPoolPercent', parseFloat(e.target.value))}
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
+          </div>
         </div>
-        <div>
-          <label>Vesting (Yrs)</label>
-          <input
-            type="number"
-            value={fund.vestingPeriod}
-            onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
-            step="0.5"
-          />
+        <div className="form-group">
+          <label>
+            <span>Vesting Period</span>
+            <Tooltip text="Years required to fully vest carry allocation"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.vestingPeriod}
+              onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
+              step="0.5"
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+          </div>
         </div>
-        <div>
-          <label>Cliff (Yrs)</label>
-          <input
-            type="number"
-            value={fund.cliffPeriod}
-            onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
-            step="0.5"
-          />
+        <div className="form-group">
+          <label>
+            <span>Cliff Period</span>
+            <Tooltip text="Years before any carry vests (all-or-nothing threshold)"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              value={fund.cliffPeriod}
+              onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
+              step="0.5"
+              style={{ paddingRight: '35px' }}
+            />
+            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+          </div>
         </div>
       </div>
 
-      <div>
-        <h4>Hurdles</h4>
+      <div className="section">
+        <div className="fund-section-header">
+          <span>Hurdles</span>
+          <Tooltip text="Performance thresholds that increase carry % at higher return multiples"><span className="tooltip-icon">?</span></Tooltip>
+        </div>
         {fund.hurdles.map((hurdle, idx) => (
-          <div key={idx}>
+          <div key={idx} className="hurdle-item">
             <input
               type="number"
               value={hurdle.multiple}
@@ -142,8 +332,10 @@ function FundCard({ fund, index }: FundCardProps) {
                 })
               }
               step="0.1"
+              style={{ maxWidth: '60px' }}
             />
-            <span>x →</span>
+            <span style={{ color: '#718096', fontWeight: 600 }}>x</span>
+            <span style={{ color: '#718096' }}>→</span>
             <input
               type="number"
               value={hurdle.carryPercent}
@@ -154,27 +346,32 @@ function FundCard({ fund, index }: FundCardProps) {
                 })
               }
               step="0.1"
+              style={{ maxWidth: '60px' }}
             />
-            <span>%</span>
+            <span style={{ color: '#718096', fontSize: '0.85em' }}>%</span>
             <button
+              className="btn btn-danger"
               onClick={() => dispatch({ type: 'REMOVE_HURDLE', payload: { fundId: fund.id, hurdleIndex: idx } })}
             >
               ✕
             </button>
           </div>
         ))}
-        <button onClick={handleAddHurdle}>
+        <button className="btn btn-small add-hurdle-btn" onClick={handleAddHurdle}>
           + Add Hurdle
         </button>
       </div>
 
-      <div>
-        <h4>Scenarios</h4>
+      <div className="section">
+        <div className="fund-section-header">
+          <span>Return Scenarios</span>
+          <Tooltip text="Different return outcomes to model (e.g., base case, upside, downside)"><span className="tooltip-icon">?</span></Tooltip>
+        </div>
         {fund.scenarios.map((scenario, idx) => {
           const irr = calculateIRR(scenario.grossReturnMultiple, fund.years);
           return (
-            <div key={scenario.id}>
-              <div>
+            <div key={scenario.id} className="scenario-card">
+              <div className="scenario-card-header">
                 <input
                   type="text"
                   value={scenario.name}
@@ -187,14 +384,15 @@ function FundCard({ fund, index }: FundCardProps) {
                 />
                 {idx > 0 && (
                   <button
+                    className="btn btn-danger"
                     onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
                   >
                     ✕
                   </button>
                 )}
               </div>
-              <div>
-                <label>Gross Return:</label>
+              <div className="scenario-field">
+                <label>Gross Return</label>
                 <input
                   type="number"
                   value={scenario.grossReturnMultiple}
@@ -206,28 +404,44 @@ function FundCard({ fund, index }: FundCardProps) {
                   }
                   step="0.1"
                 />
-                <span>x</span>
+                <span style={{ color: '#92400e', fontWeight: 600 }}>x</span>
               </div>
-              <div>IRR: {irr}%</div>
+              <div className="scenario-field">
+                <label>Gross IRR</label>
+                <div className="calculated">{irr}%</div>
+              </div>
             </div>
           );
         })}
         {fund.scenarios.length < 5 && (
-          <button onClick={handleAddScenario}>
+          <button className="btn btn-primary btn-small" onClick={handleAddScenario}>
             + Add Scenario
           </button>
         )}
       </div>
 
-      <div>
-        <h4>Realization Curve</h4>
-        <div>
+      <div className="section">
+        <div className="fund-section-header">
+          <span>Realization Curve</span>
+          <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
+        </div>
+        <div className="curve-presets">
           {(['standard', 'aggressive', 'linear'] as const).map((preset) => (
             <button
               key={preset}
+              ref={hoveredPreset === preset ? buttonRef : null}
+              className="btn btn-small curve-preset-btn"
               onClick={() => dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } })}
+              onMouseEnter={(e) => handlePresetHover(preset, e)}
+              onMouseLeave={() => setHoveredPreset(null)}
+              style={{ position: 'relative' }}
             >
-              {preset}
+              {preset.charAt(0).toUpperCase() + preset.slice(1)}
+              {hoveredPreset === preset && (
+                <div className={`curve-preview-tooltip ${tooltipAlign === 'left' ? 'align-left' : tooltipAlign === 'right' ? 'align-right' : ''}`}>
+                  <canvas ref={canvasRef} className="curve-preview-canvas" />
+                </div>
+              )}
             </button>
           ))}
         </div>

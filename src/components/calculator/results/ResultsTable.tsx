@@ -67,34 +67,36 @@ function ResultsTable() {
   };
 
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th colSpan={maxYears}>Years from Today</th>
-          </tr>
-          <tr>
-            <th>Years Worked</th>
-            {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
-              <th key={year}>{year}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {calculations.map((row, rowIdx) => (
-            <tr key={rowIdx}>
-              <td>{rowIdx + 1}</td>
-              {row.map((cellData, colIdx) => {
-                if (!cellData || cellData.total < 0.01) {
-                  return <td key={colIdx}>-</td>;
-                }
+    <div className="results-container">
+      <div className="results-table">
+        <table>
+          <thead>
+            <tr>
+              <th className="empty-corner"></th>
+              <th className="years-from-today-header" colSpan={maxYears}>Years from Today</th>
+            </tr>
+            <tr>
+              <th className="years-worked-header">Years Worked</th>
+              {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
+                <th key={year}>{year}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {calculations.slice(0, maxYears).map((row, rowIdx) => (
+              <tr key={rowIdx}>
+                <td>{rowIdx + 1}</td>
+                {row.map((cellData, colIdx) => {
+                  if (!cellData || cellData.total < 0.01) {
+                    return <td key={colIdx} className="empty">-</td>;
+                  }
 
                 const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
 
                 return (
                   <td
                     key={colIdx}
+                    className="value"
                     style={{ position: 'relative' }}
                     ref={isHovered ? cellRef : null}
                     onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
@@ -105,28 +107,22 @@ function ResultsTable() {
                     {isHovered && tooltipData && (
                       <div
                         ref={tooltipRef}
+                        className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
                         style={{
                           ...tooltipPosition,
                           position: 'absolute',
                           minWidth: '300px',
-                          zIndex: 1000,
-                          background: '#111827',
-                          color: 'white',
-                          padding: '16px',
-                          borderRadius: '8px',
-                          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                          fontSize: '13px',
-                          lineHeight: 1.6,
+                          zIndex: 10000,
                           pointerEvents: 'none'
                         }}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', borderBottom: '2px solid rgba(255,255,255,0.4)', marginBottom: '10px', paddingBottom: '8px' }}>
-                          <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Years Worked:</span>
-                          <span style={{ color: 'white', fontWeight: 600 }}>{tooltipData.yearsWorked}</span>
+                        <div className="tooltip-row">
+                          <span className="tooltip-label">Years Worked:</span>
+                          <span className="tooltip-value">{tooltipData.yearsWorked}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', borderBottom: '2px solid rgba(255,255,255,0.4)', marginBottom: '12px', paddingBottom: '8px' }}>
-                          <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Years from Today:</span>
-                          <span style={{ color: 'white', fontWeight: 600 }}>{tooltipData.yearsFromToday}</span>
+                        <div className="tooltip-row">
+                          <span className="tooltip-label">Years from Today:</span>
+                          <span className="tooltip-value">{tooltipData.yearsFromToday}</span>
                         </div>
 
                         {tooltipData.fundBreakdowns.map((fb, idx) => (
@@ -169,6 +165,7 @@ function ResultsTable() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
