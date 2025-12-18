@@ -2,7 +2,8 @@ import type { Fund, CellData, FundBreakdown, VintageBreakdown } from '../types/c
 
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
-  if (years <= 0) return '0.0';
+  if (isNaN(multiple) || isNaN(years) || years <= 0) return '0.0';
+  if (multiple <= 0) return '-100.0';
   const irr = Math.pow(multiple, 1 / years) - 1;
   return (irr * 100).toFixed(1);
 }
@@ -112,8 +113,12 @@ export function calculateCell(
     const scenario = fund.scenarios.find(s => s.id === selectedScenarioId) || fund.scenarios[0];
     if (!scenario) return;
 
+    // Handle NaN or invalid multiples - use default of 5x
+    // Allow any non-negative multiple including < 1 (e.g., 0.8x for a loss)
+    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 5 : scenario.grossReturnMultiple;
+
     // Calculate total carry pool for this fund
-    const returns = fund.size * scenario.grossReturnMultiple;
+    const returns = fund.size * multiple;
     const carry = calculateFundCarry(fund, returns);
 
     // Calculate per GP share for this fund
