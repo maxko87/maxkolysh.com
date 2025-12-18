@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
+import { formatCurrency } from '../../../utils/formatCurrency';
 import type { CellData } from '../../../types/calculator';
 
 function ResultsTable() {
@@ -17,25 +18,6 @@ function ResultsTable() {
 
   const maxYears = 20;
   const currentYear = new Date().getFullYear();
-
-  const formatCurrency = (value: number): string => {
-    if (value < 100) {
-      // Less than $100M: show 1 decimal
-      return `$${value.toFixed(1)}M`;
-    } else if (value < 1000) {
-      // $100M-$999M: no decimal
-      return `$${Math.round(value)}M`;
-    } else if (value < 10000) {
-      // $1B-$9.99B: 2 decimals
-      return `$${(value / 1000).toFixed(2)}B`;
-    } else if (value < 100000) {
-      // $10B-$99.9B: 1 decimal
-      return `$${(value / 1000).toFixed(1)}B`;
-    } else {
-      // $100B+: no decimal
-      return `$${Math.round(value / 1000)}B`;
-    }
-  };
 
   useEffect(() => {
     if (tooltipRef.current && cellRef.current) {
@@ -132,13 +114,8 @@ function ResultsTable() {
                           pointerEvents: 'none'
                         }}
                       >
-                        <div className="tooltip-row">
-                          <span className="tooltip-label">Years Worked:</span>
-                          <span className="tooltip-value">{tooltipData.yearsWorked}</span>
-                        </div>
-                        <div className="tooltip-row">
-                          <span className="tooltip-label">Years from Today:</span>
-                          <span className="tooltip-value">{tooltipData.yearsFromToday}</span>
+                        <div className="tooltip-label" style={{ marginBottom: '12px' }}>
+                          If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.
                         </div>
 
                         {tooltipData.fundBreakdowns.map((fb, idx) => (
@@ -149,7 +126,7 @@ function ResultsTable() {
                               ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
                             }}
                           >
-                            <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em' }}>
+                            <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em', textAlign: 'left' }}>
                               {fb.name}
                             </div>
                             {fb.vintages.map((v, vIdx) => (

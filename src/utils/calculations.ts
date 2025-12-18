@@ -142,14 +142,20 @@ export function calculateCell(
       if (vestingProgress > 0 && yearsIntoThisVintage >= fund.cliffPeriod) {
         const yearsSinceVintageStart = yearsFromToday - fundStartYear;
         const realizationPercent = getRealizationAtYear(yearsSinceVintageStart, fund.realizationCurve, fund.years);
-        const vintageCarry = vestingProgress * realizationPercent * perGPShare;
 
-        if (vintageCarry > 0.01) {
+        // Total carry for this vintage before vesting
+        const totalVintageCarry = realizationPercent * perGPShare;
+        // Your vested fraction
+        const vestedVintageCarry = vestingProgress * totalVintageCarry;
+
+        if (vestedVintageCarry > 0.01) {
           vintageBreakdowns.push({
             vintage: vintageIndex + 1,
-            yearsIn: Math.round(yearsIntoThisVintage * 10) / 10,
+            yearsIn: Math.round(yearsSinceVintageStart * 10) / 10,
             realization: Math.round(realizationPercent * 100),
-            amount: vintageCarry
+            amount: vestedVintageCarry,
+            totalCarry: totalVintageCarry,
+            vestedCarry: vestedVintageCarry
           });
         }
       }

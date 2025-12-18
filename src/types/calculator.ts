@@ -40,6 +40,8 @@ export interface VintageBreakdown {
   yearsIn: number;
   realization: number;
   amount: number;
+  totalCarry: number;        // Total carry for this vintage before vesting
+  vestedCarry: number;       // Your vested fraction of carry
 }
 
 export interface FundBreakdown {
