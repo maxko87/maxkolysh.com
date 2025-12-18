@@ -98,16 +98,16 @@ export type CalculatorAction =
   | { type: 'REMOVE_SCENARIO'; payload: { fundId: number; scenarioId: number } }
   | { type: 'UPDATE_SCENARIO'; payload: { fundId: number; scenarioId: number; field: keyof Scenario; value: any } }
   | { type: 'UPDATE_REALIZATION_CURVE'; payload: { fundId: number; curve: number[] } }
-  | { type: 'SET_REALIZATION_PRESET'; payload: { fundId: number; preset: 'linear' | 'standard' | 'aggressive' } }
+  | { type: 'SET_REALIZATION_PRESET'; payload: { fundId: number; preset: 'linear' | 'standard' | 'conservative' } }
   | { type: 'SELECT_SCENARIO'; payload: { fundId: number; scenarioId: number } };
 
 // Preset curve types
-export type CurvePreset = 'linear' | 'standard' | 'aggressive';
+export type CurvePreset = 'linear' | 'standard' | 'conservative';
 
 export const CURVE_PRESETS: Record<CurvePreset, number[]> = {
   linear: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-  standard: [0, 0, 0.02, 0.05, 0.10, 0.15, 0.25, 0.40, 0.60, 0.85, 1.0],
-  aggressive: [0, 0.05, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1.0, 1.0, 1.0],
+  standard: [0, 0.01, 0.02, 0.05, 0.10, 0.15, 0.25, 0.40, 0.60, 0.85, 1.0],
+  conservative: [0, 0, 0, 0.01, 0.03, 0.05, 0.10, 0.20, 0.40, 0.70, 1.0],
 };
 
 // Default values

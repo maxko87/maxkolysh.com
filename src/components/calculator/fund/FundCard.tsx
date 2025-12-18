@@ -13,7 +13,7 @@ interface FundCardProps {
 function FundCard({ fund, index }: FundCardProps) {
   const { state, dispatch } = useCalculator();
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<'standard' | 'aggressive' | 'linear'>('standard');
+  const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'linear'>('standard');
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleRemove = () => {
@@ -49,7 +49,7 @@ function FundCard({ fund, index }: FundCardProps) {
     }
   };
 
-  const handlePresetClick = (preset: 'standard' | 'aggressive' | 'linear') => {
+  const handlePresetClick = (preset: 'standard' | 'conservative' | 'linear') => {
     setSelectedPreset(preset);
     dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } });
   };
@@ -371,13 +371,13 @@ function FundCard({ fund, index }: FundCardProps) {
                 <label>Expected Gross Multiple</label>
                 <input
                   type="number"
-                  value={scenario.grossReturnMultiple}
+                  value={isNaN(scenario.grossReturnMultiple) ? '' : scenario.grossReturnMultiple}
                   onChange={(e) => {
-                    const value = parseFloat(e.target.value);
-                    // Use default of 5 if empty/invalid, but allow any positive number including < 1
+                    const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
+                    // Allow NaN (empty input) - will use placeholder value of 5 in calculations
                     dispatch({
                       type: 'UPDATE_SCENARIO',
-                      payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: isNaN(value) ? 5 : value }
+                      payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value }
                     });
                   }}
                   step="0.1"
@@ -415,7 +415,7 @@ function FundCard({ fund, index }: FundCardProps) {
                 <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">
-                {(['standard', 'aggressive', 'linear'] as const).map((preset) => (
+                {(['conservative', 'standard', 'linear'] as const).map((preset) => (
                   <button
                     key={preset}
                     className={`btn btn-small curve-preset-btn ${selectedPreset === preset ? 'btn-primary' : ''}`}
