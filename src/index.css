@@ -357,31 +357,6 @@ body {
     position: relative;
 }
 
-.tooltip-icon:hover::after {
-    content: attr(data-tooltip);
-    position: fixed;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--text-primary);
-    color: white;
-    font-size: 12px;
-    font-weight: 400;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    z-index: 10000;
-    pointer-events: none;
-    max-width: min(250px, calc(100vw - 20px));
-    width: max-content;
-    white-space: normal;
-    word-wrap: break-word;
-}
-
-.tooltip-icon:hover::before {
-    content: '';
-    position: fixed;
-    border: 6px solid transparent;
-    border-top-color: var(--text-primary);
-    z-index: 10000;
-}
 
 .app-layout input[type="text"],
 .app-layout input[type="number"] {
@@ -522,6 +497,12 @@ body {
     position: relative;
 }
 
+.scenario-card-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+}
+
 .scenario-card-header {
     display: flex;
     justify-content: space-between;
@@ -539,22 +520,23 @@ body {
 
 .scenario-field {
     display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: var(--spacing-sm);
-}
-
-.scenario-field:last-child {
-    margin-bottom: 0;
+    flex-direction: column;
+    gap: var(--spacing-xs);
 }
 
 .scenario-field label {
     font-size: 0.83em;
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
-.scenario-field input,
-.scenario-field .calculated {
-    width: 60px;
+.app-layout .scenario-field input[type="number"] {
+    width: 100%;
+}
+
+.app-layout .scenario-field .calculated {
+    width: fit-content;
+    min-width: 70px;
 }
 
 .scenario-field .calculated {
