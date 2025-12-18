@@ -207,39 +207,6 @@ function FundCard({ fund, index }: FundCardProps) {
         </div>
         <div className="form-group">
           <label>
-            <span>Fund Cycle</span>
-            <Tooltip text="Time between raising consecutive funds"><span className="tooltip-icon">?</span></Tooltip>
-          </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={fund.fundCycle}
-              onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
-              step="0.5"
-              placeholder="2"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-          </div>
-        </div>
-        <div className="form-group">
-          <label>
-            <span>Fund Life</span>
-            <Tooltip text="Expected lifespan of the fund before full realization"><span className="tooltip-icon">?</span></Tooltip>
-          </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={fund.years}
-              onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
-              placeholder="10"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-          </div>
-        </div>
-        <div className="form-group">
-          <label>
             <span># of Equal GPs</span>
             <Tooltip text="Number of equal General Partners sharing carry"><span className="tooltip-icon">?</span></Tooltip>
           </label>
@@ -253,7 +220,7 @@ function FundCard({ fund, index }: FundCardProps) {
         <div className="form-group">
           <label>
             <span>Carry Pool to GPs</span>
-            <Tooltip text="Percentage of carry allocated to GP pool vs other stakeholders"><span className="tooltip-icon">?</span></Tooltip>
+            <Tooltip text="Percentage of carry allocated to GP pool vs other stakeholders (junior partners, staff)"><span className="tooltip-icon">?</span></Tooltip>
           </label>
           <div style={{ position: 'relative' }}>
             <input
@@ -303,6 +270,59 @@ function FundCard({ fund, index }: FundCardProps) {
       </div>
 
       <div className="section">
+        <div style={{ marginBottom: 'var(--spacing-md)' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: 'var(--spacing-sm)' }}>
+            <input
+              type="checkbox"
+              checked={fund.raiseContinuously}
+              onChange={(e) => handleFieldChange('raiseContinuously', e.target.checked)}
+              style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+            />
+            <span style={{ fontWeight: 600, fontSize: '0.95em' }}>Raise this fund continuously</span>
+            <Tooltip text="Enable this to model raising new funds on a regular cycle"><span className="tooltip-icon">?</span></Tooltip>
+          </label>
+        </div>
+
+        <div className="form-grid">
+          <div className="form-group">
+            <label>
+              <span>Fund Life</span>
+              <Tooltip text="Expected lifespan of the fund before full realization"><span className="tooltip-icon">?</span></Tooltip>
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="number"
+                value={fund.years}
+                onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
+                placeholder="10"
+                style={{ paddingRight: '35px' }}
+              />
+              <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+            </div>
+          </div>
+          {fund.raiseContinuously && (
+            <div className="form-group">
+              <label>
+                <span>Fund Cycle</span>
+                <Tooltip text="Time between raising consecutive funds"><span className="tooltip-icon">?</span></Tooltip>
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="number"
+                  value={fund.fundCycle}
+                  onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
+                  step="0.5"
+                  placeholder="2"
+                  style={{ paddingRight: '35px' }}
+                />
+                <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="section">
         <div className="fund-section-header">
           <span>Hurdles</span>
           <Tooltip text="Performance thresholds that increase carry % at higher return multiples"><span className="tooltip-icon">?</span></Tooltip>
@@ -347,6 +367,40 @@ function FundCard({ fund, index }: FundCardProps) {
         <button className="btn add-btn" onClick={handleAddHurdle}>
           + Add Hurdle
         </button>
+      </div>
+
+      <div className="section">
+        <div
+          className="fund-section-header"
+          style={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          <span>Advanced {showAdvanced ? '▼' : '▶'}</span>
+        </div>
+        {showAdvanced && (
+          <>
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Curve</span>
+                <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              <div className="curve-presets">
+                {(['conservative', 'standard', 'linear'] as const).map((preset) => (
+                  <button
+                    key={preset}
+                    className={`btn btn-small curve-preset-btn ${selectedPreset === preset ? 'btn-primary' : ''}`}
+                    onClick={() => handlePresetClick(preset)}
+                  >
+                    {preset.charAt(0).toUpperCase() + preset.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
+                <canvas ref={canvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="section">
@@ -401,40 +455,6 @@ function FundCard({ fund, index }: FundCardProps) {
           <button className="btn add-btn" onClick={handleAddScenario}>
             + Add Scenario
           </button>
-        )}
-      </div>
-
-      <div className="section">
-        <div
-          className="fund-section-header"
-          style={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => setShowAdvanced(!showAdvanced)}
-        >
-          <span>Advanced {showAdvanced ? '▼' : '▶'}</span>
-        </div>
-        {showAdvanced && (
-          <>
-            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Curve</span>
-                <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
-              </div>
-              <div className="curve-presets">
-                {(['conservative', 'standard', 'linear'] as const).map((preset) => (
-                  <button
-                    key={preset}
-                    className={`btn btn-small curve-preset-btn ${selectedPreset === preset ? 'btn-primary' : ''}`}
-                    onClick={() => handlePresetClick(preset)}
-                  >
-                    {preset.charAt(0).toUpperCase() + preset.slice(1)}
-                  </button>
-                ))}
-              </div>
-              <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
-                <canvas ref={canvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
-              </div>
-            </div>
-          </>
         )}
       </div>
     </div>

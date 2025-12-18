@@ -160,6 +160,11 @@ export function calculateCell(
         }
       }
 
+      // If not raising continuously, only calculate for the first fund
+      if (!fund.raiseContinuously) {
+        break;
+      }
+
       fundStartYear += fund.fundCycle;
       vintageIndex++;
     }

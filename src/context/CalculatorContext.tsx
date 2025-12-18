@@ -2,7 +2,7 @@ import React, { createContext, useReducer, useMemo } from 'react';
 import type { CalculatorState, CalculatorAction, CellData } from '../types/calculator';
 import { createDefaultFund, CURVE_PRESETS } from '../types/calculator';
 import { calculateAllCells } from '../utils/calculations';
-import { loadStateFromHash } from '../utils/stateCompression';
+import { loadStateFromHash, compressState } from '../utils/stateCompression';
 
 // Initial state
 const getInitialState = (): CalculatorState => {
@@ -229,6 +229,15 @@ export function CalculatorProvider({ children }: CalculatorProviderProps) {
   const calculations = useMemo(() => {
     return calculateAllCells(state.funds, state.selectedScenarios);
   }, [state.funds, state.selectedScenarios]);
+
+  // Update URL whenever state changes (React way!)
+  React.useEffect(() => {
+    const compressed = compressState(state);
+    if (compressed) {
+      const url = window.location.pathname + '?' + compressed;
+      window.history.replaceState(null, '', url);
+    }
+  }, [state]);
 
   return (
     <CalculatorContext.Provider value={{ state, dispatch, calculations }}>
