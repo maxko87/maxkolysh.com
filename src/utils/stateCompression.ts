@@ -1,100 +1,227 @@
-import type { CalculatorState, CompressedState, Fund } from '../types/calculator';
+import type { CalculatorState, Fund } from '../types/calculator';
+import { CURVE_PRESETS, DEFAULT_REALIZATION_CURVE } from '../types/calculator';
 
 export function compressState(state: CalculatorState): string {
   try {
-    const data: CompressedState = {
-      f: state.funds.map(f => ({
-        n: f.name,
-        s: f.size,
-        c: f.carryPercent,
-        m: f.mgmtFeePercent,
-        y: f.fundCycle,
-        fy: f.years,
-        h: f.hurdles,
-        sc: f.scenarios.map(s => ({
-          n: s.name,
-          g: s.grossReturnMultiple
-        })),
-        gps: f.numGPs,
-        cp: f.carryPoolPercent,
-        vp: f.vestingPeriod,
-        cl: f.cliffPeriod,
-        rc: f.realizationCurve
-      })),
-      ss: state.selectedScenarios
-    };
+    const params = new URLSearchParams();
 
-    const json = JSON.stringify(data);
-    return btoa(encodeURIComponent(json));
+    state.funds.forEach((fund, idx) => {
+      const prefix = `f${idx + 1}`;
+
+      // Basic fund info
+      params.set(`${prefix}_name`, fund.name);
+      params.set(`${prefix}_size`, fund.size.toString());
+      params.set(`${prefix}_carry`, fund.carryPercent.toString());
+      params.set(`${prefix}_mgmt`, fund.mgmtFeePercent.toString());
+      params.set(`${prefix}_life`, fund.years.toString());
+      params.set(`${prefix}_gps`, fund.numGPs.toString());
+      params.set(`${prefix}_pool`, fund.carryPoolPercent.toString());
+      params.set(`${prefix}_vest`, fund.vestingPeriod.toString());
+      params.set(`${prefix}_cliff`, fund.cliffPeriod.toString());
+      params.set(`${prefix}_continuous`, fund.raiseContinuously ? '1' : '0');
+
+      if (fund.raiseContinuously) {
+        params.set(`${prefix}_cycle`, fund.fundCycle.toString());
+      }
+
+      // Hurdles: format as "multiple_carry" (e.g., "2_25" for 2x multiple, 25% carry)
+      fund.hurdles.forEach((hurdle, hIdx) => {
+        params.set(`${prefix}_h${hIdx + 1}`, `${hurdle.multiple}_${hurdle.carryPercent}`);
+      });
+
+      // Scenarios: format as "name:multiple" (e.g., "Base_Case:5")
+      fund.scenarios.forEach((scenario, sIdx) => {
+        const scenarioName = scenario.name.replace(/\s+/g, '_');
+        params.set(`${prefix}_s${sIdx + 1}`, `${scenarioName}:${scenario.grossReturnMultiple}`);
+      });
+
+      // Realization curve: detect preset or store custom
+      const curvePreset = Object.entries(CURVE_PRESETS).find(([_, curve]) =>
+        JSON.stringify(curve) === JSON.stringify(fund.realizationCurve)
+      );
+
+      if (curvePreset) {
+        params.set(`${prefix}_curve`, curvePreset[0]);
+      } else {
+        // Store custom curve as comma-separated values
+        params.set(`${prefix}_curve`, fund.realizationCurve.join(','));
+      }
+
+      // Selected scenario for this fund
+      const selectedScenarioId = state.selectedScenarios[fund.id];
+      const selectedScenarioIdx = fund.scenarios.findIndex(s => s.id === selectedScenarioId);
+      if (selectedScenarioIdx > 0) {
+        params.set(`${prefix}_selected`, (selectedScenarioIdx + 1).toString());
+      }
+    });
+
+    return params.toString();
   } catch (error) {
     console.error('Failed to compress state:', error);
     return '';
   }
 }
 
-export function decompressState(hash: string): CalculatorState | null {
+export function decompressState(queryString: string): CalculatorState | null {
   try {
-    const json = decodeURIComponent(atob(hash));
-    const data: CompressedState = JSON.parse(json);
+    // Try new format first
+    const params = new URLSearchParams(queryString);
 
-    let maxScenarioId = 0;
+    // Detect if it's the old base64 format (no '=' in query params indicates old format)
+    if (!queryString.includes('=')) {
+      // Old format - try to decode
+      try {
+        const json = decodeURIComponent(atob(queryString));
+        const data = JSON.parse(json);
 
-    const funds: Fund[] = data.f.map((f, i) => {
-      const scenarios = f.sc.map((s, j) => {
-        const scenarioId = i * 100 + j;
-        maxScenarioId = Math.max(maxScenarioId, scenarioId + 1);
-        return {
-          id: scenarioId,
-          name: s.n,
-          grossReturnMultiple: s.g
-        };
-      });
+        // Convert old format to new format
+        const funds: Fund[] = data.f.map((f: any, i: number) => {
+          const scenarios = f.sc.map((s: any, j: number) => ({
+            id: i * 100 + j,
+            name: s.n,
+            grossReturnMultiple: s.g
+          }));
 
-      return {
-        id: i,
-        name: f.n,
-        size: f.s,
-        carryPercent: f.c,
-        mgmtFeePercent: f.m,
-        fundCycle: f.y,
-        hurdles: f.h,
-        scenarios,
-        numGPs: f.gps || 15,
-        carryPoolPercent: f.cp || 80,
-        vestingPeriod: f.vp || 4,
-        cliffPeriod: f.cl || 1,
-        realizationCurve: f.rc || [0, 0, 0.02, 0.05, 0.08, 0.12, 0.2, 0.35, 0.55, 0.8, 1.0],
-        years: f.fy || 10
-      };
-    });
+          return {
+            id: i,
+            name: f.n,
+            size: f.s,
+            carryPercent: f.c,
+            mgmtFeePercent: f.m,
+            fundCycle: f.y,
+            hurdles: f.h,
+            scenarios,
+            numGPs: f.gps || 15,
+            carryPoolPercent: f.cp || 80,
+            vestingPeriod: f.vp || 4,
+            cliffPeriod: f.cl || 1,
+            realizationCurve: f.rc || [...DEFAULT_REALIZATION_CURVE],
+            years: f.fy || 10,
+            raiseContinuously: f.rco !== undefined ? f.rco : true
+          };
+        });
 
-    // Restore selectedScenarios, or initialize with first scenario of each fund
-    let selectedScenarios = data.ss || {};
-    if (Object.keys(selectedScenarios).length === 0) {
-      funds.forEach(fund => {
-        selectedScenarios[fund.id] = fund.scenarios[0].id;
-      });
+        let selectedScenarios = data.ss || {};
+        if (Object.keys(selectedScenarios).length === 0) {
+          funds.forEach(fund => {
+            selectedScenarios[fund.id] = fund.scenarios[0].id;
+          });
+        }
+
+        return { funds, selectedScenarios };
+      } catch {
+        return null;
+      }
     }
 
-    return {
-      funds,
-      selectedScenarios
-    };
+    // New format parsing
+    const funds: Fund[] = [];
+    const selectedScenarios: Record<number, number> = {};
+
+    // Find all fund indices
+    const fundIndices = new Set<number>();
+    for (const key of params.keys()) {
+      const match = key.match(/^f(\d+)_/);
+      if (match) {
+        fundIndices.add(parseInt(match[1]));
+      }
+    }
+
+    const sortedIndices = Array.from(fundIndices).sort((a, b) => a - b);
+
+    sortedIndices.forEach((fundIdx, arrayIdx) => {
+      const prefix = `f${fundIdx}`;
+
+      // Parse hurdles
+      const hurdles = [];
+      let hIdx = 1;
+      while (params.has(`${prefix}_h${hIdx}`)) {
+        const [multiple, carryPercent] = params.get(`${prefix}_h${hIdx}`)!.split('_').map(parseFloat);
+        hurdles.push({ multiple, carryPercent });
+        hIdx++;
+      }
+
+      // Parse scenarios
+      const scenarios = [];
+      let sIdx = 1;
+      while (params.has(`${prefix}_s${sIdx}`)) {
+        const [name, multiple] = params.get(`${prefix}_s${sIdx}`)!.split(':');
+        scenarios.push({
+          id: arrayIdx * 100 + sIdx - 1,
+          name: name.replace(/_/g, ' '),
+          grossReturnMultiple: parseFloat(multiple)
+        });
+        sIdx++;
+      }
+
+      // Parse realization curve
+      const curveParam = params.get(`${prefix}_curve`) || 'standard';
+      let realizationCurve: number[];
+      if (curveParam in CURVE_PRESETS) {
+        realizationCurve = [...CURVE_PRESETS[curveParam as keyof typeof CURVE_PRESETS]];
+      } else {
+        realizationCurve = curveParam.split(',').map(parseFloat);
+      }
+
+      const continuous = params.get(`${prefix}_continuous`) === '1';
+
+      const fund: Fund = {
+        id: arrayIdx,
+        name: params.get(`${prefix}_name`) || `Fund ${fundIdx}`,
+        size: parseFloat(params.get(`${prefix}_size`) || '200'),
+        carryPercent: parseFloat(params.get(`${prefix}_carry`) || '20'),
+        mgmtFeePercent: parseFloat(params.get(`${prefix}_mgmt`) || '2'),
+        fundCycle: parseFloat(params.get(`${prefix}_cycle`) || '2'),
+        years: parseFloat(params.get(`${prefix}_life`) || '10'),
+        hurdles,
+        scenarios: scenarios.length > 0 ? scenarios : [{ id: arrayIdx * 100, name: 'Base Case', grossReturnMultiple: 5 }],
+        numGPs: parseInt(params.get(`${prefix}_gps`) || '15'),
+        carryPoolPercent: parseFloat(params.get(`${prefix}_pool`) || '80'),
+        vestingPeriod: parseFloat(params.get(`${prefix}_vest`) || '4'),
+        cliffPeriod: parseFloat(params.get(`${prefix}_cliff`) || '1'),
+        realizationCurve,
+        raiseContinuously: continuous
+      };
+
+      funds.push(fund);
+
+      // Set selected scenario
+      const selectedIdx = parseInt(params.get(`${prefix}_selected`) || '1') - 1;
+      selectedScenarios[arrayIdx] = fund.scenarios[selectedIdx]?.id || fund.scenarios[0].id;
+    });
+
+    if (funds.length === 0) {
+      return null;
+    }
+
+    return { funds, selectedScenarios };
   } catch (error) {
-    console.error('Failed to decode hash:', error);
+    console.error('Failed to decode query string:', error);
     return null;
   }
 }
 
 export function loadStateFromHash(): CalculatorState | null {
+  // Try loading from query params first (new format)
+  const queryString = window.location.search.substring(1);
+  if (queryString) {
+    const result = decompressState(queryString);
+    if (result) return result;
+  }
+
+  // Fall back to hash format (old format for backwards compatibility)
   const hash = window.location.hash.substring(1);
-  if (!hash) return null;
-  return decompressState(hash);
+  if (hash) {
+    return decompressState(hash);
+  }
+
+  return null;
 }
 
 export function updateHash(state: CalculatorState): void {
   const compressed = compressState(state);
   if (compressed) {
-    window.history.replaceState(null, '', '#' + compressed);
+    const url = window.location.pathname + '?' + compressed;
+    window.history.replaceState(null, '', url);
   }
 }

@@ -1,14 +1,15 @@
-import { compressState } from '../../../utils/stateCompression';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { useState } from 'react';
 
 function ResultsHeader() {
-  const { state, calculations } = useCalculator();
+  const { calculations } = useCalculator();
   const [showToast, setShowToast] = useState(false);
 
   const handleShare = () => {
-    const url = window.location.origin + window.location.pathname + '#' + compressState(state);
+    // URL is always in sync with state thanks to useEffect in context
+    // Just copy the current URL to clipboard
+    const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);

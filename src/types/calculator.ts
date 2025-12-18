@@ -26,6 +26,7 @@ export interface Fund {
   vestingPeriod: number;           // Years to vest
   cliffPeriod: number;             // Cliff in years
   realizationCurve: number[];      // 11 points (0-10 years)
+  raiseContinuously: boolean;      // Whether to raise funds continuously
 }
 
 export interface CalculatorState {
@@ -78,6 +79,7 @@ export interface CompressedFund {
   vp: number;   // vestingPeriod
   cl: number;   // cliffPeriod
   rc: number[]; // realizationCurve
+  rco: boolean; // raiseContinuously
 }
 
 export interface CompressedState {
@@ -146,5 +148,6 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     vestingPeriod: 4,
     cliffPeriod: 1,
     realizationCurve: [...DEFAULT_REALIZATION_CURVE],
+    raiseContinuously: true,
   };
 };
