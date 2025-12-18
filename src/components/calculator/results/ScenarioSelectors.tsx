@@ -18,11 +18,11 @@ function ScenarioSelectors() {
                 payload: { fundId: fund.id, scenarioId: parseInt(e.target.value) }
               })
             }
-            style={{ padding: '6px 12px', borderRadius: '6px', border: '1.5px solid #e2e8f0', fontSize: '0.9em' }}
+            style={{ padding: '6px 12px', borderRadius: '6px', border: '1.5px solid #e2e8f0', fontSize: '0.99em' }}
           >
             {fund.scenarios.map(scenario => (
               <option key={scenario.id} value={scenario.id}>
-                {scenario.name}
+                {scenario.grossReturnMultiple}x
               </option>
             ))}
           </select>

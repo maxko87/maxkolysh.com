@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
 import { calculateIRR } from '../../../utils/calculations';
+import { CURVE_PRESETS } from '../../../types/calculator';
 import Tooltip from '../common/Tooltip';
 
 interface FundCardProps {
@@ -9,14 +10,11 @@ interface FundCardProps {
   index: number;
 }
 
-type PresetType = 'standard' | 'aggressive' | 'linear' | null;
-
 function FundCard({ fund, index }: FundCardProps) {
   const { state, dispatch } = useCalculator();
-  const [hoveredPreset, setHoveredPreset] = useState<PresetType>(null);
-  const [tooltipAlign, setTooltipAlign] = useState<'center' | 'left' | 'right'>('center');
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<'standard' | 'aggressive' | 'linear'>('standard');
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleRemove = () => {
     if (state.funds.length > 1) {
@@ -51,42 +49,19 @@ function FundCard({ fund, index }: FundCardProps) {
     }
   };
 
-  const handlePresetHover = (preset: 'standard' | 'aggressive' | 'linear', event: React.MouseEvent<HTMLButtonElement>) => {
-    setHoveredPreset(preset);
-
-    // Check if tooltip would go off-screen
-    const button = event.currentTarget;
-    const rect = button.getBoundingClientRect();
-    const tooltipWidth = 300;
-    const tooltipHalfWidth = tooltipWidth / 2;
-
-    if (rect.left < tooltipHalfWidth) {
-      setTooltipAlign('left');
-    } else if (rect.right + tooltipHalfWidth > window.innerWidth) {
-      setTooltipAlign('right');
-    } else {
-      setTooltipAlign('center');
-    }
-  };
-
-  const getCurveData = (preset: 'standard' | 'aggressive' | 'linear') => {
-    if (preset === 'standard') {
-      return [0, 0.02, 0.05, 0.10, 0.15, 0.20, 0.35, 0.50, 0.75, 1.0];
-    } else if (preset === 'aggressive') {
-      return [0, 0.15, 0.30, 0.50, 0.70, 0.85, 0.93, 0.97, 0.99, 1.0];
-    } else {
-      return [0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90];
-    }
+  const handlePresetClick = (preset: 'standard' | 'aggressive' | 'linear') => {
+    setSelectedPreset(preset);
+    dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } });
   };
 
   useEffect(() => {
-    if (!hoveredPreset || !canvasRef.current) return;
+    if (!showAdvanced || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const curve = getCurveData(hoveredPreset);
+    const curve = CURVE_PRESETS[selectedPreset];
     const width = 300;
     const height = 160;
     const padding = 30;
@@ -174,7 +149,7 @@ function FundCard({ fund, index }: FundCardProps) {
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
     }
-  }, [hoveredPreset, fund.years]);
+  }, [showAdvanced, selectedPreset, fund.years]);
 
   return (
     <div className="fund-card">
@@ -372,16 +347,7 @@ function FundCard({ fund, index }: FundCardProps) {
           return (
             <div key={scenario.id} className="scenario-card">
               <div className="scenario-card-header">
-                <input
-                  type="text"
-                  value={scenario.name}
-                  onChange={(e) =>
-                    dispatch({
-                      type: 'UPDATE_SCENARIO',
-                      payload: { fundId: fund.id, scenarioId: scenario.id, field: 'name', value: e.target.value }
-                    })
-                  }
-                />
+                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>{scenario.grossReturnMultiple}x</h4>
                 {idx > 0 && (
                   <button
                     className="btn btn-danger"
@@ -392,7 +358,7 @@ function FundCard({ fund, index }: FundCardProps) {
                 )}
               </div>
               <div className="scenario-field">
-                <label>Gross Return</label>
+                <label>Expected Gross Multiple</label>
                 <input
                   type="number"
                   value={scenario.grossReturnMultiple}
@@ -404,7 +370,6 @@ function FundCard({ fund, index }: FundCardProps) {
                   }
                   step="0.1"
                 />
-                <span style={{ color: '#92400e', fontWeight: 600 }}>x</span>
               </div>
               <div className="scenario-field">
                 <label>Gross IRR</label>
@@ -421,30 +386,37 @@ function FundCard({ fund, index }: FundCardProps) {
       </div>
 
       <div className="section">
-        <div className="fund-section-header">
-          <span>Realization Curve</span>
-          <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
+        <div
+          className="fund-section-header"
+          style={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => setShowAdvanced(!showAdvanced)}
+        >
+          <span>Advanced {showAdvanced ? '▼' : '▶'}</span>
         </div>
-        <div className="curve-presets">
-          {(['standard', 'aggressive', 'linear'] as const).map((preset) => (
-            <button
-              key={preset}
-              ref={hoveredPreset === preset ? buttonRef : null}
-              className="btn btn-small curve-preset-btn"
-              onClick={() => dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } })}
-              onMouseEnter={(e) => handlePresetHover(preset, e)}
-              onMouseLeave={() => setHoveredPreset(null)}
-              style={{ position: 'relative' }}
-            >
-              {preset.charAt(0).toUpperCase() + preset.slice(1)}
-              {hoveredPreset === preset && (
-                <div className={`curve-preview-tooltip ${tooltipAlign === 'left' ? 'align-left' : tooltipAlign === 'right' ? 'align-right' : ''}`}>
-                  <canvas ref={canvasRef} className="curve-preview-canvas" />
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
+        {showAdvanced && (
+          <>
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Curve</span>
+                <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              <div className="curve-presets">
+                {(['standard', 'aggressive', 'linear'] as const).map((preset) => (
+                  <button
+                    key={preset}
+                    className={`btn btn-small curve-preset-btn ${selectedPreset === preset ? 'btn-primary' : ''}`}
+                    onClick={() => handlePresetClick(preset)}
+                  >
+                    {preset.charAt(0).toUpperCase() + preset.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
+                <canvas ref={canvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
