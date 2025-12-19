@@ -31,7 +31,10 @@ function ScenarioSelectors() {
         if (!cellData || cellData.total < 0.01) {
           rowData.push('-');
         } else {
-          rowData.push(cellData.total.toFixed(1));
+          // Convert millions to dollars and format with commas
+          const dollars = Math.round(cellData.total * 1000000);
+          const formatted = '$' + dollars.toLocaleString('en-US');
+          rowData.push(formatted);
         }
       });
       csvRows.push(rowData.join(','));
