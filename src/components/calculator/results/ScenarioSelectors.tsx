@@ -26,7 +26,7 @@ function ScenarioSelectors() {
 
     // Create CSV rows
     calculations.slice(0, maxYears).forEach((row, rowIdx) => {
-      const rowData = [rowIdx + 1]; // Years at fund
+      const rowData: (string | number)[] = [rowIdx + 1]; // Years at fund
       row.forEach((cellData) => {
         if (!cellData || cellData.total < 0.01) {
           rowData.push('-');
