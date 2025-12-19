@@ -62,8 +62,8 @@ export function getRealizationAtYear(year: number, realizationCurve: number[], f
   const index = Math.floor(curvePosition);
   const fraction = curvePosition - index;
 
-  const r1 = realizationCurve[index] || 0;
-  const r2 = realizationCurve[index + 1] || 1;
+  const r1 = realizationCurve[index] ?? 0;
+  const r2 = realizationCurve[index + 1] ?? 1;
 
   return r1 + (r2 - r1) * fraction;
 }
@@ -140,8 +140,8 @@ export function calculateCell(
       const vestingProgress = Math.min(yearsIntoThisVintage / fund.vestingPeriod, 1);
 
       if (vestingProgress > 0 && yearsIntoThisVintage >= fund.cliffPeriod) {
-        const yearsSinceVintageStart = yearsFromToday - fundStartYear;
-        const realizationPercent = getRealizationAtYear(yearsSinceVintageStart, fund.realizationCurve, fund.years);
+        const vintageAgeInYears = yearsFromToday - fundStartYear;
+        const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fund.years);
 
         // Total carry for this vintage before vesting
         const totalVintageCarry = realizationPercent * perGPShare;
@@ -151,7 +151,7 @@ export function calculateCell(
         if (vestedVintageCarry > 0.01) {
           vintageBreakdowns.push({
             vintage: vintageIndex + 1,
-            yearsIn: Math.round(yearsSinceVintageStart * 10) / 10,
+            yearsIn: Math.round(vintageAgeInYears * 10) / 10,
             realization: Math.round(realizationPercent * 100),
             amount: vestedVintageCarry,
             totalCarry: totalVintageCarry,
