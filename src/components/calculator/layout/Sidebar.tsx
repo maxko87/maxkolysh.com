@@ -3,6 +3,7 @@ import { useCalculator } from '../../../hooks/useCalculator';
 import { createDefaultFund } from '../../../types/calculator';
 import FundCard from '../fund/FundCard';
 import HowToUseModal from '../common/HowToUseModal';
+import PresetSelector from '../common/PresetSelector';
 
 function Sidebar() {
   const { state, dispatch } = useCalculator();
@@ -23,9 +24,12 @@ function Sidebar() {
     <div className="sidebar">
       <div style={{ marginBottom: 'var(--spacing-2xl)' }}>
         <h1 style={{ marginBottom: 'var(--spacing-md)' }}>Fund GP Comp Calculator</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          How to Use
-        </button>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+            How to Use
+          </button>
+          <PresetSelector />
+        </div>
       </div>
 
       <div className="section">

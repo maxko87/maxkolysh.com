@@ -1,3 +1,3 @@
 # Build Instructions
 
-Never run `npm run build` - the user doesn't need this checked during development.
+Never run `npm run build` or `npm run dev` - the user is already running the server live.
