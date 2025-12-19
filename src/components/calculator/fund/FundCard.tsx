@@ -13,6 +13,7 @@ interface FundCardProps {
 function FundCard({ fund, index }: FundCardProps) {
   const { state, dispatch } = useCalculator();
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'linear'>('standard');
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -157,27 +158,72 @@ function FundCard({ fund, index }: FundCardProps) {
 
   return (
     <div className="fund-card">
-      <div className="fund-card-header">
-        <input
-          type="text"
-          value={fund.name}
-          onChange={(e) => handleFieldChange('name', e.target.value)}
-        />
-        {index > 0 && (
-          <button className="btn btn-danger" onClick={handleRemove}>
-            Remove
-          </button>
-        )}
-      </div>
+      {!isExpanded ? (
+        <div
+          className="fund-card-header"
+          onClick={() => setIsExpanded(true)}
+          style={{ cursor: 'pointer', userSelect: 'none' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span
+              style={{
+                fontSize: '0.94em',
+                fontWeight: 700,
+                color: 'var(--text-secondary)',
+                minWidth: '16px'
+              }}
+            >
+              ▶
+            </span>
+            <span>{fund.name}</span>
+          </div>
+        </div>
+      ) : (
+        <div className="fund-card-header">
+          <div style={{ flex: 1 }}>
+            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              Fund Name
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                onClick={() => setIsExpanded(!isExpanded)}
+                style={{
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  fontSize: '0.94em',
+                  fontWeight: 700,
+                  color: 'var(--text-secondary)',
+                  minWidth: '16px'
+                }}
+              >
+                ▼
+              </span>
+              <input
+                type="text"
+                value={fund.name}
+                onChange={(e) => handleFieldChange('name', e.target.value)}
+                style={{ flex: 1 }}
+              />
+            </div>
+          </div>
+          {index > 0 && (
+            <button className="btn btn-danger" onClick={handleRemove} style={{ alignSelf: 'flex-end' }}>
+              Remove
+            </button>
+          )}
+        </div>
+      )}
 
-      <div className="form-grid">
-        <div className="form-group">
-          <label>
-            <span>Fund Size</span>
-            <Tooltip text="Total fund size in millions of dollars">
-              <span className="tooltip-icon">?</span>
-            </Tooltip>
-          </label>
+      {isExpanded && (
+        <>
+          <div className="form-grid">
+            <div className="form-group">
+              <label>
+                <span>Fund Size</span>
+                <Tooltip text="Total fund size in millions of dollars">
+                  <span className="tooltip-icon">?</span>
+                </Tooltip>
+              </label>
           <div style={{ position: 'relative' }}>
             <input
               type="number"
@@ -457,6 +503,8 @@ function FundCard({ fund, index }: FundCardProps) {
           </button>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }

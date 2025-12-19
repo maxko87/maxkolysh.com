@@ -4,7 +4,7 @@ import { formatCurrency } from '../../../utils/formatCurrency';
 import type { CellData } from '../../../types/calculator';
 
 function ResultsTable() {
-  const { calculations } = useCalculator();
+  const { calculations, state } = useCalculator();
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
   const [tooltipData, setTooltipData] = useState<CellData | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top?: string; bottom?: string; left: string; transform: string; marginTop?: string; marginBottom?: string }>({
@@ -18,6 +18,12 @@ function ResultsTable() {
 
   const maxYears = 20;
   const currentYear = new Date().getFullYear();
+
+  // Determine if we're showing historic funds and what the base year should be
+  const hasHistoricFunds = state.funds.some(fund => fund.vintageYear !== undefined);
+  const baseYear = hasHistoricFunds && state.funds[0]?.vintageYear
+    ? state.funds[0].vintageYear
+    : currentYear;
 
   useEffect(() => {
     if (tooltipRef.current && cellRef.current) {
@@ -76,7 +82,7 @@ function ResultsTable() {
             <tr>
               <th>Years at Fund</th>
               {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
-                <th key={year}>{currentYear + year}</th>
+                <th key={year}>{baseYear + year}</th>
               ))}
             </tr>
           </thead>
@@ -115,7 +121,11 @@ function ResultsTable() {
                         }}
                       >
                         <div className="tooltip-label" style={{ marginBottom: '12px' }}>
-                          If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.
+                          {hasHistoricFunds ? (
+                            <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+                          ) : (
+                            <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+                          )}
                         </div>
 
                         {tooltipData.fundBreakdowns.map((fb, idx) => (

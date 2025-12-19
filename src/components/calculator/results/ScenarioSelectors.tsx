@@ -56,7 +56,7 @@ function ScenarioSelectors() {
   if (state.funds.length === 0) return null;
 
   return (
-    <div className="scenario-tabs" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <div className="scenario-tabs" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
       {state.funds.map(fund => (
         <div key={fund.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <label style={{ margin: 0 }}>{fund.name}:</label>
@@ -78,10 +78,10 @@ function ScenarioSelectors() {
           </select>
         </div>
       ))}
-      <button className="btn btn-share" onClick={handleExportCSV}>
+      <button className="btn btn-share" onClick={handleExportCSV} style={{ flexShrink: 0, alignSelf: 'center' }}>
         Export to CSV
       </button>
-      <button className="btn btn-share" onClick={handleShare}>
+      <button className="btn btn-share" onClick={handleShare} style={{ flexShrink: 0, alignSelf: 'center' }}>
         Share
       </button>
 

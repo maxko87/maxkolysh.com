@@ -27,6 +27,7 @@ export interface Fund {
   cliffPeriod: number;             // Cliff in years
   realizationCurve: number[];      // 11 points (0-10 years)
   raiseContinuously: boolean;      // Whether to raise funds continuously
+  vintageYear?: number;            // Optional vintage year for historic funds
 }
 
 export interface CalculatorState {
@@ -148,6 +149,6 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     vestingPeriod: 4,
     cliffPeriod: 1,
     realizationCurve: [...DEFAULT_REALIZATION_CURVE],
-    raiseContinuously: true,
+    raiseContinuously: false,
   };
 };
