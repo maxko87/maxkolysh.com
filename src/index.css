@@ -53,6 +53,7 @@ body {
   text-decoration: none;
   transition: color 0.2s ease;
   font-size: 16px;
+  width: fit-content;
 }
 
 .home-container a:hover {
