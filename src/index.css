@@ -228,9 +228,9 @@ body {
 }
 
 .sidebar {
-    width: 390px;
-    min-width: 330px;
-    max-width: 430px;
+    width: 398px;
+    min-width: 338px;
+    max-width: 438px;
     background: var(--bg-primary);
     border-right: 1px solid var(--border-color);
     overflow-y: auto;
@@ -896,8 +896,8 @@ body {
 /* Responsive Design */
 @media (max-width: 1200px) {
     .sidebar {
-        width: 340px;
-        min-width: 300px;
+        width: 348px;
+        min-width: 308px;
     }
 }
 
