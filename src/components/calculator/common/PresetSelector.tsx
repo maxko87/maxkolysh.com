@@ -198,7 +198,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
               </div>
             ) : (
               <>
-                {filteredFunds.map((preset, index) => {
+                {filteredFunds.map((preset) => {
                   const originalIndex = PRESET_FUNDS.indexOf(preset);
                   return (
                     <button
