@@ -259,6 +259,8 @@ body {
     background: var(--bg-secondary);
     overflow-y: auto;
     padding: var(--spacing-2xl);
+    display: flex;
+    flex-direction: column;
 }
 
 /* Typography for Calculator */

@@ -145,19 +145,19 @@ function ResultsTable() {
                                 style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '10px' }}
                               >
                                 <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
-                                <span style={{ color: 'white', fontWeight: 600 }}>${v.amount.toFixed(1)}M</span>
+                                <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
                               </div>
                             ))}
                             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '6px', paddingLeft: '10px', fontWeight: 600 }}>
                               <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{fb.name} Total:</span>
-                              <span style={{ color: 'white', fontWeight: 600 }}>${fb.amount.toFixed(1)}M</span>
+                              <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(fb.amount)}</span>
                             </div>
                           </div>
                         ))}
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
                           <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
-                          <span style={{ fontWeight: 700, color: '#a5b4fc' }}>${tooltipData.total.toFixed(1)}M</span>
+                          <span style={{ fontWeight: 700, color: '#a5b4fc' }}>{formatCurrency(tooltipData.total)}</span>
                         </div>
                       </div>
                     )}
