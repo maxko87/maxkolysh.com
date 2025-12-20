@@ -229,13 +229,36 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                         color: 'var(--color-text-secondary)',
                         display: 'flex',
                         gap: 'var(--spacing-sm)',
-                        flexWrap: 'wrap'
+                        flexWrap: 'wrap',
+                        alignItems: 'center'
                       }}>
                         <span>{preset.strategy}</span>
                         <span>•</span>
                         <span>${preset.size}M fund</span>
                         <span>•</span>
-                        <span>{preset.source}</span>
+                        {preset.sourceUrl ? (
+                          <a
+                            href={preset.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              color: '#0066cc',
+                              textDecoration: 'none',
+                              cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.textDecoration = 'underline';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.textDecoration = 'none';
+                            }}
+                          >
+                            {preset.source}
+                          </a>
+                        ) : (
+                          <span>{preset.source}</span>
+                        )}
                       </div>
                     </button>
                   );

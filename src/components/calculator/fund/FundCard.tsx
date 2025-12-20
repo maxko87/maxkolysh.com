@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
-import { calculateIRR } from '../../../utils/calculations';
-import { CURVE_PRESETS } from '../../../types/calculator';
+import { calculateIRR, calculateMultipleFromIRR } from '../../../utils/calculations';
+import { CURVE_PRESETS, DEPLOYMENT_PRESETS, type DeploymentPreset } from '../../../types/calculator';
 import Tooltip from '../common/Tooltip';
 
 interface FundCardProps {
@@ -15,7 +15,9 @@ function FundCard({ fund, index }: FundCardProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'linear'>('standard');
+  const [selectedDeploymentPreset, setSelectedDeploymentPreset] = useState<DeploymentPreset>('linear');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const deploymentCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleRemove = () => {
     if (state.funds.length > 1) {
@@ -57,6 +59,11 @@ function FundCard({ fund, index }: FundCardProps) {
   const handlePresetClick = (preset: 'standard' | 'conservative' | 'linear') => {
     setSelectedPreset(preset);
     dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } });
+  };
+
+  const handleDeploymentPresetClick = (preset: DeploymentPreset) => {
+    setSelectedDeploymentPreset(preset);
+    dispatch({ type: 'SET_DEPLOYMENT_PRESET', payload: { fundId: fund.id, preset } });
   };
 
   useEffect(() => {
@@ -156,6 +163,103 @@ function FundCard({ fund, index }: FundCardProps) {
     }
   }, [showAdvanced, selectedPreset, fund.years]);
 
+  useEffect(() => {
+    if (!showAdvanced || !deploymentCanvasRef.current) return;
+
+    const canvas = deploymentCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const curve = DEPLOYMENT_PRESETS[selectedDeploymentPreset];
+    const width = 300;
+    const height = 160;
+    const padding = 30;
+    const topPadding = 20;
+    const fundYears = fund.years;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const chartWidth = width - 2 * padding;
+    const chartHeight = height - padding - topPadding;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw axes
+    ctx.strokeStyle = '#cbd5e0';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(padding, topPadding);
+    ctx.lineTo(padding, height - padding);
+    ctx.lineTo(width - padding, height - padding);
+    ctx.stroke();
+
+    // Draw grid and labels
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = '#718096';
+    ctx.textAlign = 'center';
+
+    const numLabels = 5;
+    const step = Math.ceil(fundYears / numLabels);
+    for (let i = 0; i <= fundYears; i += step) {
+      const x = padding + (i / fundYears) * chartWidth;
+      const y = height - padding;
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x, topPadding);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+
+      ctx.fillText(`Y${i}`, x, y + 15);
+    }
+
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 10; i += 5) {
+      const y = height - padding - (i / 10) * chartHeight;
+
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(width - padding, y);
+      ctx.stroke();
+
+      ctx.fillText(`${i * 10}%`, padding - 5, y + 3);
+    }
+
+    // Draw curve
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+
+    for (let i = 0; i <= 10; i++) {
+      const yearPosition = (i / 10) * fundYears;
+      const x = padding + (yearPosition / fundYears) * chartWidth;
+      const y = height - padding - (curve[i] || 0) * chartHeight;
+
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+
+    // Draw control points
+    for (let i = 0; i <= 10; i++) {
+      const yearPosition = (i / 10) * fundYears;
+      const x = padding + (yearPosition / fundYears) * chartWidth;
+      const y = height - padding - (curve[i] || 0) * chartHeight;
+
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }, [showAdvanced, selectedDeploymentPreset, fund.years]);
+
   return (
     <div className="fund-card">
       {!isExpanded ? (
@@ -245,6 +349,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.carryPercent}
               onChange={(e) => handleFieldChange('carryPercent', parseFloat(e.target.value))}
+              step="0.1"
               placeholder="20"
               style={{ paddingRight: '35px' }}
             />
@@ -273,6 +378,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.carryPoolPercent}
               onChange={(e) => handleFieldChange('carryPoolPercent', parseFloat(e.target.value))}
+              step="0.1"
               placeholder="80"
               style={{ paddingRight: '35px' }}
             />
@@ -445,6 +551,55 @@ function FundCard({ fund, index }: FundCardProps) {
                 <canvas ref={canvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
               </div>
             </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div className="form-group">
+                <label>
+                  <span>Years to Clear 1X</span>
+                  <Tooltip text="Years until fund clears 1X and starts distributing gains (when carry begins). Based on industry data, funds typically reach 1x DPI by year 8, with 59% reaching it by year 5."><span className="tooltip-icon">?</span></Tooltip>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="number"
+                    value={fund.yearsToClear1X}
+                    onChange={(e) => {
+                      const value = parseFloat(e.target.value);
+                      // Ensure it's less than fund life
+                      if (!isNaN(value) && value >= 0 && value < fund.years) {
+                        handleFieldChange('yearsToClear1X', value);
+                      }
+                    }}
+                    step="0.5"
+                    placeholder="5"
+                    min="0"
+                    max={fund.years - 0.5}
+                    style={{ paddingRight: '35px' }}
+                  />
+                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Schedule</span>
+                <Tooltip text="Pattern of when fund capital is deployed over time. Front-loaded means faster deployment early, back-loaded means slower initial deployment."><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              <div className="curve-presets">
+                {(['linear', 'frontLoaded', 'backLoaded'] as const).map((preset) => (
+                  <button
+                    key={preset}
+                    className={`btn btn-small curve-preset-btn ${selectedDeploymentPreset === preset ? 'btn-primary' : ''}`}
+                    onClick={() => handleDeploymentPresetClick(preset)}
+                  >
+                    {preset === 'frontLoaded' ? 'Front-Loaded' : preset === 'backLoaded' ? 'Back-Loaded' : 'Linear'}
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
+                <canvas ref={deploymentCanvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
+              </div>
+            </div>
           </>
         )}
       </div>
@@ -476,23 +631,48 @@ function FundCard({ fund, index }: FundCardProps) {
                   )}
                 </div>
               </div>
-              <div className="scenario-field">
-                <label>Expected Gross Multiple</label>
-                <input
-                  type="number"
-                  value={isNaN(scenario.grossReturnMultiple) ? '' : scenario.grossReturnMultiple}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
-                    // Allow NaN (empty input) - will use placeholder value of 5 in calculations
-                    dispatch({
-                      type: 'UPDATE_SCENARIO',
-                      payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value }
-                    });
-                  }}
-                  step="0.1"
-                  placeholder="5"
-                  min="0"
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                <div className="scenario-field">
+                  <label>Expected Gross Multiple</label>
+                  <input
+                    type="number"
+                    value={isNaN(scenario.grossReturnMultiple) ? '' : scenario.grossReturnMultiple}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
+                      // Allow NaN (empty input) - will use placeholder value of 5 in calculations
+                      dispatch({
+                        type: 'UPDATE_SCENARIO',
+                        payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value }
+                      });
+                    }}
+                    step="0.1"
+                    placeholder="5"
+                    min="0"
+                  />
+                </div>
+                <div className="scenario-field">
+                  <label>IRR</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="number"
+                      value={irr}
+                      onChange={(e) => {
+                        const irrValue = parseFloat(e.target.value);
+                        if (!isNaN(irrValue)) {
+                          const newMultiple = calculateMultipleFromIRR(irrValue, fund.years);
+                          dispatch({
+                            type: 'UPDATE_SCENARIO',
+                            payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: newMultiple }
+                          });
+                        }
+                      }}
+                      step="0.1"
+                      placeholder="0"
+                      style={{ paddingRight: '30px' }}
+                    />
+                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
+                  </div>
+                </div>
               </div>
             </div>
           );

@@ -1,5 +1,5 @@
 import type { CalculatorState, Fund } from '../types/calculator';
-import { CURVE_PRESETS, DEFAULT_REALIZATION_CURVE } from '../types/calculator';
+import { CURVE_PRESETS, DEFAULT_REALIZATION_CURVE, DEPLOYMENT_PRESETS, DEFAULT_DEPLOYMENT_CURVE, DEFAULT_YEARS_TO_CLEAR_1X } from '../types/calculator';
 
 export function compressState(state: CalculatorState): string {
   try {
@@ -46,6 +46,21 @@ export function compressState(state: CalculatorState): string {
         // Store custom curve as comma-separated values
         params.set(`${prefix}_curve`, fund.realizationCurve.join(','));
       }
+
+      // Deployment curve: detect preset or store custom
+      const deploymentPreset = Object.entries(DEPLOYMENT_PRESETS).find(([_, curve]) =>
+        JSON.stringify(curve) === JSON.stringify(fund.deploymentCurve)
+      );
+
+      if (deploymentPreset) {
+        params.set(`${prefix}_deploy`, deploymentPreset[0]);
+      } else {
+        // Store custom curve as comma-separated values
+        params.set(`${prefix}_deploy`, fund.deploymentCurve.join(','));
+      }
+
+      // Years to clear 1X
+      params.set(`${prefix}_y1x`, fund.yearsToClear1X.toString());
 
       // Selected scenario for this fund
       const selectedScenarioId = state.selectedScenarios[fund.id];
@@ -96,6 +111,8 @@ export function decompressState(queryString: string): CalculatorState | null {
             vestingPeriod: f.vp || 4,
             cliffPeriod: f.cl || 1,
             realizationCurve: f.rc || [...DEFAULT_REALIZATION_CURVE],
+            deploymentCurve: f.dc || [...DEFAULT_DEPLOYMENT_CURVE],
+            yearsToClear1X: f.y1x || DEFAULT_YEARS_TO_CLEAR_1X,
             years: f.fy || 10,
             raiseContinuously: f.rco !== undefined ? f.rco : true
           };
@@ -163,6 +180,15 @@ export function decompressState(queryString: string): CalculatorState | null {
         realizationCurve = curveParam.split(',').map(parseFloat);
       }
 
+      // Parse deployment curve
+      const deployParam = params.get(`${prefix}_deploy`) || 'linear';
+      let deploymentCurve: number[];
+      if (deployParam in DEPLOYMENT_PRESETS) {
+        deploymentCurve = [...DEPLOYMENT_PRESETS[deployParam as keyof typeof DEPLOYMENT_PRESETS]];
+      } else {
+        deploymentCurve = deployParam.split(',').map(parseFloat);
+      }
+
       const continuous = params.get(`${prefix}_continuous`) === '1';
 
       const fund: Fund = {
@@ -180,6 +206,8 @@ export function decompressState(queryString: string): CalculatorState | null {
         vestingPeriod: parseFloat(params.get(`${prefix}_vest`) || '4'),
         cliffPeriod: parseFloat(params.get(`${prefix}_cliff`) || '1'),
         realizationCurve,
+        deploymentCurve,
+        yearsToClear1X: parseFloat(params.get(`${prefix}_y1x`) || DEFAULT_YEARS_TO_CLEAR_1X.toString()),
         raiseContinuously: continuous
       };
 
