@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import CalculatorPage from './pages/CalculatorPage';
-import VCsHateRecruitingPage from './pages/VCsHateRecruitingPage';
-import RequestIntrosPage from './pages/RequestIntrosPage';
-import LearnedLeaguePage from './pages/LearnedLeaguePage';
+import VCsHateRecruitingPage from './pages/blog/VCsHateRecruitingPage';
+import RequestIntrosPage from './pages/blog/RequestIntrosPage';
+import LearnedLeaguePage from './pages/blog/LearnedLeaguePage';
 
 function App() {
   return (

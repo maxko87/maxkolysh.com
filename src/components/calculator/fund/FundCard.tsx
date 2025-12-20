@@ -301,29 +301,33 @@ function FundCard({ fund, index }: FundCardProps) {
           </div>
         </div>
       ) : (
-        <div className="fund-card-header" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <span
-            onClick={() => setIsExpanded(!isExpanded)}
-            style={{
-              cursor: 'pointer',
-              userSelect: 'none',
-              fontSize: '0.94em',
-              fontWeight: 700,
-              color: 'var(--text-secondary)',
-              marginBottom: '8px'
-            }}
-          >
-            ▼
-          </span>
-          <div style={{ flex: 1, width: '100%' }}>
-            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
-              Fund Name
-            </label>
+        <div className="fund-card-header">
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+              <span
+                onClick={() => setIsExpanded(!isExpanded)}
+                style={{
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  fontSize: '0.94em',
+                  fontWeight: 700,
+                  color: 'var(--text-secondary)',
+                  minWidth: '16px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                ▼
+              </span>
+              <label style={{ fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                Fund Name
+              </label>
+            </div>
             <input
               type="text"
               value={fund.name}
               onChange={(e) => handleFieldChange('name', e.target.value)}
-              style={{ flex: 1, width: '100%' }}
+              style={{ width: '100%' }}
             />
           </div>
           {index > 0 && (
