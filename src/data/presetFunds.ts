@@ -3776,7 +3776,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
   },
 
   {
-    displayName: "Union Square Ventures 2012 (2011) - 23.91x",
+    displayName: "⭐ Union Square Ventures 2012 (2011) - 23.91x",
     fundName: "Union Square Ventures 2012",
     vintage: 2011,
     strategy: "Private Equity",
@@ -3787,7 +3787,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 53.6,
   },
   {
-    displayName: "Union Square Ventures 2004 (2004) - 13.82x",
+    displayName: "⭐ Union Square Ventures 2004 (2004) - 13.82x",
     fundName: "Union Square Ventures 2004",
     vintage: 2004,
     strategy: "Private Equity",
@@ -3798,7 +3798,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 66.9,
   },
   {
-    displayName: "USV 2016 (2016) - 6.56x",
+    displayName: "⭐ USV 2016 (2016) - 6.56x",
     fundName: "USV 2016",
     vintage: 2016,
     strategy: "Private Equity",
@@ -3853,7 +3853,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 26.3,
   },
   {
-    displayName: "GGV Capital V (2014) - 4.51x",
+    displayName: "⭐ GGV Capital V (2014) - 4.51x",
     fundName: "GGV Capital V",
     vintage: 2014,
     strategy: "Private Equity",
@@ -3886,7 +3886,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 28.6,
   },
   {
-    displayName: "Mayfield XIV (2013) - 4.14x",
+    displayName: "⭐ Mayfield XIV (2013) - 4.14x",
     fundName: "Mayfield XIV",
     vintage: 2013,
     strategy: "Private Equity",
@@ -3985,7 +3985,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 34.8,
   },
   {
-    displayName: "USV 2019 (2019) - 3.37x",
+    displayName: "⭐ USV 2019 (2019) - 3.37x",
     fundName: "USV 2019",
     vintage: 2019,
     strategy: "Private Equity",
@@ -4040,7 +4040,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 22.7,
   },
   {
-    displayName: "Granite Ventures II (2005) - 2.88x",
+    displayName: "⭐ Granite Ventures II (2005) - 2.88x",
     fundName: "Granite Ventures II",
     vintage: 2005,
     strategy: "Private Equity",
@@ -4139,7 +4139,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     irr: 18.1,
   },
   {
-    displayName: "Olympic Venture Partners IV (1997) - 2.62x",
+    displayName: "⭐ Olympic Venture Partners IV (1997) - 2.62x",
     fundName: "Olympic Venture Partners IV",
     vintage: 1997,
     strategy: "Private Equity",
