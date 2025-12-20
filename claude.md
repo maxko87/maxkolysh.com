@@ -1,2 +1,3 @@
 - Never run `npm run build` or `npm run dev` - the user is already running the server live.
 - when i say "commit", run 'git add .; git commit -am XXX; git push' and add a message based on this chat history (since the last commit). be thorough in your message.
+- before any commit, run `tsc && vite build` to test your changes and fix the errors.
