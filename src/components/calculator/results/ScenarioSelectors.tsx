@@ -78,10 +78,10 @@ function ScenarioSelectors() {
           </select>
         </div>
       ))}
-      <button className="btn btn-share" onClick={handleExportCSV} style={{ flexShrink: 0, alignSelf: 'center' }}>
+      <button className="btn btn-secondary" onClick={handleExportCSV} style={{ flexShrink: 0, alignSelf: 'center' }}>
         Export to CSV
       </button>
-      <button className="btn btn-share" onClick={handleShare} style={{ flexShrink: 0, alignSelf: 'center' }}>
+      <button className="btn btn-secondary" onClick={handleShare} style={{ flexShrink: 0, alignSelf: 'center' }}>
         Share
       </button>
 

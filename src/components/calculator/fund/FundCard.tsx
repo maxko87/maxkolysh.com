@@ -463,7 +463,7 @@ function FundCard({ fund, index }: FundCardProps) {
                       step="0.01"
                       placeholder="5"
                       min="0"
-                      style={{ paddingRight: '30px' }}
+                      style={{ paddingRight: '35px' }}
                     />
                     <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>x</span>
                   </div>
@@ -514,7 +514,7 @@ function FundCard({ fund, index }: FundCardProps) {
                       }}
                       step="0.01"
                       placeholder="0"
-                      style={{ paddingRight: '30px' }}
+                      style={{ paddingRight: '35px' }}
                     />
                     <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
                   </div>
@@ -584,6 +584,12 @@ function FundCard({ fund, index }: FundCardProps) {
               </div>
               {fund.hurdles.map((hurdle, idx) => (
                 <div key={idx} className="hurdle-item">
+                  <button
+                    className="btn btn-danger card-close-btn"
+                    onClick={() => dispatch({ type: 'REMOVE_HURDLE', payload: { fundId: fund.id, hurdleIndex: idx } })}
+                  >
+                    ✕
+                  </button>
                   <input
                     type="number"
                     value={hurdle.multiple}
@@ -611,12 +617,6 @@ function FundCard({ fund, index }: FundCardProps) {
                     style={{ maxWidth: '60px' }}
                   />
                   <span style={{ color: '#718096', fontSize: '0.85em' }}>%</span>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => dispatch({ type: 'REMOVE_HURDLE', payload: { fundId: fund.id, hurdleIndex: idx } })}
-                  >
-                    ✕
-                  </button>
                 </div>
               ))}
               <button className="btn add-btn" onClick={handleAddHurdle}>
