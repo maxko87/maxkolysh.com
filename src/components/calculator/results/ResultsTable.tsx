@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import type { CellData } from '../../../types/calculator';
@@ -24,6 +24,23 @@ function ResultsTable() {
   const baseYear = hasHistoricFunds && state.funds[0]?.vintageYear
     ? state.funds[0].vintageYear
     : currentYear;
+
+  // Find how many leading columns are all zeros/empty
+  const numZeroColumns = useMemo(() => {
+    let count = 0;
+    for (let colIdx = 0; colIdx < maxYears; colIdx++) {
+      const allZero = calculations.every(row => {
+        const cell = row[colIdx];
+        return !cell || cell.total === 0;
+      });
+      if (allZero) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
+  }, [calculations, maxYears]);
 
   useEffect(() => {
     if (tooltipRef.current && cellRef.current) {
@@ -74,6 +91,33 @@ function ResultsTable() {
     setTooltipData(null);
   };
 
+  // Build header columns
+  const headerColumns = useMemo(() => {
+    const columns = [];
+
+    // Add collapsed zero columns as single column
+    if (numZeroColumns > 0) {
+      const startYear = baseYear + 1;
+      const endYear = baseYear + numZeroColumns;
+      columns.push({
+        label: numZeroColumns === 1 ? `${startYear}` : `${startYear}-${endYear}`,
+        isCollapsed: true,
+        originalIndices: Array.from({ length: numZeroColumns }, (_, i) => i)
+      });
+    }
+
+    // Add remaining columns
+    for (let i = numZeroColumns; i < maxYears; i++) {
+      columns.push({
+        label: `${baseYear + i + 1}`,
+        isCollapsed: false,
+        originalIndices: [i]
+      });
+    }
+
+    return columns;
+  }, [numZeroColumns, maxYears, baseYear]);
+
   return (
     <div className="results-container">
       <div className="results-table">
@@ -81,8 +125,8 @@ function ResultsTable() {
           <thead>
             <tr>
               <th>Years at Fund</th>
-              {Array.from({ length: maxYears }, (_, i) => i + 1).map(year => (
-                <th key={year}>{baseYear + year}</th>
+              {headerColumns.map((col, idx) => (
+                <th key={idx}>{col.label}</th>
               ))}
             </tr>
           </thead>
@@ -90,84 +134,93 @@ function ResultsTable() {
             {calculations.slice(0, maxYears).map((row, rowIdx) => (
               <tr key={rowIdx}>
                 <td>{rowIdx + 1}</td>
-                {row.map((cellData, colIdx) => {
+                {headerColumns.map((col, colIdx) => {
+                  // For collapsed columns, just show "-"
+                  if (col.isCollapsed) {
+                    return <td key={colIdx} className="empty">-</td>;
+                  }
+
+                  // For regular columns, show the data
+                  const originalColIdx = col.originalIndices[0];
+                  const cellData = row[originalColIdx];
+
                   if (!cellData) {
                     return <td key={colIdx} className="empty">-</td>;
                   }
 
-                const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+                  const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
 
-                return (
-                  <td
-                    key={colIdx}
-                    className="value"
-                    style={{ position: 'relative' }}
-                    ref={isHovered ? cellRef : null}
-                    onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
-                    onMouseLeave={handleCellMouseLeave}
-                  >
-                    {formatCurrency(cellData.total)}
+                  return (
+                    <td
+                      key={colIdx}
+                      className="value"
+                      style={{ position: 'relative' }}
+                      ref={isHovered ? cellRef : null}
+                      onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
+                      onMouseLeave={handleCellMouseLeave}
+                    >
+                      {formatCurrency(cellData.total)}
 
-                    {isHovered && tooltipData && (
-                      <div
-                        ref={tooltipRef}
-                        className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
-                        style={{
-                          ...tooltipPosition,
-                          position: 'absolute',
-                          minWidth: '300px',
-                          zIndex: 10000,
-                          pointerEvents: 'none'
-                        }}
-                      >
-                        <div className="tooltip-label" style={{ marginBottom: '12px' }}>
-                          {hasHistoricFunds ? (
-                            <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
-                          ) : (
-                            <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
-                          )}
-                        </div>
-
-                        {tooltipData.fundBreakdowns.map((fb, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              marginBottom: '12px',
-                              ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
-                            }}
-                          >
-                            <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em', textAlign: 'left' }}>
-                              {fb.name}
-                            </div>
-                            {fb.vintages.map((v, vIdx) => (
-                              <div
-                                key={vIdx}
-                                style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '12px' }}
-                              >
-                                <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
-                                <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
-                              </div>
-                            ))}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>
-                              <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{fb.name} Total:</span>
-                              <span style={{ color: 'white', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
-                            </div>
+                      {isHovered && tooltipData && (
+                        <div
+                          ref={tooltipRef}
+                          className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
+                          style={{
+                            ...tooltipPosition,
+                            position: 'absolute',
+                            minWidth: '300px',
+                            zIndex: 10000,
+                            pointerEvents: 'none'
+                          }}
+                        >
+                          <div className="tooltip-label" style={{ marginBottom: '12px' }}>
+                            {hasHistoricFunds ? (
+                              <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+                            ) : (
+                              <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+                            )}
                           </div>
-                        ))}
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
-                          <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
-                          <span style={{ fontWeight: 700, color: '#a5b4fc' }}>{formatCurrency(tooltipData.total)}</span>
+                          {tooltipData.fundBreakdowns.map((fb, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                marginBottom: '12px',
+                                ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
+                              }}
+                            >
+                              <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em', textAlign: 'left' }}>
+                                {fb.name}
+                              </div>
+                              {fb.vintages.map((v, vIdx) => (
+                                <div
+                                  key={vIdx}
+                                  style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '12px' }}
+                                >
+                                  <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
+                                  <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
+                                </div>
+                              ))}
+                              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>
+                                <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{fb.name} Total:</span>
+                                <span style={{ color: 'white', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
+                              </div>
+                            </div>
+                          ))}
+
+                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
+                            <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
+                            <span style={{ fontWeight: 700, color: '#a5b4fc' }}>{formatCurrency(tooltipData.total)}</span>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
