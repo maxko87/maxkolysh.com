@@ -400,7 +400,6 @@ body {
     margin-bottom: var(--spacing-md);
     border: 1px solid var(--border-color);
     position: relative;
-    padding-right: 40px;
 }
 
 .fund-card-header {
@@ -473,14 +472,14 @@ body {
 
 .card-close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 8px;
+    right: 8px;
     z-index: 10;
-    padding: 4px 8px;
-    font-size: 1em;
+    padding: 4px;
+    font-size: 0.95em;
     line-height: 1;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -509,6 +508,7 @@ body {
     gap: var(--spacing-sm);
     align-items: center;
     transition: all var(--transition-base);
+    position: relative;
 }
 
 .hurdle-item:hover {
@@ -520,11 +520,6 @@ body {
     flex: 0 0 auto;
 }
 
-.hurdle-item button {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.88em;
-}
-
 .add-btn {
     margin-top: var(--spacing-sm);
     width: 100%;
@@ -532,13 +527,12 @@ body {
 
 /* Scenario Cards */
 .scenario-card {
-    background: #fef3c7;
+    background: #f0f4ff;
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-sm);
-    border: 1.5px solid var(--warning-color);
+    border: 1.5px solid #c7d2fe;
     position: relative;
-    padding-right: 36px;
 }
 
 .scenario-card-fields {
@@ -600,6 +594,10 @@ body {
     gap: var(--spacing-sm);
     justify-content: flex-start;
     flex-wrap: nowrap;
+}
+
+.curve-preset-btn {
+    white-space: nowrap;
 }
 
 .curve-preview-canvas {
