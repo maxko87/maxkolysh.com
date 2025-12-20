@@ -593,7 +593,7 @@ body {
     display: flex;
     gap: var(--spacing-sm);
     justify-content: flex-start;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 }
 
 .curve-preset-btn {

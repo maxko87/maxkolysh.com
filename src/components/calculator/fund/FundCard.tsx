@@ -685,7 +685,7 @@ function FundCard({ fund, index }: FundCardProps) {
                     className={`btn btn-small curve-preset-btn ${selectedDeploymentPreset === preset ? 'btn-primary' : ''}`}
                     onClick={() => handleDeploymentPresetClick(preset)}
                   >
-                    {preset === 'frontLoaded' ? 'Front-Loaded' : preset === 'backLoaded' ? 'Back-Loaded' : 'Linear'}
+                    {preset === 'frontLoaded' ? 'Front' : preset === 'backLoaded' ? 'Back' : 'Linear'}
                   </button>
                 ))}
               </div>
