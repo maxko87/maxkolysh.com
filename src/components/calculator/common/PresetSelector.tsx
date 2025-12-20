@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { PRESET_FUNDS, createFundDataFromPreset } from '../../../data/presetFunds';
+import { formatCurrency } from '../../../utils/formatCurrency';
 
 function PresetSelector() {
   const { dispatch } = useCalculator();
@@ -234,7 +235,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                       }}>
                         <span>{preset.strategy}</span>
                         <span>•</span>
-                        <span>${preset.size}M fund</span>
+                        <span>{formatCurrency(preset.size)} fund</span>
                         <span>•</span>
                         {preset.sourceUrl ? (
                           <a
