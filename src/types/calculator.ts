@@ -21,8 +21,7 @@ export interface Fund {
   years: number;                   // Fund duration
   hurdles: Hurdle[];
   scenarios: Scenario[];
-  numGPs: number;                  // Number of GPs
-  carryPoolPercent: number;        // % of carry to GP pool
+  carryAllocationPercent: number;  // % of total carry allocated to one GP
   vestingPeriod: number;           // Years to vest
   cliffPeriod: number;             // Cliff in years
   realizationCurve: number[];      // 11 points (0-10 years)
@@ -77,8 +76,7 @@ export interface CompressedFund {
   fy: number;   // years
   h: Hurdle[];  // hurdles
   sc: CompressedScenario[]; // scenarios
-  gps: number;  // numGPs
-  cp: number;   // carryPoolPercent
+  ca: number;   // carryAllocationPercent
   vp: number;   // vestingPeriod
   cl: number;   // cliffPeriod
   rc: number[]; // realizationCurve
@@ -125,7 +123,7 @@ export const CURVE_PRESETS: Record<CurvePreset, number[]> = {
 export const DEPLOYMENT_PRESETS: Record<DeploymentPreset, number[]> = {
   linear: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],        // Even deployment
   frontLoaded: [0, 0.25, 0.45, 0.60, 0.72, 0.81, 0.88, 0.93, 0.96, 0.98, 1.0], // Front-loaded
-  backLoaded: [0, 0.02, 0.07, 0.15, 0.28, 0.40, 0.55, 0.70, 0.85, 0.95, 1.0],  // Back-loaded
+  backLoaded: [0, 0.02, 0.05, 0.12, 0.20, 0.30, 0.45, 0.65, 0.82, 0.94, 1.0],  // Back-loaded - most capital deployed in second half
 };
 
 // Default values
@@ -161,13 +159,12 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     years: 15,
     hurdles: [],
     scenarios: [{ id: Date.now(), name: 'Base Case', grossReturnMultiple: 5 }],
-    numGPs: 1,
-    carryPoolPercent: 100,
+    carryAllocationPercent: 5,
     vestingPeriod: 4,
     cliffPeriod: 1,
     realizationCurve: [...DEFAULT_REALIZATION_CURVE],
     deploymentCurve: [...DEFAULT_DEPLOYMENT_CURVE],
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
-    raiseContinuously: false,
+    raiseContinuously: true,
   };
 };

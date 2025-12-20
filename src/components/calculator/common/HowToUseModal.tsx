@@ -65,17 +65,16 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
 
           <section className="modal-section">
             <h3>Modeling Multiple Funds</h3>
-            <p>There are two ways to model multiple fund vintages:</p>
             <ul className="simple-list">
-              <li><strong>Automatic (Recommended)</strong> - Check "Raise this fund continuously" and set your Fund Cycle (e.g., 2 years). The calculator will automatically model raising new funds at regular intervals.</li>
-              <li><strong>Manual</strong> - Use the "+ Add Fund" button to manually create separate funds for each fundraise. This gives you full control over the timing and parameters of each fund.</li>
+              <li><strong>Raise this fund continuously</strong> - Check this box and set your Fund Cycle (e.g., 2 years) to automatically model raising new funds at regular intervals. This is the recommended approach for most scenarios.</li>
+              <li><strong>+ Add Fund</strong> - Use this button to manually create separate funds for each fundraise. This gives you full control over the timing and parameters of each fund.</li>
             </ul>
           </section>
 
           <section className="modal-section">
             <h3>Note on Historic Fund Data</h3>
             <p style={{ fontSize: '0.9em', color: '#64748b' }}>
-              The historic fund sizes in the preset dropdown are <strong>estimates</strong> based on CalPERS's public commitment data.
+              The historic fund sizes in the preset dropdown are estimates based on CalPERS's public commitment data.
               Since pension funds typically don't disclose total fund sizes, we estimate them by assuming CalPERS commits:
             </p>
             <ul className="simple-list" style={{ fontSize: '0.9em', color: '#64748b' }}>

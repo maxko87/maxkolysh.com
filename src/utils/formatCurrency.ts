@@ -1,4 +1,9 @@
 export function formatCurrency(value: number): string {
+  // Handle NaN, Infinity, and other invalid values
+  if (!isFinite(value) || isNaN(value)) {
+    return '$0.0M';
+  }
+
   if (value < 100) {
     // Less than $100M: show 1 decimal
     return `$${value.toFixed(1)}M`;

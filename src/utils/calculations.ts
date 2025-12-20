@@ -18,10 +18,14 @@ export function calculateMultipleFromIRR(irrPercent: number, years: number): num
 
 // Calculate carry for a fund
 export function calculateFundCarry(fund: Fund, returns: number): number {
-  const multiple = returns / fund.size;
-  const profit = returns - fund.size;
+  // Use default values for NaN fields
+  const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
+  const carryPercent = isNaN(fund.carryPercent) || !isFinite(fund.carryPercent) ? 20 : fund.carryPercent;
 
-  let carryRate = fund.carryPercent / 100;
+  const multiple = returns / fundSize;
+  const profit = returns - fundSize;
+
+  let carryRate = carryPercent / 100;
   const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
 
   for (const hurdle of sortedHurdles) {
@@ -161,6 +165,14 @@ export function calculateCell(
     const scenario = fund.scenarios.find(s => s.id === selectedScenarioId) || fund.scenarios[0];
     if (!scenario) return;
 
+    // Use default values for any NaN fund fields (matching placeholders)
+    const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
+    const vestingPeriod = isNaN(fund.vestingPeriod) || !isFinite(fund.vestingPeriod) ? 4 : fund.vestingPeriod;
+    const cliffPeriod = isNaN(fund.cliffPeriod) || !isFinite(fund.cliffPeriod) ? 1 : fund.cliffPeriod;
+    const fundYears = isNaN(fund.years) || !isFinite(fund.years) ? 10 : fund.years;
+    const carryAllocationPercent = isNaN(fund.carryAllocationPercent) || !isFinite(fund.carryAllocationPercent) ? 5 : fund.carryAllocationPercent;
+    const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
+
     // Handle NaN or invalid multiples - use default of 5x
     // Allow any non-negative multiple including < 1 (e.g., 0.8x for a loss)
     const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 5 : scenario.grossReturnMultiple;
@@ -172,24 +184,23 @@ export function calculateCell(
 
     while (fundStartYear < yearsWorked && vintageIndex < 20) {
       const yearsIntoThisVintage = yearsWorked - fundStartYear;
-      const vestingProgress = Math.min(yearsIntoThisVintage / fund.vestingPeriod, 1);
+      const vestingProgress = Math.min(yearsIntoThisVintage / vestingPeriod, 1);
 
-      if (vestingProgress > 0 && yearsIntoThisVintage >= fund.cliffPeriod) {
+      if (vestingProgress > 0 && yearsIntoThisVintage >= cliffPeriod) {
         const vintageAgeInYears = yearsFromToday - fundStartYear;
 
         // Get deployment percentage - only deployed capital generates returns
-        const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, fund.years);
+        const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, fundYears);
 
         // Calculate returns based on deployed capital only
-        const deployedCapital = fund.size * deploymentPercent;
+        const deployedCapital = fundSize * deploymentPercent;
         const returns = deployedCapital * multiple;
         const carry = calculateFundCarry(fund, returns);
 
         // Calculate per GP share for this vintage
-        const gpPoolShare = carry * (fund.carryPoolPercent / 100);
-        const perGPShare = gpPoolShare / fund.numGPs;
+        const perGPShare = carry * (carryAllocationPercent / 100);
 
-        const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fund.years, fund.yearsToClear1X);
+        const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, fund.yearsToClear1X || 5);
 
         // Total carry for this vintage before vesting
         const totalVintageCarry = realizationPercent * perGPShare;
@@ -212,7 +223,7 @@ export function calculateCell(
         break;
       }
 
-      fundStartYear += fund.fundCycle;
+      fundStartYear += fundCycle;
       vintageIndex++;
     }
 

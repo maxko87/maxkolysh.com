@@ -228,8 +228,8 @@ body {
 }
 
 .sidebar {
-    width: 398px;
-    min-width: 338px;
+    width: 400px;
+    min-width: 400px;
     max-width: 438px;
     background: var(--bg-primary);
     border-right: 1px solid var(--border-color);
@@ -896,13 +896,6 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-    .sidebar {
-        width: 348px;
-        min-width: 308px;
-    }
-}
-
 @media (max-width: 1024px) {
     .app-layout {
         flex-direction: column;

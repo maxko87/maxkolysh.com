@@ -14,8 +14,7 @@ export function compressState(state: CalculatorState): string {
       params.set(`${prefix}_carry`, fund.carryPercent.toString());
       params.set(`${prefix}_mgmt`, fund.mgmtFeePercent.toString());
       params.set(`${prefix}_life`, fund.years.toString());
-      params.set(`${prefix}_gps`, fund.numGPs.toString());
-      params.set(`${prefix}_pool`, fund.carryPoolPercent.toString());
+      params.set(`${prefix}_alloc`, fund.carryAllocationPercent.toString());
       params.set(`${prefix}_vest`, fund.vestingPeriod.toString());
       params.set(`${prefix}_cliff`, fund.cliffPeriod.toString());
       params.set(`${prefix}_continuous`, fund.raiseContinuously ? '1' : '0');
@@ -106,8 +105,7 @@ export function decompressState(queryString: string): CalculatorState | null {
             fundCycle: f.y,
             hurdles: f.h,
             scenarios,
-            numGPs: f.gps || 15,
-            carryPoolPercent: f.cp || 80,
+            carryAllocationPercent: f.ca || 5,
             vestingPeriod: f.vp || 4,
             cliffPeriod: f.cl || 1,
             realizationCurve: f.rc || [...DEFAULT_REALIZATION_CURVE],
@@ -201,8 +199,7 @@ export function decompressState(queryString: string): CalculatorState | null {
         years: parseFloat(params.get(`${prefix}_life`) || '10'),
         hurdles,
         scenarios: scenarios.length > 0 ? scenarios : [{ id: arrayIdx * 100, name: 'Base Case', grossReturnMultiple: 5 }],
-        numGPs: parseInt(params.get(`${prefix}_gps`) || '15'),
-        carryPoolPercent: parseFloat(params.get(`${prefix}_pool`) || '80'),
+        carryAllocationPercent: parseFloat(params.get(`${prefix}_alloc`) || '5'),
         vestingPeriod: parseFloat(params.get(`${prefix}_vest`) || '4'),
         cliffPeriod: parseFloat(params.get(`${prefix}_cliff`) || '1'),
         realizationCurve,

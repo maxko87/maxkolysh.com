@@ -25,7 +25,23 @@ function FundCard({ fund, index }: FundCardProps) {
     }
   };
 
+  // Default values matching placeholders
+  const fieldDefaults: Record<string, number> = {
+    size: 200,
+    carryPercent: 20,
+    carryAllocationPercent: 5,
+    vestingPeriod: 4,
+    cliffPeriod: 1,
+    years: 10,
+    fundCycle: 2,
+    yearsToClear1X: 5
+  };
+
   const handleFieldChange = (field: keyof Fund, value: any) => {
+    // If value is NaN or invalid, use the default placeholder value
+    if (typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
+      value = fieldDefaults[field] ?? value;
+    }
     dispatch({ type: 'UPDATE_FUND_FIELD', payload: { fundId: fund.id, field, value } });
   };
 
@@ -266,7 +282,7 @@ function FundCard({ fund, index }: FundCardProps) {
         <div
           className="fund-card-header"
           onClick={() => setIsExpanded(true)}
-          style={{ cursor: 'pointer', userSelect: 'none' }}
+          style={{ cursor: 'pointer', userSelect: 'none', padding: 'var(--spacing-md) var(--spacing-lg)', marginBottom: 0 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span
@@ -274,7 +290,9 @@ function FundCard({ fund, index }: FundCardProps) {
                 fontSize: '0.94em',
                 fontWeight: 700,
                 color: 'var(--text-secondary)',
-                minWidth: '16px'
+                minWidth: '16px',
+                display: 'flex',
+                alignItems: 'center'
               }}
             >
               ▶
@@ -283,32 +301,30 @@ function FundCard({ fund, index }: FundCardProps) {
           </div>
         </div>
       ) : (
-        <div className="fund-card-header">
-          <div style={{ flex: 1 }}>
+        <div className="fund-card-header" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+          <span
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{
+              cursor: 'pointer',
+              userSelect: 'none',
+              fontSize: '0.94em',
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
+              marginBottom: '8px'
+            }}
+          >
+            ▼
+          </span>
+          <div style={{ flex: 1, width: '100%' }}>
             <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
               Fund Name
             </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span
-                onClick={() => setIsExpanded(!isExpanded)}
-                style={{
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                  fontSize: '0.94em',
-                  fontWeight: 700,
-                  color: 'var(--text-secondary)',
-                  minWidth: '16px'
-                }}
-              >
-                ▼
-              </span>
-              <input
-                type="text"
-                value={fund.name}
-                onChange={(e) => handleFieldChange('name', e.target.value)}
-                style={{ flex: 1 }}
-              />
-            </div>
+            <input
+              type="text"
+              value={fund.name}
+              onChange={(e) => handleFieldChange('name', e.target.value)}
+              style={{ flex: 1, width: '100%' }}
+            />
           </div>
           {index > 0 && (
             <button className="btn btn-danger" onClick={handleRemove} style={{ alignSelf: 'flex-end' }}>
@@ -358,65 +374,19 @@ function FundCard({ fund, index }: FundCardProps) {
         </div>
         <div className="form-group">
           <label>
-            <span># of Equal GPs</span>
-            <Tooltip text="Number of equal General Partners sharing carry"><span className="tooltip-icon">?</span></Tooltip>
-          </label>
-          <input
-            type="number"
-            value={fund.numGPs}
-            onChange={(e) => handleFieldChange('numGPs', parseInt(e.target.value))}
-            placeholder="15"
-          />
-        </div>
-        <div className="form-group">
-          <label>
-            <span>Carry Pool to GPs</span>
-            <Tooltip text="Percentage of carry allocated to GP pool vs other stakeholders (junior partners, staff)"><span className="tooltip-icon">?</span></Tooltip>
+            <span>Carry Allocation per GP</span>
+            <Tooltip text="Percentage of total fund carry allocated to one General Partner"><span className="tooltip-icon">?</span></Tooltip>
           </label>
           <div style={{ position: 'relative' }}>
             <input
               type="number"
-              value={fund.carryPoolPercent}
-              onChange={(e) => handleFieldChange('carryPoolPercent', parseFloat(e.target.value))}
+              value={fund.carryAllocationPercent}
+              onChange={(e) => handleFieldChange('carryAllocationPercent', parseFloat(e.target.value))}
               step="0.1"
-              placeholder="80"
+              placeholder="5"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
-          </div>
-        </div>
-        <div className="form-group">
-          <label>
-            <span>Vesting Period</span>
-            <Tooltip text="Years required to fully vest carry allocation"><span className="tooltip-icon">?</span></Tooltip>
-          </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={fund.vestingPeriod}
-              onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
-              step="0.5"
-              placeholder="4"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-          </div>
-        </div>
-        <div className="form-group">
-          <label>
-            <span>Cliff</span>
-            <Tooltip text="Years before any carry vests (all-or-nothing threshold)"><span className="tooltip-icon">?</span></Tooltip>
-          </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={fund.cliffPeriod}
-              onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
-              step="0.5"
-              placeholder="1"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
           </div>
         </div>
       </div>
@@ -475,53 +445,6 @@ function FundCard({ fund, index }: FundCardProps) {
       </div>
 
       <div className="section">
-        <div className="fund-section-header">
-          <span>Hurdles</span>
-          <Tooltip text="Performance thresholds that increase carry % at higher return multiples"><span className="tooltip-icon">?</span></Tooltip>
-        </div>
-        {fund.hurdles.map((hurdle, idx) => (
-          <div key={idx} className="hurdle-item">
-            <input
-              type="number"
-              value={hurdle.multiple}
-              onChange={(e) =>
-                dispatch({
-                  type: 'UPDATE_HURDLE',
-                  payload: { fundId: fund.id, hurdleIndex: idx, field: 'multiple', value: parseFloat(e.target.value) }
-                })
-              }
-              step="0.1"
-              style={{ maxWidth: '60px' }}
-            />
-            <span style={{ color: '#718096', fontWeight: 600 }}>x</span>
-            <span style={{ color: '#718096' }}>→</span>
-            <input
-              type="number"
-              value={hurdle.carryPercent}
-              onChange={(e) =>
-                dispatch({
-                  type: 'UPDATE_HURDLE',
-                  payload: { fundId: fund.id, hurdleIndex: idx, field: 'carryPercent', value: parseFloat(e.target.value) }
-                })
-              }
-              step="0.1"
-              style={{ maxWidth: '60px' }}
-            />
-            <span style={{ color: '#718096', fontSize: '0.85em' }}>%</span>
-            <button
-              className="btn btn-danger"
-              onClick={() => dispatch({ type: 'REMOVE_HURDLE', payload: { fundId: fund.id, hurdleIndex: idx } })}
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-        <button className="btn add-btn" onClick={handleAddHurdle}>
-          + Add Hurdle
-        </button>
-      </div>
-
-      <div className="section">
         <div
           className="fund-section-header"
           style={{ cursor: 'pointer', userSelect: 'none' }}
@@ -531,6 +454,90 @@ function FundCard({ fund, index }: FundCardProps) {
         </div>
         {showAdvanced && (
           <>
+            <div className="form-grid" style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div className="form-group">
+                <label>
+                  <span>Vesting Period</span>
+                  <Tooltip text="Years required to fully vest carry allocation"><span className="tooltip-icon">?</span></Tooltip>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="number"
+                    value={fund.vestingPeriod}
+                    onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
+                    step="0.5"
+                    placeholder="4"
+                    style={{ paddingRight: '35px' }}
+                  />
+                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+                </div>
+              </div>
+              <div className="form-group">
+                <label>
+                  <span>Cliff</span>
+                  <Tooltip text="Years before any carry vests (all-or-nothing threshold)"><span className="tooltip-icon">?</span></Tooltip>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="number"
+                    value={fund.cliffPeriod}
+                    onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
+                    step="0.5"
+                    placeholder="1"
+                    style={{ paddingRight: '35px' }}
+                  />
+                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div className="fund-section-header">
+                <span>Hurdles</span>
+                <Tooltip text="Performance thresholds that increase carry % at higher return multiples"><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              {fund.hurdles.map((hurdle, idx) => (
+                <div key={idx} className="hurdle-item">
+                  <input
+                    type="number"
+                    value={hurdle.multiple}
+                    onChange={(e) =>
+                      dispatch({
+                        type: 'UPDATE_HURDLE',
+                        payload: { fundId: fund.id, hurdleIndex: idx, field: 'multiple', value: parseFloat(e.target.value) }
+                      })
+                    }
+                    step="0.1"
+                    style={{ maxWidth: '60px' }}
+                  />
+                  <span style={{ color: '#718096', fontWeight: 600 }}>x</span>
+                  <span style={{ color: '#718096' }}>→</span>
+                  <input
+                    type="number"
+                    value={hurdle.carryPercent}
+                    onChange={(e) =>
+                      dispatch({
+                        type: 'UPDATE_HURDLE',
+                        payload: { fundId: fund.id, hurdleIndex: idx, field: 'carryPercent', value: parseFloat(e.target.value) }
+                      })
+                    }
+                    step="0.1"
+                    style={{ maxWidth: '60px' }}
+                  />
+                  <span style={{ color: '#718096', fontSize: '0.85em' }}>%</span>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => dispatch({ type: 'REMOVE_HURDLE', payload: { fundId: fund.id, hurdleIndex: idx } })}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button className="btn add-btn" onClick={handleAddHurdle}>
+                + Add Hurdle
+              </button>
+            </div>
+
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
                 <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Curve</span>
