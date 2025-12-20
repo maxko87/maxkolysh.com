@@ -45,7 +45,7 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
               <li><strong>Fund Cycle</strong> - Time between raising consecutive funds, typically 2-3 years</li>
               <li><strong>Fund Life</strong> - Duration of the fund before full realization, typically 10 years</li>
               <li><strong>Hurdles</strong> - Performance thresholds that affect carry percentage at different return levels</li>
-              <li><strong>Gross Return Multiple</strong> - Total return on the fund before fees (e.g., 3x means $300M returned on a $100M fund)</li>
+              <li><strong>Gross Return MOIC</strong> - Total return on the fund before fees (e.g., 3x means $300M returned on a $100M fund)</li>
               <li><strong>Vesting Period</strong> - Time required for GPs to fully earn their carry allocation, typically 4 years</li>
               <li><strong>Cliff</strong> - Minimum time before any carry vests, typically 1 year</li>
               <li><strong>Realization Curve</strong> - Pattern of when fund returns are distributed over time</li>

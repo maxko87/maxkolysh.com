@@ -8,6 +8,7 @@ function PresetSelector() {
   const { dispatch } = useCalculator();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'default' | 'alphabetical' | 'size' | 'multiple'>('default');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +39,16 @@ function PresetSelector() {
     if (!isOpen) {
       setSearchQuery('');
     }
+
+    // Handle escape key to close dropdown
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen]);
 
   // Search: checks if query words match text or start of words in text
@@ -65,6 +76,18 @@ function PresetSelector() {
   const filteredFunds = PRESET_FUNDS.filter((preset) => {
     const searchText = `${preset.fundName} ${preset.displayName} ${preset.strategy} ${preset.source} ${preset.vintage}`;
     return fuzzyMatch(searchText, searchQuery);
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'alphabetical':
+        return a.displayName.localeCompare(b.displayName);
+      case 'size':
+        return b.size - a.size; // Descending order (largest first)
+      case 'multiple':
+        return b.grossReturnMultiple - a.grossReturnMultiple; // Descending order (highest first)
+      case 'default':
+      default:
+        return 0; // Keep original order
+    }
   });
 
   const handleSelectPreset = (presetIndex: number) => {
@@ -170,7 +193,10 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
               borderBottom: '1px solid var(--color-border)'
             }}>
               <div style={{
-                padding: 'var(--spacing-md) var(--spacing-sm)'
+                padding: 'var(--spacing-md) var(--spacing-sm)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--spacing-sm)'
               }}>
                 <input
                   ref={searchInputRef}
@@ -189,6 +215,34 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                   }}
                   onClick={(e) => e.stopPropagation()}
                 />
+                <div style={{
+                  display: 'flex',
+                  gap: '4px',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ fontSize: '0.85em', color: 'var(--color-text-secondary)', marginRight: '4px' }}>Sort:</span>
+                  {(['default', 'alphabetical', 'size', 'multiple'] as const).map((option) => (
+                    <button
+                      key={option}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSortBy(option);
+                      }}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: '0.8em',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        backgroundColor: sortBy === option ? '#667eea' : 'transparent',
+                        color: sortBy === option ? 'white' : 'var(--color-text)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {option === 'default' ? 'Default' : option === 'alphabetical' ? 'A-Z' : option === 'size' ? 'Size' : 'MOIC'}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             {filteredFunds.length === 0 ? (
@@ -235,7 +289,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                         flexWrap: 'wrap',
                         alignItems: 'center'
                       }}>
-                        <span>{formatCurrency(preset.size)} fund</span>
+                        <span>{formatCurrency(preset.size)}</span>
                         <span>•</span>
                         {preset.sourceUrl ? (
                           <a
@@ -496,7 +550,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
 
                 <div>
                   <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                    Gross Return Multiple (TVPI) *
+                    Gross Return MOIC (TVPI) *
                   </label>
                   <input
                     type="number"

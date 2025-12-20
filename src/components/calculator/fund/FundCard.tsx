@@ -278,15 +278,14 @@ function FundCard({ fund, index }: FundCardProps) {
 
   return (
     <div className="fund-card">
-      {!isExpanded ? (
-        <div
-          className="fund-card-header"
-          onClick={() => setIsExpanded(true)}
-          style={{ cursor: 'pointer', userSelect: 'none', padding: 'var(--spacing-md) var(--spacing-lg)', marginBottom: 0 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="fund-card-header" style={{ marginBottom: isExpanded ? undefined : 0 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
             <span
+              onClick={() => setIsExpanded(!isExpanded)}
               style={{
+                cursor: 'pointer',
+                userSelect: 'none',
                 fontSize: '0.94em',
                 fontWeight: 700,
                 color: 'var(--text-secondary)',
@@ -295,48 +294,27 @@ function FundCard({ fund, index }: FundCardProps) {
                 alignItems: 'center'
               }}
             >
-              ▶
+              {isExpanded ? '▼' : '▶'}
             </span>
-            <span>{fund.name}</span>
+            <span style={{ fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              {isExpanded ? 'Fund Name' : fund.name}
+            </span>
           </div>
-        </div>
-      ) : (
-        <div className="fund-card-header">
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-              <span
-                onClick={() => setIsExpanded(!isExpanded)}
-                style={{
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                  fontSize: '0.94em',
-                  fontWeight: 700,
-                  color: 'var(--text-secondary)',
-                  minWidth: '16px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                ▼
-              </span>
-              <label style={{ fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                Fund Name
-              </label>
-            </div>
+          {isExpanded && (
             <input
               type="text"
               value={fund.name}
               onChange={(e) => handleFieldChange('name', e.target.value)}
               style={{ width: '100%' }}
             />
-          </div>
-          {index > 0 && (
-            <button className="btn btn-danger" onClick={handleRemove} style={{ alignSelf: 'flex-end' }}>
-              Remove
-            </button>
           )}
         </div>
-      )}
+        {index > 0 && isExpanded && (
+          <button className="btn btn-danger" onClick={handleRemove} style={{ alignSelf: 'flex-end' }}>
+            Remove
+          </button>
+        )}
+      </div>
 
       {isExpanded && (
         <>
@@ -379,7 +357,7 @@ function FundCard({ fund, index }: FundCardProps) {
         <div className="form-group">
           <label>
             <span>Carry Allocation per GP</span>
-            <Tooltip text="Percentage of total fund carry allocated to one General Partner"><span className="tooltip-icon">?</span></Tooltip>
+            <Tooltip text="Percentage of total fund carry allocated to one General Partner. Typical is 5%. Calculate by dividing total carry allocated to all GPs (excluding junior partners, staff, etc) by total number of GPs."><span className="tooltip-icon">?</span></Tooltip>
           </label>
           <div style={{ position: 'relative' }}>
             <input
@@ -446,6 +424,100 @@ function FundCard({ fund, index }: FundCardProps) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="section">
+        <div className="fund-section-header">
+          <span>Return Scenarios</span>
+          <Tooltip text="Different return outcomes to model (e.g., base case, upside, downside)"><span className="tooltip-icon">?</span></Tooltip>
+        </div>
+        {fund.scenarios.map((scenario, idx) => {
+          const irr = calculateIRR(scenario.grossReturnMultiple, fund.years);
+          return (
+            <div key={scenario.id} className="scenario-card">
+              <div className="scenario-card-header">
+                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>
+                  {isNaN(scenario.grossReturnMultiple) ? '—' : `${Math.round(scenario.grossReturnMultiple * 100) / 100}x`}
+                </h4>
+                <span style={{ fontSize: '0.9em', color: '#92400e', fontWeight: 600 }}>
+                  Gross IRR: {Math.round(irr * 100) / 100}%
+                </span>
+                <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
+                  {idx > 0 && (
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                <div className="scenario-field">
+                  <label>Expected Gross MOIC</label>
+                  <input
+                    type="number"
+                    value={isNaN(scenario.grossReturnMultiple) ? '' : Math.round(scenario.grossReturnMultiple * 100) / 100}
+                    onChange={(e) => {
+                      const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
+                      // Round to 2 decimal places
+                      const roundedValue = isNaN(value) ? NaN : Math.round(value * 100) / 100;
+                      dispatch({
+                        type: 'UPDATE_SCENARIO',
+                        payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedValue }
+                      });
+                    }}
+                    step="0.01"
+                    placeholder="5"
+                    min="0"
+                  />
+                </div>
+                <div className="scenario-field">
+                  <label>IRR</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="number"
+                      value={isNaN(scenario.grossReturnMultiple) ? '' : Math.round(irr * 100) / 100}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '') {
+                          // Allow clearing the field by setting multiple to NaN
+                          dispatch({
+                            type: 'UPDATE_SCENARIO',
+                            payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: NaN }
+                          });
+                        } else {
+                          const irrValue = parseFloat(value);
+                          if (!isNaN(irrValue)) {
+                            // Round IRR to 2 decimals
+                            const roundedIRR = Math.round(irrValue * 100) / 100;
+                            const newMultiple = calculateMultipleFromIRR(roundedIRR, fund.years);
+                            // Round the resulting multiple to 2 decimals
+                            const roundedMultiple = Math.round(newMultiple * 100) / 100;
+                            dispatch({
+                              type: 'UPDATE_SCENARIO',
+                              payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedMultiple }
+                            });
+                          }
+                        }
+                      }}
+                      step="0.01"
+                      placeholder="0"
+                      style={{ paddingRight: '30px' }}
+                    />
+                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {fund.scenarios.length < 5 && (
+          <button className="btn add-btn" onClick={handleAddScenario}>
+            + Add Scenario
+          </button>
+        )}
       </div>
 
       <div className="section">
@@ -612,86 +684,6 @@ function FundCard({ fund, index }: FundCardProps) {
               </div>
             </div>
           </>
-        )}
-      </div>
-
-      <div className="section">
-        <div className="fund-section-header">
-          <span>Return Scenarios</span>
-          <Tooltip text="Different return outcomes to model (e.g., base case, upside, downside)"><span className="tooltip-icon">?</span></Tooltip>
-        </div>
-        {fund.scenarios.map((scenario, idx) => {
-          const irr = calculateIRR(scenario.grossReturnMultiple, fund.years);
-          return (
-            <div key={scenario.id} className="scenario-card">
-              <div className="scenario-card-header">
-                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>
-                  {isNaN(scenario.grossReturnMultiple) ? '—' : `${scenario.grossReturnMultiple}x`}
-                </h4>
-                <span style={{ fontSize: '0.9em', color: '#92400e', fontWeight: 600 }}>
-                  Gross IRR: {irr}%
-                </span>
-                <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
-                  {idx > 0 && (
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
-                <div className="scenario-field">
-                  <label>Expected Gross Multiple</label>
-                  <input
-                    type="number"
-                    value={isNaN(scenario.grossReturnMultiple) ? '' : scenario.grossReturnMultiple}
-                    onChange={(e) => {
-                      const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
-                      // Allow NaN (empty input) - will use placeholder value of 5 in calculations
-                      dispatch({
-                        type: 'UPDATE_SCENARIO',
-                        payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value }
-                      });
-                    }}
-                    step="0.1"
-                    placeholder="5"
-                    min="0"
-                  />
-                </div>
-                <div className="scenario-field">
-                  <label>IRR</label>
-                  <div style={{ position: 'relative' }}>
-                    <input
-                      type="number"
-                      value={irr}
-                      onChange={(e) => {
-                        const irrValue = parseFloat(e.target.value);
-                        if (!isNaN(irrValue)) {
-                          const newMultiple = calculateMultipleFromIRR(irrValue, fund.years);
-                          dispatch({
-                            type: 'UPDATE_SCENARIO',
-                            payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: newMultiple }
-                          });
-                        }
-                      }}
-                      step="0.1"
-                      placeholder="0"
-                      style={{ paddingRight: '30px' }}
-                    />
-                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-        {fund.scenarios.length < 5 && (
-          <button className="btn add-btn" onClick={handleAddScenario}>
-            + Add Scenario
-          </button>
         )}
       </div>
         </>
