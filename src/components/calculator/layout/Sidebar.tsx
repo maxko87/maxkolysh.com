@@ -23,7 +23,26 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <div style={{ marginBottom: 'var(--spacing-2xl)' }}>
-        <h1 style={{ marginBottom: 'var(--spacing-md)' }}>Fund GP Comp Calculator</h1>
+        <h1 style={{
+          marginBottom: 'var(--spacing-xs)',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          fontSize: '1.9em',
+          fontWeight: 800,
+          letterSpacing: '-0.8px',
+          lineHeight: 1.2
+        }}>
+          Fund GP Comp Calculator
+        </h1>
+        <div style={{
+          fontSize: '13px',
+          color: '#94a3b8',
+          marginBottom: 'var(--spacing-md)'
+        }}>
+          Made with 🤖 by Max Kolysh
+        </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
             How to Use

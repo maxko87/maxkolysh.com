@@ -40,24 +40,26 @@ function PresetSelector() {
     }
   }, [isOpen]);
 
-  // Fuzzy search: checks if all characters in query appear in order in the text
+  // Search: checks if query words match text or start of words in text
   const fuzzyMatch = (text: string, query: string): boolean => {
     if (!query) return true;
 
     const textLower = text.toLowerCase();
     const queryLower = query.toLowerCase();
 
-    let textIndex = 0;
-    let queryIndex = 0;
-
-    while (textIndex < textLower.length && queryIndex < queryLower.length) {
-      if (textLower[textIndex] === queryLower[queryIndex]) {
-        queryIndex++;
-      }
-      textIndex++;
+    // First try simple substring match
+    if (textLower.includes(queryLower)) {
+      return true;
     }
 
-    return queryIndex === queryLower.length;
+    // Then try matching each query word against word boundaries in text
+    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 0);
+    const textWords = textLower.split(/\s+/);
+
+    // All query words must match at least one text word (at start)
+    return queryWords.every(queryWord =>
+      textWords.some(textWord => textWord.startsWith(queryWord))
+    );
   };
 
   const filteredFunds = PRESET_FUNDS.filter((preset) => {
