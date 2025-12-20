@@ -91,7 +91,7 @@ function ResultsTable() {
               <tr key={rowIdx}>
                 <td>{rowIdx + 1}</td>
                 {row.map((cellData, colIdx) => {
-                  if (!cellData || cellData.total < 0.01) {
+                  if (!cellData) {
                     return <td key={colIdx} className="empty">-</td>;
                   }
 

@@ -9,6 +9,7 @@ function Tooltip({ text, children }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0, arrowLeft: 0, showBelow: false });
   const triggerRef = useRef<HTMLSpanElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isVisible || !triggerRef.current) return;
@@ -19,6 +20,7 @@ function Tooltip({ text, children }: TooltipProps) {
     // Tooltip is always 250px wide max
     const tooltipWidth = 250;
     const padding = 10;
+    const gap = 8;
 
     // Position tooltip horizontally - keep it within viewport
     let left = Math.max(padding, Math.min(
@@ -26,12 +28,12 @@ function Tooltip({ text, children }: TooltipProps) {
       triggerRect.left + triggerRect.width / 2 - tooltipWidth / 2
     ));
 
-    // Position tooltip vertically
-    const tooltipHeight = 100; // approximate
-    const showBelow = triggerRect.top < tooltipHeight + padding;
+    // Position tooltip vertically - measure actual height if possible
+    const tooltipHeight = tooltipRef.current?.offsetHeight || 100;
+    const showBelow = triggerRect.top < tooltipHeight + padding + gap;
     const top = showBelow
-      ? triggerRect.bottom + 8
-      : triggerRect.top - tooltipHeight - 8;
+      ? triggerRect.bottom + gap
+      : triggerRect.top - tooltipHeight - gap;
 
     // Arrow points to trigger center
     const arrowLeft = Math.max(12, Math.min(
@@ -52,6 +54,7 @@ function Tooltip({ text, children }: TooltipProps) {
       {children}
       {isVisible && (
         <div
+          ref={tooltipRef}
           style={{
             position: 'fixed',
             top: `${position.top}px`,
