@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
-import { calculateIRR, calculateMultipleFromIRR } from '../../../utils/calculations';
-import { CURVE_PRESETS, DEPLOYMENT_PRESETS, type DeploymentPreset } from '../../../types/calculator';
+import { calculateIRR, calculateMultipleFromIRR, calculateYearsToClear1X } from '../../../utils/calculations';
+import { DEPLOYMENT_PRESETS, type DeploymentPreset } from '../../../types/calculator';
 import Tooltip from '../common/Tooltip';
 
 interface FundCardProps {
@@ -89,7 +89,8 @@ function FundCard({ fund, index }: FundCardProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const curve = CURVE_PRESETS[selectedPreset];
+    // Use the fund's actual realization curve (not the preset) for consistency
+    const curve = fund.realizationCurve;
     const width = 300;
     const height = 160;
     const padding = 30;
@@ -166,6 +167,36 @@ function FundCard({ fund, index }: FundCardProps) {
     }
     ctx.stroke();
 
+    // Draw vertical line showing when carry begins (when DPI crosses 1.0x)
+    // Calculate based on first scenario's return multiple AND the realization curve
+    const firstScenario = fund.scenarios[0];
+    if (firstScenario) {
+      const returnMultiple = firstScenario.grossReturnMultiple;
+
+      // Use the actual fund's realization curve (not the preset) for accurate calculation
+      const carryStartYear = calculateYearsToClear1X(returnMultiple, fund.realizationCurve, fundYears);
+
+      if (isFinite(carryStartYear) && carryStartYear <= fundYears) {
+        const carryStartX = padding + (carryStartYear / fundYears) * chartWidth;
+
+        // Draw dashed vertical line
+        ctx.strokeStyle = '#ef4444'; // Red color
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]); // Dashed line
+        ctx.beginPath();
+        ctx.moveTo(carryStartX, topPadding);
+        ctx.lineTo(carryStartX, height - padding);
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset to solid line
+
+        // Add label with year
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Carry Y${Math.round(carryStartYear * 10) / 10}`, carryStartX, topPadding - 5);
+      }
+    }
+
     // Draw control points
     for (let i = 0; i <= 10; i++) {
       const yearPosition = (i / 10) * fundYears;
@@ -177,7 +208,7 @@ function FundCard({ fund, index }: FundCardProps) {
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
     }
-  }, [showAdvanced, selectedPreset, fund.years]);
+  }, [showAdvanced, selectedPreset, fund.years, fund.scenarios, fund.realizationCurve]);
 
   useEffect(() => {
     if (!showAdvanced || !deploymentCanvasRef.current) return;
@@ -460,7 +491,7 @@ function FundCard({ fund, index }: FundCardProps) {
                           payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedValue }
                         });
                       }}
-                      step="0.01"
+                      step="0.5"
                       placeholder="5"
                       min="0"
                       style={{ paddingRight: '35px' }}
@@ -501,7 +532,7 @@ function FundCard({ fund, index }: FundCardProps) {
                         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
                           e.preventDefault();
                           const currentIRR = isNaN(scenario.grossReturnMultiple) ? 0 : irr;
-                          const step = e.shiftKey ? 1 : 0.1;
+                          const step = e.shiftKey ? 1 : 0.5;
                           const newIRR = e.key === 'ArrowUp' ? currentIRR + step : currentIRR - step;
                           const roundedIRR = Math.round(newIRR * 100) / 100;
                           const newMultiple = calculateMultipleFromIRR(roundedIRR, fund.years);
@@ -512,7 +543,7 @@ function FundCard({ fund, index }: FundCardProps) {
                           });
                         }
                       }}
-                      step="0.01"
+                      step="0.5"
                       placeholder="0"
                       style={{ paddingRight: '35px' }}
                     />
@@ -645,33 +676,7 @@ function FundCard({ fund, index }: FundCardProps) {
               </div>
             </div>
 
-            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-              <div className="form-group">
-                <label>
-                  <span>Years to Clear 1X</span>
-                  <Tooltip text="Years until fund clears 1X and starts distributing gains (when carry begins). Based on industry data, funds typically reach 1x DPI by year 8, with 59% reaching it by year 5."><span className="tooltip-icon">?</span></Tooltip>
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="number"
-                    value={fund.yearsToClear1X}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      // Ensure it's less than fund life
-                      if (!isNaN(value) && value >= 0 && value < fund.years) {
-                        handleFieldChange('yearsToClear1X', value);
-                      }
-                    }}
-                    step="0.5"
-                    placeholder="5"
-                    min="0"
-                    max={fund.years - 0.5}
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-                </div>
-              </div>
-            </div>
+            {/* Years to Clear 1X is now auto-calculated per scenario based on return multiple */}
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>

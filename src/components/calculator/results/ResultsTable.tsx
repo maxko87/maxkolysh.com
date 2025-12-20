@@ -142,15 +142,15 @@ function ResultsTable() {
                             {fb.vintages.map((v, vIdx) => (
                               <div
                                 key={vIdx}
-                                style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '10px' }}
+                                style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '12px' }}
                               >
                                 <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
                                 <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
                               </div>
                             ))}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '6px', paddingLeft: '10px', fontWeight: 600 }}>
-                              <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>{fb.name} Total:</span>
-                              <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(fb.amount)}</span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>
+                              <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{fb.name} Total:</span>
+                              <span style={{ color: 'white', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
                             </div>
                           </div>
                         ))}
