@@ -400,6 +400,7 @@ body {
     margin-bottom: var(--spacing-md);
     border: 1px solid var(--border-color);
     position: relative;
+    padding-right: 40px;
 }
 
 .fund-card-header {
@@ -470,6 +471,27 @@ body {
     color: var(--danger-hover);
 }
 
+.card-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    padding: 4px 8px;
+    font-size: 1em;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.card-close-btn:hover {
+    background: rgba(245, 101, 101, 0.1);
+}
+
 .btn-share {
     background: var(--primary-color);
     color: white;
@@ -516,6 +538,7 @@ body {
     margin-bottom: var(--spacing-sm);
     border: 1.5px solid var(--warning-color);
     position: relative;
+    padding-right: 36px;
 }
 
 .scenario-card-fields {
