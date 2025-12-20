@@ -3774,15 +3774,15 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     grossReturnMultiple: 0.91,
     irr: -1.3,
   },
-  // OPERS Funds
+
   {
     displayName: "Union Square Ventures 2012 (2011) - 23.91x",
     fundName: "Union Square Ventures 2012",
     vintage: 2011,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 312,  // Estimated from $23.4M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 156,  // Estimated from $23.4M commitment
     grossReturnMultiple: 23.91,
     irr: 53.6,
   },
@@ -3792,8 +3792,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2004,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 333,  // Estimated from $25M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
     grossReturnMultiple: 13.82,
     irr: 66.9,
   },
@@ -3803,8 +3803,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2016,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 253,  // Estimated from $19M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 127,  // Estimated from $19M commitment
     grossReturnMultiple: 6.56,
     irr: 49.0,
   },
@@ -3814,8 +3814,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2014,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 183,  // Estimated from $13.7M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 91,  // Estimated from $13.7M commitment
     grossReturnMultiple: 6.36,
     irr: 39.8,
   },
@@ -3825,8 +3825,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2012,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1250,  // Estimated from $75M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
     grossReturnMultiple: 5.00,
     irr: 36.9,
   },
@@ -3836,8 +3836,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2014,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 232,  // Estimated from $17.4M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 116,  // Estimated from $17.4M commitment
     grossReturnMultiple: 4.79,
     irr: 25.9,
   },
@@ -3847,8 +3847,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1986,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1638,  // Estimated from $98.3M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 983,  // Estimated from $98.3M commitment
     grossReturnMultiple: 4.55,
     irr: 26.3,
   },
@@ -3858,8 +3858,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2014,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 4.51,
     irr: 23.9,
   },
@@ -3869,8 +3869,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2008,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 333,  // Estimated from $25M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
     grossReturnMultiple: 4.38,
     irr: 20.9,
   },
@@ -3880,8 +3880,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1984,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1658,  // Estimated from $99.5M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 995,  // Estimated from $99.5M commitment
     grossReturnMultiple: 4.31,
     irr: 28.6,
   },
@@ -3891,8 +3891,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2013,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 333,  // Estimated from $25M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
     grossReturnMultiple: 4.14,
     irr: 21.4,
   },
@@ -3902,8 +3902,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2010,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 244,  // Estimated from $18.3M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 122,  // Estimated from $18.3M commitment
     grossReturnMultiple: 3.60,
     irr: 58.4,
   },
@@ -3913,8 +3913,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1993,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 3.53,
     irr: 36.3,
   },
@@ -3924,8 +3924,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2004,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 3.52,
     irr: 28.2,
   },
@@ -3935,8 +3935,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1981,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 4313,  // Estimated from $194.1M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1941,  // Estimated from $194.1M commitment
     grossReturnMultiple: 3.44,
     irr: 22.5,
   },
@@ -3946,8 +3946,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2011,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 3.42,
     irr: 23.1,
   },
@@ -3957,8 +3957,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1991,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 3.41,
     irr: 35.2,
   },
@@ -3968,8 +3968,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1985,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 867,  // Estimated from $65M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 433,  // Estimated from $65M commitment
     grossReturnMultiple: 3.40,
     irr: 16.8,
   },
@@ -3979,8 +3979,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1993,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 3.37,
     irr: 34.8,
   },
@@ -3990,8 +3990,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2019,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 200,  // Estimated from $15M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 100,  // Estimated from $15M commitment
     grossReturnMultiple: 3.37,
     irr: 45.0,
   },
@@ -4001,8 +4001,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1983,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 333,  // Estimated from $25M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
     grossReturnMultiple: 3.30,
     irr: 39.7,
   },
@@ -4012,7 +4012,7 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2015,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
     size: 4000,  // Estimated from $150M commitment
     grossReturnMultiple: 3.15,
     irr: 26.6,
@@ -4023,8 +4023,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2017,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 5000,  // Estimated from $225M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3750,  // Estimated from $225M commitment
     grossReturnMultiple: 2.96,
     irr: 36.7,
   },
@@ -4034,8 +4034,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2008,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1250,  // Estimated from $75M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
     grossReturnMultiple: 2.93,
     irr: 22.7,
   },
@@ -4045,8 +4045,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2005,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 333,  // Estimated from $25M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
     grossReturnMultiple: 2.88,
     irr: 10.9,
   },
@@ -4056,8 +4056,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2001,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1250,  // Estimated from $75M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
     grossReturnMultiple: 2.85,
     irr: 48.1,
   },
@@ -4067,8 +4067,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2005,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.80,
     irr: 18.3,
   },
@@ -4078,8 +4078,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1996,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1250,  // Estimated from $75M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
     grossReturnMultiple: 2.78,
     irr: 78.5,
   },
@@ -4089,8 +4089,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2009,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 533,  // Estimated from $40M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 267,  // Estimated from $40M commitment
     grossReturnMultiple: 2.76,
     irr: 31.9,
   },
@@ -4100,8 +4100,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2000,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 333,  // Estimated from $25M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
     grossReturnMultiple: 2.74,
     irr: 29.6,
   },
@@ -4111,8 +4111,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2017,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.69,
     irr: 27.2,
   },
@@ -4122,8 +4122,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2017,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 2.69,
     irr: 21.1,
   },
@@ -4133,8 +4133,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2015,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 3333,  // Estimated from $150M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1500,  // Estimated from $150M commitment
     grossReturnMultiple: 2.65,
     irr: 18.1,
   },
@@ -4144,8 +4144,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1997,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 187,  // Estimated from $14M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 93,  // Estimated from $14M commitment
     grossReturnMultiple: 2.62,
     irr: 63.9,
   },
@@ -4155,8 +4155,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2001,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 3333,  // Estimated from $150M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1500,  // Estimated from $150M commitment
     grossReturnMultiple: 2.58,
     irr: 41.0,
   },
@@ -4166,8 +4166,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2014,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.45,
     irr: 23.7,
   },
@@ -4177,8 +4177,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2007,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.45,
     irr: 29.4,
   },
@@ -4188,8 +4188,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1999,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 10000,  // Estimated from $300M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
     grossReturnMultiple: 2.44,
     irr: 24.4,
   },
@@ -4199,8 +4199,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1996,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 2.43,
     irr: 26.5,
   },
@@ -4210,8 +4210,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2005,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.43,
     irr: 11.9,
   },
@@ -4221,8 +4221,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2010,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.42,
     irr: 18.8,
   },
@@ -4232,8 +4232,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2004,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 2.37,
     irr: 25.4,
   },
@@ -4243,8 +4243,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2015,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.36,
     irr: 30.5,
   },
@@ -4254,8 +4254,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2013,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 533,  // Estimated from $40M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 267,  // Estimated from $40M commitment
     grossReturnMultiple: 2.34,
     irr: 38.3,
   },
@@ -4265,8 +4265,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2011,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 16667,  // Estimated from $500M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 14286,  // Estimated from $500M commitment
     grossReturnMultiple: 2.28,
     irr: 17.4,
   },
@@ -4276,8 +4276,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2007,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 4444,  // Estimated from $200M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
     grossReturnMultiple: 2.27,
     irr: 18.0,
   },
@@ -4287,8 +4287,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 1999,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 667,  // Estimated from $50M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
     grossReturnMultiple: 2.26,
     irr: 21.6,
   },
@@ -4298,8 +4298,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2013,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.24,
     irr: 21.8,
   },
@@ -4309,8 +4309,8 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2007,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 4167,  // Estimated from $187.5M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1875,  // Estimated from $187.5M commitment
     grossReturnMultiple: 2.23,
     irr: 15.3,
   },
@@ -4320,9 +4320,1683 @@ export const PRESET_FUNDS: PresetFund[] = [  {
     vintage: 2012,
     strategy: "Private Equity",
     source: "OPERS",
-    sourceUrl: "https://www.opers.org/investments/",
-    size: 1667,  // Estimated from $100M commitment
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
     grossReturnMultiple: 2.22,
     irr: 25.6,
-  }
+  },
+  {
+    displayName: "Olympic Venture Partners III (1994) - 2.22x",
+    fundName: "Olympic Venture Partners III",
+    vintage: 1994,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 67,  // Estimated from $10M commitment
+    grossReturnMultiple: 2.22,
+    irr: 27.1,
+  },
+  {
+    displayName: "Vista Equity Partners Fund V (2014) - 2.19x",
+    fundName: "Vista Equity Partners Fund V",
+    vintage: 2014,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 2.19,
+    irr: 17.3,
+  },
+  {
+    displayName: "Zell-Chilmark Fund (1990) - 2.19x",
+    fundName: "Zell-Chilmark Fund",
+    vintage: 1990,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
+    grossReturnMultiple: 2.19,
+    irr: 17.9,
+  },
+  {
+    displayName: "Francisco Partners V (2018) - 2.18x",
+    fundName: "Francisco Partners V",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $200M commitment
+    grossReturnMultiple: 2.18,
+    irr: 19.5,
+  },
+  {
+    displayName: "GI Partners Fund IV (2013) - 2.17x",
+    fundName: "GI Partners Fund IV",
+    vintage: 2013,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 2.17,
+    irr: 15.1,
+  },
+  {
+    displayName: "KSL Capital Partners Supplemental II (2009) - 2.16x",
+    fundName: "KSL Capital Partners Supplemental II",
+    vintage: 2009,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 2.16,
+    irr: 24.8,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III-B (2008) - 2.16x",
+    fundName: "Pathway Private Equity Fund III-B",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 11429,  // Estimated from $400M commitment
+    grossReturnMultiple: 2.16,
+    irr: 15.7,
+  },
+  {
+    displayName: "Genstar Capital Partners IX (2019) - 2.15x",
+    fundName: "Genstar Capital Partners IX",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1200,  // Estimated from $120M commitment
+    grossReturnMultiple: 2.15,
+    irr: 28.4,
+  },
+  {
+    displayName: "CVC European Equity Partners II (1998) - 2.10x",
+    fundName: "CVC European Equity Partners II",
+    vintage: 1998,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1500,  // Estimated from $150M commitment
+    grossReturnMultiple: 2.10,
+    irr: 18.9,
+  },
+  {
+    displayName: "Advent International GPE VI A (2008) - 2.09x",
+    fundName: "Advent International GPE VI A",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 2.09,
+    irr: 16.4,
+  },
+  {
+    displayName: "KKR North America Fund XI (2012) - 2.09x",
+    fundName: "KKR North America Fund XI",
+    vintage: 2012,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 13900,  // Estimated from $750M commitment
+    grossReturnMultiple: 2.09,
+    irr: 19.6,
+  },
+  {
+    displayName: "KKR Americas Fund XII (2017) - 2.08x",
+    fundName: "KKR Americas Fund XII",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 13900,  // Estimated from $500M commitment
+    grossReturnMultiple: 2.08,
+    irr: 20.4,
+  },
+  {
+    displayName: "Permira VI (2016) - 2.08x",
+    fundName: "Permira VI",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4177,  // Estimated from $250.6M commitment
+    grossReturnMultiple: 2.08,
+    irr: 16.5,
+  },
+  {
+    displayName: "Green Equity Investors VI (2012) - 2.07x",
+    fundName: "Green Equity Investors VI",
+    vintage: 2012,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1500,  // Estimated from $150M commitment
+    grossReturnMultiple: 2.07,
+    irr: 13.6,
+  },
+  {
+    displayName: "KKR European Fund (1999) - 2.07x",
+    fundName: "KKR European Fund",
+    vintage: 1999,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 11429,  // Estimated from $400M commitment
+    grossReturnMultiple: 2.07,
+    irr: 19.7,
+  },
+  {
+    displayName: "Oregon Investment Fund (Series 1-A) (2007) - 2.07x",
+    fundName: "Oregon Investment Fund (Series 1-A)",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 2.07,
+    irr: 15.3,
+  },
+  {
+    displayName: "TCW Special Credits Fund III (1991) - 2.07x",
+    fundName: "TCW Special Credits Fund III",
+    vintage: 1991,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 2.07,
+    irr: 21.7,
+  },
+  {
+    displayName: "Wellspring Capital Partners III (2002) - 2.07x",
+    fundName: "Wellspring Capital Partners III",
+    vintage: 2002,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
+    grossReturnMultiple: 2.07,
+    irr: 26.1,
+  },
+  {
+    displayName: "Encap Energy Capital Fund X (2015) - 2.06x",
+    fundName: "Encap Energy Capital Fund X",
+    vintage: 2015,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 900,  // Estimated from $90M commitment
+    grossReturnMultiple: 2.06,
+    irr: 16.4,
+  },
+  {
+    displayName: "Vector Capital IV (2007) - 2.05x",
+    fundName: "Vector Capital IV",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 2.05,
+    irr: 14.4,
+  },
+  {
+    displayName: "Green Equity Investors VII (2017) - 2.04x",
+    fundName: "Green Equity Investors VII",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 2.04,
+    irr: 19.5,
+  },
+  {
+    displayName: "CVC Capital Partners VI (2014) - 2.03x",
+    fundName: "CVC Capital Partners VI",
+    vintage: 2014,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1965,  // Estimated from $196.5M commitment
+    grossReturnMultiple: 2.03,
+    irr: 16.3,
+  },
+  {
+    displayName: "TPG Partners VII (2015) - 2.03x",
+    fundName: "TPG Partners VII",
+    vintage: 2015,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 13500,  // Estimated from $700M commitment
+    grossReturnMultiple: 2.03,
+    irr: 20.5,
+  },
+  {
+    displayName: "Vista Equity Partners Fund VI (2016) - 2.02x",
+    fundName: "Vista Equity Partners Fund VI",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 16000,  // Estimated from $500M commitment
+    grossReturnMultiple: 2.02,
+    irr: 16.7,
+  },
+  {
+    displayName: "Doughty Hanson & Co II (1995) - 2.01x",
+    fundName: "Doughty Hanson & Co II",
+    vintage: 1995,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 2.01,
+    irr: 45.0,
+  },
+  {
+    displayName: "KKR Asian Fund III (2017) - 2.01x",
+    fundName: "KKR Asian Fund III",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 2.01,
+    irr: 21.4,
+  },
+  {
+    displayName: "CVC Capital Partners VII (2017) - 2.00x",
+    fundName: "CVC Capital Partners VII",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 18500,  // Estimated from $245.1M commitment
+    grossReturnMultiple: 2.00,
+    irr: 20.8,
+  },
+  {
+    displayName: "Vista Equity Partners Fund IV (2011) - 2.00x",
+    fundName: "Vista Equity Partners Fund IV",
+    vintage: 2011,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 2.00,
+    irr: 13.6,
+  },
+  {
+    displayName: "CVC European Equity Partners V (2008) - 1.99x",
+    fundName: "CVC European Equity Partners V",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4853,  // Estimated from $291.2M commitment
+    grossReturnMultiple: 1.99,
+    irr: 16.7,
+  },
+  {
+    displayName: "A&M Capital Partners II (2018) - 1.94x",
+    fundName: "A&M Capital Partners II",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.94,
+    irr: 36.8,
+  },
+  {
+    displayName: "Apax IX (2016) - 1.94x",
+    fundName: "Apax IX",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.94,
+    irr: 18.8,
+  },
+  {
+    displayName: "CVC European Equity Partners IV (2005) - 1.92x",
+    fundName: "CVC European Equity Partners IV",
+    vintage: 2005,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1455,  // Estimated from $145.5M commitment
+    grossReturnMultiple: 1.92,
+    irr: 17.0,
+  },
+  {
+    displayName: "Doughty Hanson & Co III (1997) - 1.92x",
+    fundName: "Doughty Hanson & Co III",
+    vintage: 1997,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.92,
+    irr: 13.6,
+  },
+  {
+    displayName: "Genstar IX Opportunities Fund I (2019) - 1.92x",
+    fundName: "Genstar IX Opportunities Fund I",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 800,  // Estimated from $80M commitment
+    grossReturnMultiple: 1.92,
+    irr: 20.9,
+  },
+  {
+    displayName: "TPG Partners IV (2003) - 1.91x",
+    fundName: "TPG Partners IV",
+    vintage: 2003,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 1.91,
+    irr: 15.2,
+  },
+  {
+    displayName: "Vista Foundation Fund III (2016) - 1.89x",
+    fundName: "Vista Foundation Fund III",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.89,
+    irr: 19.9,
+  },
+  {
+    displayName: "Vista Foundation Fund II (2013) - 1.88x",
+    fundName: "Vista Foundation Fund II",
+    vintage: 2013,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
+    grossReturnMultiple: 1.88,
+    irr: 13.7,
+  },
+  {
+    displayName: "KKR 2006 Fund (2006) - 1.87x",
+    fundName: "KKR 2006 Fund",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 37500,  // Estimated from $1312.5M commitment
+    grossReturnMultiple: 1.87,
+    irr: 9.8,
+  },
+  {
+    displayName: "EnCap Energy Capital Fund XI (2016) - 1.86x",
+    fundName: "EnCap Energy Capital Fund XI",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.86,
+    irr: 21.4,
+  },
+  {
+    displayName: "KKR Millennium Fund (2002) - 1.84x",
+    fundName: "KKR Millennium Fund",
+    vintage: 2002,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 28571,  // Estimated from $1000M commitment
+    grossReturnMultiple: 1.84,
+    irr: 16.4,
+  },
+  {
+    displayName: "Advent International GPE VII C (2012) - 1.81x",
+    fundName: "Advent International GPE VII C",
+    vintage: 2012,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 1.81,
+    irr: 13.3,
+  },
+  {
+    displayName: "Blackstone Capital Partners VI (2011) - 1.80x",
+    fundName: "Blackstone Capital Partners VI",
+    vintage: 2011,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 15800,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.80,
+    irr: 12.2,
+  },
+  {
+    displayName: "TPG Growth II (2011) - 1.80x",
+    fundName: "TPG Growth II",
+    vintage: 2011,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
+    grossReturnMultiple: 1.80,
+    irr: 14.8,
+  },
+  {
+    displayName: "KKR Asian Fund (2007) - 1.79x",
+    fundName: "KKR Asian Fund",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 991,  // Estimated from $99.1M commitment
+    grossReturnMultiple: 1.79,
+    irr: 13.7,
+  },
+  {
+    displayName: "Advent Latin American Private Equity Fund VI C (2015) - 1.78x",
+    fundName: "Advent Latin American Private Equity Fund VI C",
+    vintage: 2015,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 750,  // Estimated from $75M commitment
+    grossReturnMultiple: 1.78,
+    irr: 13.3,
+  },
+  {
+    displayName: "Centerbridge Capital Partners (2006) - 1.78x",
+    fundName: "Centerbridge Capital Partners",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.78,
+    irr: 19.2,
+  },
+  {
+    displayName: "Francisco Partners Agility II (2020) - 1.76x",
+    fundName: "Francisco Partners Agility II",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 1.76,
+    irr: 26.4,
+  },
+  {
+    displayName: "Apollo Investment Fund VII (2008) - 1.75x",
+    fundName: "Apollo Investment Fund VII",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 11429,  // Estimated from $400M commitment
+    grossReturnMultiple: 1.75,
+    irr: 22.5,
+  },
+  {
+    displayName: "Hellman & Friedman Capital Partners VIII (2016) - 1.75x",
+    fundName: "Hellman & Friedman Capital Partners VIII",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.75,
+    irr: 11.7,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III-Co Series A (2019) - 1.75x",
+    fundName: "Pathway Private Equity Fund III-Co Series A",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.75,
+    irr: 13.7,
+  },
+  {
+    displayName: "NEV III (2008) - 1.74x",
+    fundName: "NEV III",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 11429,  // Estimated from $400M commitment
+    grossReturnMultiple: 1.74,
+    irr: 11.7,
+  },
+  {
+    displayName: "NEV II (2005) - 1.73x",
+    fundName: "NEV II",
+    vintage: 2005,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 1.73,
+    irr: 9.0,
+  },
+  {
+    displayName: "Warburg Pincus Private Equity IX (2005) - 1.72x",
+    fundName: "Warburg Pincus Private Equity IX",
+    vintage: 2005,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.72,
+    irr: 9.6,
+  },
+  {
+    displayName: "Warburg Pincus Private Equity X (2007) - 1.71x",
+    fundName: "Warburg Pincus Private Equity X",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 15000,  // Estimated from $400M commitment
+    grossReturnMultiple: 1.71,
+    irr: 9.0,
+  },
+  {
+    displayName: "Aquiline Financial Services Fund (2005) - 1.70x",
+    fundName: "Aquiline Financial Services Fund",
+    vintage: 2005,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.70,
+    irr: 7.5,
+  },
+  {
+    displayName: "TPG Partners II (1997) - 1.69x",
+    fundName: "TPG Partners II",
+    vintage: 1997,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 1.69,
+    irr: 9.9,
+  },
+  {
+    displayName: "Blackstone Capital Partners VII (2016) - 1.67x",
+    fundName: "Blackstone Capital Partners VII",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 17600,  // Estimated from $450M commitment
+    grossReturnMultiple: 1.67,
+    irr: 13.0,
+  },
+  {
+    displayName: "Apax VIII USD (2012) - 1.66x",
+    fundName: "Apax VIII USD",
+    vintage: 2012,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1504,  // Estimated from $150.4M commitment
+    grossReturnMultiple: 1.66,
+    irr: 12.8,
+  },
+  {
+    displayName: "KKR 1987 Fund (1987) - 1.66x",
+    fundName: "KKR 1987 Fund",
+    vintage: 1987,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 20763,  // Estimated from $726.7M commitment
+    grossReturnMultiple: 1.66,
+    irr: 8.8,
+  },
+  {
+    displayName: "KKR 1993 Fund (1993) - 1.66x",
+    fundName: "KKR 1993 Fund",
+    vintage: 1993,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5833,  // Estimated from $350M commitment
+    grossReturnMultiple: 1.66,
+    irr: 16.7,
+  },
+  {
+    displayName: "Francisco Partners II (2006) - 1.65x",
+    fundName: "Francisco Partners II",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.65,
+    irr: 10.4,
+  },
+  {
+    displayName: "GI Partners Fund V (2017) - 1.64x",
+    fundName: "GI Partners Fund V",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.64,
+    irr: 15.3,
+  },
+  {
+    displayName: "Hamilton Lane SMID Fund (2009) - 1.64x",
+    fundName: "Hamilton Lane SMID Fund",
+    vintage: 2009,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 1.64,
+    irr: 11.8,
+  },
+  {
+    displayName: "Palladium Equity Partners V (2017) - 1.64x",
+    fundName: "Palladium Equity Partners V",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.64,
+    irr: 16.3,
+  },
+  {
+    displayName: "TPG Growth III (2015) - 1.64x",
+    fundName: "TPG Growth III",
+    vintage: 2015,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.64,
+    irr: 16.5,
+  },
+  {
+    displayName: "KKR 1996 Fund (1997) - 1.63x",
+    fundName: "KKR 1996 Fund",
+    vintage: 1997,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 22857,  // Estimated from $800M commitment
+    grossReturnMultiple: 1.63,
+    irr: 13.2,
+  },
+  {
+    displayName: "Advent International GPE IX (2019) - 1.62x",
+    fundName: "Advent International GPE IX",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 17500,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.62,
+    irr: 16.8,
+  },
+  {
+    displayName: "KKR European Fund III (2008) - 1.61x",
+    fundName: "KKR European Fund III",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 13229,  // Estimated from $463M commitment
+    grossReturnMultiple: 1.61,
+    irr: 11.0,
+  },
+  {
+    displayName: "TPG Growth IV (2017) - 1.61x",
+    fundName: "TPG Growth IV",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.61,
+    irr: 14.7,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III-Co Series C (2019) - 1.59x",
+    fundName: "Pathway Private Equity Fund III-Co Series C",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 17143,  // Estimated from $600M commitment
+    grossReturnMultiple: 1.59,
+    irr: 15.7,
+  },
+  {
+    displayName: "CVC Capital Partners Asia Pacific III (2008) - 1.58x",
+    fundName: "CVC Capital Partners Asia Pacific III",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.58,
+    irr: 12.8,
+  },
+  {
+    displayName: "TCV VI (2006) - 1.58x",
+    fundName: "TCV VI",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 167,  // Estimated from $25M commitment
+    grossReturnMultiple: 1.58,
+    irr: 12.4,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III (2001) - 1.55x",
+    fundName: "Pathway Private Equity Fund III",
+    vintage: 2001,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.55,
+    irr: 7.9,
+  },
+  {
+    displayName: "Roark Capital Partners V (2018) - 1.53x",
+    fundName: "Roark Capital Partners V",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.53,
+    irr: 13.3,
+  },
+  {
+    displayName: "Apollo Investment Fund VI (2006) - 1.51x",
+    fundName: "Apollo Investment Fund VI",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.51,
+    irr: 8.6,
+  },
+  {
+    displayName: "Apollo Investment Fund VIII (2013) - 1.51x",
+    fundName: "Apollo Investment Fund VIII",
+    vintage: 2013,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 18400,  // Estimated from $400M commitment
+    grossReturnMultiple: 1.51,
+    irr: 10.9,
+  },
+  {
+    displayName: "General Atlantic (2016) - 1.51x",
+    fundName: "General Atlantic",
+    vintage: 2016,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 14286,  // Estimated from $500M commitment
+    grossReturnMultiple: 1.51,
+    irr: 14.0,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III-Co Series B (2019) - 1.51x",
+    fundName: "Pathway Private Equity Fund III-Co Series B",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.51,
+    irr: 11.3,
+  },
+  {
+    displayName: "Blackstone Energy Partners II (2015) - 1.50x",
+    fundName: "Blackstone Energy Partners II",
+    vintage: 2015,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.50,
+    irr: 8.4,
+  },
+  {
+    displayName: "Bridgepoint Europe VI (2018) - 1.50x",
+    fundName: "Bridgepoint Europe VI",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4622,  // Estimated from $277.3M commitment
+    grossReturnMultiple: 1.50,
+    irr: 13.5,
+  },
+  {
+    displayName: "MBK Partners Fund IV (2017) - 1.50x",
+    fundName: "MBK Partners Fund IV",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.50,
+    irr: 9.7,
+  },
+  {
+    displayName: "TPG Partners VI (2008) - 1.49x",
+    fundName: "TPG Partners VI",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 21429,  // Estimated from $750M commitment
+    grossReturnMultiple: 1.49,
+    irr: 9.7,
+  },
+  {
+    displayName: "Northwest Emerging Ventures (2001) - 1.48x",
+    fundName: "Northwest Emerging Ventures",
+    vintage: 2001,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.48,
+    irr: 7.2,
+  },
+  {
+    displayName: "TPG Partners VIII (2018) - 1.48x",
+    fundName: "TPG Partners VIII",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 10000,  // Estimated from $400M commitment
+    grossReturnMultiple: 1.48,
+    irr: 19.3,
+  },
+  {
+    displayName: "Fisher Lynch Co-investment Partnership (2006) - 1.47x",
+    fundName: "Fisher Lynch Co-investment Partnership",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.47,
+    irr: 6.9,
+  },
+  {
+    displayName: "Hellman & Friedman Capital Partners IX (2019) - 1.45x",
+    fundName: "Hellman & Friedman Capital Partners IX",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 16000,  // Estimated from $280M commitment
+    grossReturnMultiple: 1.45,
+    irr: 11.2,
+  },
+  {
+    displayName: "Veritas Capital Fund VII (2020) - 1.41x",
+    fundName: "Veritas Capital Fund VII",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.41,
+    irr: 11.4,
+  },
+  {
+    displayName: "Centerbridge Special Credit Partners III - Flex (2020) - 1.40x",
+    fundName: "Centerbridge Special Credit Partners III - Flex",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5833,  // Estimated from $350M commitment
+    grossReturnMultiple: 1.40,
+    irr: 14.9,
+  },
+  {
+    displayName: "Oak Hill Capital Partners III (2007) - 1.40x",
+    fundName: "Oak Hill Capital Partners III",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 1.40,
+    irr: 8.9,
+  },
+  {
+    displayName: "Roark Capital Partners VI (2021) - 1.40x",
+    fundName: "Roark Capital Partners VI",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.40,
+    irr: 19.3,
+  },
+  {
+    displayName: "Aquiline Financial Services Fund IV (2019) - 1.39x",
+    fundName: "Aquiline Financial Services Fund IV",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.39,
+    irr: 10.8,
+  },
+  {
+    displayName: "Francisco Partners VI (2020) - 1.39x",
+    fundName: "Francisco Partners VI",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 6500,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.39,
+    irr: 15.5,
+  },
+  {
+    displayName: "Apollo Investment Fund IX (2018) - 1.38x",
+    fundName: "Apollo Investment Fund IX",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 24700,  // Estimated from $480M commitment
+    grossReturnMultiple: 1.38,
+    irr: 14.0,
+  },
+  {
+    displayName: "Centerbridge Capital Partners IV (2020) - 1.38x",
+    fundName: "Centerbridge Capital Partners IV",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.38,
+  },
+  {
+    displayName: "Genstar Capital Partners XI (2023) - 1.37x",
+    fundName: "Genstar Capital Partners XI",
+    vintage: 2023,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3818,  // Estimated from $229.1M commitment
+    grossReturnMultiple: 1.37,
+  },
+  {
+    displayName: "TPG Healthcare Partners (2018) - 1.37x",
+    fundName: "TPG Healthcare Partners",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.37,
+    irr: 15.3,
+  },
+  {
+    displayName: "TPG Partners V (2006) - 1.37x",
+    fundName: "TPG Partners V",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4935,  // Estimated from $296.1M commitment
+    grossReturnMultiple: 1.37,
+    irr: 4.8,
+  },
+  {
+    displayName: "A&M Capital Partners III (2021) - 1.36x",
+    fundName: "A&M Capital Partners III",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.36,
+  },
+  {
+    displayName: "CVC Capital Partners Asia V (2018) - 1.34x",
+    fundName: "CVC Capital Partners Asia V",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1500,  // Estimated from $150M commitment
+    grossReturnMultiple: 1.34,
+    irr: 14.5,
+  },
+  {
+    displayName: "Advent Global Technology (2019) - 1.32x",
+    fundName: "Advent Global Technology",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 333,  // Estimated from $50M commitment
+    grossReturnMultiple: 1.32,
+    irr: 8.0,
+  },
+  {
+    displayName: "GTCR Fund XIII-AB (2020) - 1.32x",
+    fundName: "GTCR Fund XIII-AB",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3417,  // Estimated from $205M commitment
+    grossReturnMultiple: 1.32,
+    irr: 19.2,
+  },
+  {
+    displayName: "KKR European Fund II (2005) - 1.32x",
+    fundName: "KKR European Fund II",
+    vintage: 2005,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 14286,  // Estimated from $500M commitment
+    grossReturnMultiple: 1.32,
+    irr: 4.8,
+  },
+  {
+    displayName: "TCW Crescent Mezzanine Partners V (2007) - 1.32x",
+    fundName: "TCW Crescent Mezzanine Partners V",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.32,
+    irr: 9.2,
+  },
+  {
+    displayName: "WLR Recovery Fund IV (2007) - 1.31x",
+    fundName: "WLR Recovery Fund IV",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.31,
+    irr: 6.9,
+  },
+  {
+    displayName: "Thoma Bravo Fund XV (2022) - 1.30x",
+    fundName: "Thoma Bravo Fund XV",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.30,
+  },
+  {
+    displayName: "KSL Capital Partners V (2019) - 1.29x",
+    fundName: "KSL Capital Partners V",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.29,
+    irr: 13.8,
+  },
+  {
+    displayName: "Oaktree Opportunities Fund XI (2020) - 1.28x",
+    fundName: "Oaktree Opportunities Fund XI",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5833,  // Estimated from $350M commitment
+    grossReturnMultiple: 1.28,
+    irr: 10.8,
+  },
+  {
+    displayName: "Seventh Cinven Fund (2019) - 1.28x",
+    fundName: "Seventh Cinven Fund",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3740,  // Estimated from $224.4M commitment
+    grossReturnMultiple: 1.28,
+    irr: 10.8,
+  },
+  {
+    displayName: "TPG STAR (2006) - 1.28x",
+    fundName: "TPG STAR",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.28,
+    irr: 6.2,
+  },
+  {
+    displayName: "Providence Equity Partners VI (2007) - 1.27x",
+    fundName: "Providence Equity Partners VI",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 1.27,
+    irr: 4.6,
+  },
+  {
+    displayName: "TPG Growth V (2020) - 1.27x",
+    fundName: "TPG Growth V",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.27,
+    irr: 15.6,
+  },
+  {
+    displayName: "Permira VII (2019) - 1.26x",
+    fundName: "Permira VII",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4205,  // Estimated from $252.3M commitment
+    grossReturnMultiple: 1.26,
+    irr: 7.4,
+  },
+  {
+    displayName: "Blackstone Capital Partners VIII (2020) - 1.25x",
+    fundName: "Blackstone Capital Partners VIII",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 26000,  // Estimated from $500M commitment
+    grossReturnMultiple: 1.25,
+    irr: 11.4,
+  },
+  {
+    displayName: "Advent International GPE X (2022) - 1.24x",
+    fundName: "Advent International GPE X",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 25000,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.24,
+  },
+  {
+    displayName: "Apax Europe VII (2007) - 1.24x",
+    fundName: "Apax Europe VII",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1995,  // Estimated from $199.5M commitment
+    grossReturnMultiple: 1.24,
+    irr: 4.2,
+  },
+  {
+    displayName: "Advent Global Technology II (2021) - 1.23x",
+    fundName: "Advent Global Technology II",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.23,
+  },
+  {
+    displayName: "Advent Latin American Private Equity Fund VII (2020) - 1.22x",
+    fundName: "Advent Latin American Private Equity Fund VII",
+    vintage: 2020,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1500,  // Estimated from $150M commitment
+    grossReturnMultiple: 1.22,
+    irr: 10.3,
+  },
+  {
+    displayName: "Vista Equity Partners Fund VII (2018) - 1.20x",
+    fundName: "Vista Equity Partners Fund VII",
+    vintage: 2018,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 16000,  // Estimated from $500M commitment
+    grossReturnMultiple: 1.20,
+    irr: 5.5,
+  },
+  {
+    displayName: "Vista Equity Partners Fund VIII (2022) - 1.20x",
+    fundName: "Vista Equity Partners Fund VIII",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 15000,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.20,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III-Co Series D (2019) - 1.19x",
+    fundName: "Pathway Private Equity Fund III-Co Series D",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 17143,  // Estimated from $600M commitment
+    grossReturnMultiple: 1.19,
+  },
+  {
+    displayName: "Genstar X Opportunities Fund I (2021) - 1.17x",
+    fundName: "Genstar X Opportunities Fund I",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 850,  // Estimated from $85M commitment
+    grossReturnMultiple: 1.17,
+    irr: 8.5,
+  },
+  {
+    displayName: "Clearlake Capital Partners VII (2021) - 1.15x",
+    fundName: "Clearlake Capital Partners VII",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.15,
+  },
+  {
+    displayName: "CVC Capital Partners VIII (2021) - 1.15x",
+    fundName: "CVC Capital Partners VIII",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 26000,  // Estimated from $356M commitment
+    grossReturnMultiple: 1.15,
+  },
+  {
+    displayName: "KKR Americas Fund XIII (2021) - 1.15x",
+    fundName: "KKR Americas Fund XIII",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 17000,  // Estimated from $275M commitment
+    grossReturnMultiple: 1.15,
+  },
+  {
+    displayName: "Veritas Capital Fund VIII (2022) - 1.14x",
+    fundName: "Veritas Capital Fund VIII",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.14,
+  },
+  {
+    displayName: "KKR Asian Fund II (2013) - 1.13x",
+    fundName: "KKR Asian Fund II",
+    vintage: 2013,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.13,
+    irr: 3.2,
+  },
+  {
+    displayName: "Genstar XI Opportunities Fund (2023) - 1.12x",
+    fundName: "Genstar XI Opportunities Fund",
+    vintage: 2023,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 139,  // Estimated from $20.9M commitment
+    grossReturnMultiple: 1.12,
+  },
+  {
+    displayName: "Hellman & Friedman Capital Partners X (2021) - 1.12x",
+    fundName: "Hellman & Friedman Capital Partners X",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 24300,  // Estimated from $350M commitment
+    grossReturnMultiple: 1.12,
+  },
+  {
+    displayName: "Thoma Bravo Fund XIV (2021) - 1.12x",
+    fundName: "Thoma Bravo Fund XIV",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 22800,  // Estimated from $250M commitment
+    grossReturnMultiple: 1.12,
+    irr: 4.1,
+  },
+  {
+    displayName: "TPG Healthcare Partners II (2022) - 1.12x",
+    fundName: "TPG Healthcare Partners II",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 467,  // Estimated from $70M commitment
+    grossReturnMultiple: 1.12,
+  },
+  {
+    displayName: "Aquiline Financial Services Fund V (2022) - 1.11x",
+    fundName: "Aquiline Financial Services Fund V",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.11,
+  },
+  {
+    displayName: "Genstar Capital Partners X (2021) - 1.09x",
+    fundName: "Genstar Capital Partners X",
+    vintage: 2021,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1400,  // Estimated from $140M commitment
+    grossReturnMultiple: 1.09,
+  },
+  {
+    displayName: "Permira VIII (2022) - 1.09x",
+    fundName: "Permira VIII",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4285,  // Estimated from $257.1M commitment
+    grossReturnMultiple: 1.09,
+  },
+  {
+    displayName: "TPG Partners IX (2022) - 1.08x",
+    fundName: "TPG Partners IX",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4667,  // Estimated from $280M commitment
+    grossReturnMultiple: 1.08,
+  },
+  {
+    displayName: "Pathway Private Equity Fund III-Co Series E (2019) - 1.07x",
+    fundName: "Pathway Private Equity Fund III-Co Series E",
+    vintage: 2019,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 14286,  // Estimated from $500M commitment
+    grossReturnMultiple: 1.07,
+  },
+  {
+    displayName: "Alpine Investors IX (2022) - 1.06x",
+    fundName: "Alpine Investors IX",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.06,
+  },
+  {
+    displayName: "BDCM Opportunity Fund IV (2015) - 1.05x",
+    fundName: "BDCM Opportunity Fund IV",
+    vintage: 2015,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.05,
+    irr: 2.1,
+  },
+  {
+    displayName: "Riverstone-Carlyle RAE Fund II (2008) - 1.05x",
+    fundName: "Riverstone-Carlyle RAE Fund II",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 1.05,
+    irr: 1.0,
+  },
+  {
+    displayName: "Tailwind Capital Partners III (2017) - 1.01x",
+    fundName: "Tailwind Capital Partners III",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3333,  // Estimated from $200M commitment
+    grossReturnMultiple: 1.01,
+    irr: 0.4,
+  },
+  {
+    displayName: "KKR E2 Investors (Euro 2 Annex Fund) (2009) - 0.91x",
+    fundName: "KKR E2 Investors (Euro 2 Annex Fund)",
+    vintage: 2009,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 247,  // Estimated from $37M commitment
+    grossReturnMultiple: 0.91,
+    irr: -2.9,
+  },
+  {
+    displayName: "Francisco Partners VII (2023) - 0.89x",
+    fundName: "Francisco Partners VII",
+    vintage: 2023,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.89,
+  },
+  {
+    displayName: "TSG Consumer Partners 9 (2022) - 0.87x",
+    fundName: "TSG Consumer Partners 9",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.87,
+  },
+  {
+    displayName: "CVC Capital Partners Asia Pacific II (2005) - 0.79x",
+    fundName: "CVC Capital Partners Asia Pacific II",
+    vintage: 2005,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 1000,  // Estimated from $100M commitment
+    grossReturnMultiple: 0.79,
+    irr: -5.0,
+  },
+  {
+    displayName: "Lion Capital Fund II (2007) - 0.68x",
+    fundName: "Lion Capital Fund II",
+    vintage: 2007,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3388,  // Estimated from $203.3M commitment
+    grossReturnMultiple: 0.68,
+    irr: -7.3,
+  },
+  {
+    displayName: "First Reserve Fund XI (2006) - 0.66x",
+    fundName: "First Reserve Fund XI",
+    vintage: 2006,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 0.66,
+    irr: -10.7,
+  },
+  {
+    displayName: "Eighth Cinven Fund (2023) - 0.64x",
+    fundName: "Eighth Cinven Fund",
+    vintage: 2023,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3850,  // Estimated from $231M commitment
+    grossReturnMultiple: 0.64,
+  },
+  {
+    displayName: "NOAL (2017) - 0.62x",
+    fundName: "NOAL",
+    vintage: 2017,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3882,  // Estimated from $232.9M commitment
+    grossReturnMultiple: 0.62,
+    irr: -15.3,
+  },
+  {
+    displayName: "TDR Capital V (2023) - 0.56x",
+    fundName: "TDR Capital V",
+    vintage: 2023,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3772,  // Estimated from $226.3M commitment
+    grossReturnMultiple: 0.56,
+  },
+  {
+    displayName: "First Reserve Fund XII (2008) - 0.55x",
+    fundName: "First Reserve Fund XII",
+    vintage: 2008,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 5000,  // Estimated from $300M commitment
+    grossReturnMultiple: 0.55,
+    irr: -16.4,
+  },
+  {
+    displayName: "Vitruvian Investment Partnership V (2022) - 0.50x",
+    fundName: "Vitruvian Investment Partnership V",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 3737,  // Estimated from $224.2M commitment
+    grossReturnMultiple: 0.50,
+  },
+  {
+    displayName: "Centerbridge Capital Partners V (2023) - 0.00x",
+    fundName: "Centerbridge Capital Partners V",
+    vintage: 2023,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.00,
+  },
+  {
+    displayName: "GTCR Fund XIV (2022) - 0.00x",
+    fundName: "GTCR Fund XIV",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.00,
+  },
+  {
+    displayName: "Hellman & Friedman Capital Partners XI (2022) - 0.00x",
+    fundName: "Hellman & Friedman Capital Partners XI",
+    vintage: 2022,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.00,
+  },
+  {
+    displayName: "Thoma Bravo Fund XVI (2024) - 0.00x",
+    fundName: "Thoma Bravo Fund XVI",
+    vintage: 2024,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.00,
+  },
+  {
+    displayName: "Veritas Capital Fund IX (2024) - 0.00x",
+    fundName: "Veritas Capital Fund IX",
+    vintage: 2024,
+    strategy: "Private Equity",
+    source: "OPERS",
+    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",
+    size: 4167,  // Estimated from $250M commitment
+    grossReturnMultiple: 0.00,
+  },
 ];

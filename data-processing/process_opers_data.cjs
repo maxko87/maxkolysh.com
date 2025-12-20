@@ -1,7 +1,8 @@
 const fs = require('fs');
+const path = require('path');
 
-// Read the OPERS CSV
-const csvPath = '/Users/maxkolysh/Downloads/OPERF_Private_Equity_Portfolio_Q3_2024_all_pages.csv';
+// Read the OPERS CSV (from same directory as this script)
+const csvPath = path.join(__dirname, 'OPERF_Private_Equity_Portfolio_Q3_2024_all_pages.csv');
 const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
 // Parse CSV (simple parsing)
@@ -71,29 +72,31 @@ const knownFundSizes = {
 };
 
 // Estimate fund size function
+// OPERS is smaller than CalPERS (~$100B vs ~$500B AUM), so they typically
+// commit smaller percentages of total fund sizes
 function estimateFundSize(partnership, commitment) {
   // Check if we have a known size
   if (knownFundSizes[partnership]) {
     return knownFundSizes[partnership];
   }
 
-  // For large commitments (>$300M), OPERS is typically 2-4% of fund
-  if (commitment >= 300) {
-    return Math.round(commitment / 0.03); // Use 3% as middle estimate
+  // For mega-commitments (>$400M), OPERS is typically 3-4% of fund
+  if (commitment >= 400) {
+    return Math.round(commitment / 0.035); // Use 3.5% as estimate
   }
 
-  // For medium commitments ($150-300M), OPERS is typically 3-6% of fund
-  if (commitment >= 150) {
-    return Math.round(commitment / 0.045); // Use 4.5% as middle estimate
+  // For large commitments ($200-400M), OPERS is typically 5-7% of fund
+  if (commitment >= 200) {
+    return Math.round(commitment / 0.06); // Use 6% as estimate
   }
 
-  // For smaller commitments ($75-150M), OPERS is typically 4-8% of fund
+  // For mid-market commitments ($75-200M), OPERS is typically 8-12% of fund
   if (commitment >= 75) {
-    return Math.round(commitment / 0.06); // Use 6% as middle estimate
+    return Math.round(commitment / 0.10); // Use 10% as estimate
   }
 
-  // For very small commitments (<$75M), OPERS is typically 5-10% of fund
-  return Math.round(commitment / 0.075); // Use 7.5% as middle estimate
+  // For smaller commitments (<$75M), OPERS is typically 12-18% of fund
+  return Math.round(commitment / 0.15); // Use 15% as estimate
 }
 
 // Filter for interesting funds (good performance or large/well-known funds)
@@ -127,7 +130,7 @@ console.log('// OPERS Funds');
 console.log('// Add these to PRESET_FUNDS array in presetFunds.ts');
 console.log('');
 
-interestingFunds.slice(0, 50).forEach(fund => {
+interestingFunds.forEach(fund => {
   const estimatedSize = estimateFundSize(fund.partnership, fund.commitment);
   const displayName = `${fund.partnership} (${fund.vintageYear}) - ${fund.tvpi.toFixed(2)}x`;
 
@@ -137,7 +140,7 @@ interestingFunds.slice(0, 50).forEach(fund => {
   console.log(`    vintage: ${fund.vintageYear},`);
   console.log(`    strategy: "Private Equity",`);
   console.log(`    source: "OPERS",`);
-  console.log(`    sourceUrl: "https://www.opers.org/investments/",`);
+  console.log(`    sourceUrl: "https://www.oregon.gov/treasury/invested-for-oregon/Documents/Invested-for-OR-Performance-and-Holdings/2024/OPERF_Private_Equity_Portfolio_-_Quarter_3_2024.pdf",`);
   console.log(`    size: ${estimatedSize},  // Estimated from $${fund.commitment}M commitment`);
   console.log(`    grossReturnMultiple: ${fund.tvpi.toFixed(2)},`);
   if (fund.irr !== null && !isNaN(fund.irr)) {
@@ -147,5 +150,4 @@ interestingFunds.slice(0, 50).forEach(fund => {
 });
 
 console.log('');
-console.log(`Total interesting funds: ${interestingFunds.length}`);
-console.log(`Top 50 funds exported above`);
+console.log(`Total funds exported: ${interestingFunds.length}`);

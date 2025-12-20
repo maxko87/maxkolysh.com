@@ -74,13 +74,25 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
           <section className="modal-section">
             <h3>Note on Historic Fund Data</h3>
             <p style={{ fontSize: '0.9em', color: '#64748b' }}>
-              The historic fund sizes in the preset dropdown are estimates based on CalPERS's public commitment data.
-              Since pension funds typically don't disclose total fund sizes, we estimate them by assuming CalPERS commits:
+              The historic fund sizes in the preset dropdown are estimates based on public pension fund commitment data.
+              Since pension funds typically don't disclose total fund sizes, we estimate them by assuming:
+            </p>
+            <p style={{ fontSize: '0.9em', color: '#64748b', fontWeight: 600, marginTop: '8px' }}>
+              CalPERS (~$500B AUM) commits:
             </p>
             <ul className="simple-list" style={{ fontSize: '0.9em', color: '#64748b' }}>
               <li>6-7% of mega-funds (commitments &gt;$500M)</li>
               <li>12-13% of large funds (commitments $200-500M)</li>
               <li>~20% of mid-market funds (commitments &lt;$200M)</li>
+            </ul>
+            <p style={{ fontSize: '0.9em', color: '#64748b', fontWeight: 600, marginTop: '8px' }}>
+              OPERS (~$100B AUM) commits:
+            </p>
+            <ul className="simple-list" style={{ fontSize: '0.9em', color: '#64748b' }}>
+              <li>3-4% of mega-funds (commitments &gt;$400M)</li>
+              <li>5-7% of large funds (commitments $200-400M)</li>
+              <li>8-12% of mid-market funds (commitments $75-200M)</li>
+              <li>12-18% of smaller funds (commitments &lt;$75M)</li>
             </ul>
             <p style={{ fontSize: '0.9em', color: '#64748b' }}>
               These are approximations for modeling purposes. Actual fund sizes may vary.

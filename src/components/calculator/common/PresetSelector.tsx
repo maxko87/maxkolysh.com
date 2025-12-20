@@ -8,7 +8,7 @@ function PresetSelector() {
   const { dispatch } = useCalculator();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'default' | 'alphabetical' | 'size' | 'multiple'>('default');
+  const [sortBy, setSortBy] = useState<'notable' | 'alphabetical' | 'size' | 'multiple'>('notable');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -75,16 +75,31 @@ function PresetSelector() {
 
   const filteredFunds = PRESET_FUNDS.filter((preset) => {
     const searchText = `${preset.fundName} ${preset.displayName} ${preset.strategy} ${preset.source} ${preset.vintage}`;
-    return fuzzyMatch(searchText, searchQuery);
+    const matchesSearch = fuzzyMatch(searchText, searchQuery);
+
+    // If there's a search query, show all matching funds regardless of filter
+    if (searchQuery) {
+      return matchesSearch;
+    }
+
+    // If no search and "Notable" filter is selected, only show starred funds
+    if (sortBy === 'notable') {
+      return preset.displayName.startsWith('⭐');
+    }
+
+    return matchesSearch;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'alphabetical':
-        return a.displayName.localeCompare(b.displayName);
+        // Remove stars before comparing for alphabetical sort
+        const aName = a.displayName.replace(/^⭐\s*/, '');
+        const bName = b.displayName.replace(/^⭐\s*/, '');
+        return aName.localeCompare(bName);
       case 'size':
         return b.size - a.size; // Descending order (largest first)
       case 'multiple':
         return b.grossReturnMultiple - a.grossReturnMultiple; // Descending order (highest first)
-      case 'default':
+      case 'notable':
       default:
         return 0; // Keep original order
     }
@@ -221,7 +236,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                   alignItems: 'center'
                 }}>
                   <span style={{ fontSize: '0.85em', color: 'var(--color-text-secondary)', marginRight: '4px' }}>Sort:</span>
-                  {(['default', 'alphabetical', 'size', 'multiple'] as const).map((option) => (
+                  {(['notable', 'alphabetical', 'size', 'multiple'] as const).map((option) => (
                     <button
                       key={option}
                       onClick={(e) => {
@@ -239,7 +254,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                         transition: 'all 0.2s'
                       }}
                     >
-                      {option === 'default' ? 'Default' : option === 'alphabetical' ? 'A-Z' : option === 'size' ? 'Size' : 'MOIC'}
+                      {option === 'notable' ? 'Notable' : option === 'alphabetical' ? 'A-Z' : option === 'size' ? 'Size' : 'MOIC'}
                     </button>
                   ))}
                 </div>

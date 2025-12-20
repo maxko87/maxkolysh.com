@@ -437,12 +437,7 @@ function FundCard({ fund, index }: FundCardProps) {
           return (
             <div key={scenario.id} className="scenario-card">
               <div className="scenario-card-header">
-                <h4 style={{ margin: 0, fontSize: '1em', fontWeight: 700, color: '#92400e' }}>
-                  {isNaN(scenario.grossReturnMultiple) ? '—' : `${Math.round(scenario.grossReturnMultiple * 100) / 100}x`}
-                </h4>
-                <span style={{ fontSize: '0.9em', color: '#92400e', fontWeight: 600 }}>
-                  Gross IRR: {irrString}%
-                </span>
+                <div style={{ flex: 1 }}></div>
                 <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
                   {idx > 0 && (
                     <button
@@ -456,26 +451,30 @@ function FundCard({ fund, index }: FundCardProps) {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
                 <div className="scenario-field">
-                  <label>Expected Gross MOIC</label>
-                  <input
-                    type="number"
-                    value={isNaN(scenario.grossReturnMultiple) ? '' : Math.round(scenario.grossReturnMultiple * 100) / 100}
-                    onChange={(e) => {
-                      const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
-                      // Round to 2 decimal places
-                      const roundedValue = isNaN(value) ? NaN : Math.round(value * 100) / 100;
-                      dispatch({
-                        type: 'UPDATE_SCENARIO',
-                        payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedValue }
-                      });
-                    }}
-                    step="0.01"
-                    placeholder="5"
-                    min="0"
-                  />
+                  <label>Expected MOIC</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="number"
+                      value={isNaN(scenario.grossReturnMultiple) ? '' : Math.round(scenario.grossReturnMultiple * 100) / 100}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
+                        // Round to 2 decimal places
+                        const roundedValue = isNaN(value) ? NaN : Math.round(value * 100) / 100;
+                        dispatch({
+                          type: 'UPDATE_SCENARIO',
+                          payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedValue }
+                        });
+                      }}
+                      step="0.01"
+                      placeholder="5"
+                      min="0"
+                      style={{ paddingRight: '30px' }}
+                    />
+                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>x</span>
+                  </div>
                 </div>
                 <div className="scenario-field">
-                  <label>IRR</label>
+                  <label>Expected IRR</label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type="number"
@@ -501,6 +500,21 @@ function FundCard({ fund, index }: FundCardProps) {
                               payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedMultiple }
                             });
                           }
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          const currentIRR = isNaN(scenario.grossReturnMultiple) ? 0 : irr;
+                          const step = e.shiftKey ? 1 : 0.1;
+                          const newIRR = e.key === 'ArrowUp' ? currentIRR + step : currentIRR - step;
+                          const roundedIRR = Math.round(newIRR * 100) / 100;
+                          const newMultiple = calculateMultipleFromIRR(roundedIRR, fund.years);
+                          const roundedMultiple = Math.round(newMultiple * 100) / 100;
+                          dispatch({
+                            type: 'UPDATE_SCENARIO',
+                            payload: { fundId: fund.id, scenarioId: scenario.id, field: 'grossReturnMultiple', value: roundedMultiple }
+                          });
                         }
                       }}
                       step="0.01"
