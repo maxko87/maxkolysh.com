@@ -432,7 +432,8 @@ function FundCard({ fund, index }: FundCardProps) {
           <Tooltip text="Different return outcomes to model (e.g., base case, upside, downside)"><span className="tooltip-icon">?</span></Tooltip>
         </div>
         {fund.scenarios.map((scenario, idx) => {
-          const irr = calculateIRR(scenario.grossReturnMultiple, fund.years);
+          const irrString = calculateIRR(scenario.grossReturnMultiple, fund.years);
+          const irr = parseFloat(irrString);
           return (
             <div key={scenario.id} className="scenario-card">
               <div className="scenario-card-header">
@@ -440,7 +441,7 @@ function FundCard({ fund, index }: FundCardProps) {
                   {isNaN(scenario.grossReturnMultiple) ? '—' : `${Math.round(scenario.grossReturnMultiple * 100) / 100}x`}
                 </h4>
                 <span style={{ fontSize: '0.9em', color: '#92400e', fontWeight: 600 }}>
-                  Gross IRR: {Math.round(irr * 100) / 100}%
+                  Gross IRR: {irrString}%
                 </span>
                 <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
                   {idx > 0 && (
@@ -478,7 +479,7 @@ function FundCard({ fund, index }: FundCardProps) {
                   <div style={{ position: 'relative' }}>
                     <input
                       type="number"
-                      value={isNaN(scenario.grossReturnMultiple) ? '' : Math.round(irr * 100) / 100}
+                      value={isNaN(scenario.grossReturnMultiple) ? '' : irr}
                       onChange={(e) => {
                         const value = e.target.value;
                         if (value === '') {
