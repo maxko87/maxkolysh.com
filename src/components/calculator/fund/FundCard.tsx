@@ -681,16 +681,16 @@ function FundCard({ fund, index }: FundCardProps) {
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
                 <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Schedule</span>
-                <Tooltip text="Pattern of when fund capital is deployed over time. Front-loaded means faster deployment early, back-loaded means slower initial deployment."><span className="tooltip-icon">?</span></Tooltip>
+                <Tooltip text="Pattern of when fund capital is deployed over time. Fast means 25% deployed by year 1. Fastest means 80% deployed by year 1."><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">
-                {(['linear', 'frontLoaded', 'backLoaded'] as const).map((preset) => (
+                {(['linear', 'fast', 'fastest'] as const).map((preset) => (
                   <button
                     key={preset}
                     className={`btn btn-small curve-preset-btn ${selectedDeploymentPreset === preset ? 'btn-primary' : ''}`}
                     onClick={() => handleDeploymentPresetClick(preset)}
                   >
-                    {preset === 'frontLoaded' ? 'Front' : preset === 'backLoaded' ? 'Back' : 'Linear'}
+                    {preset === 'fast' ? 'Fast' : preset === 'fastest' ? 'Fastest' : 'Linear'}
                   </button>
                 ))}
               </div>
