@@ -135,9 +135,85 @@ function ResultsTable() {
               <tr key={rowIdx}>
                 <td>{rowIdx + 1}</td>
                 {headerColumns.map((col, colIdx) => {
-                  // For collapsed columns, just show "-"
+                  // For collapsed columns, check first year's data
                   if (col.isCollapsed) {
-                    return <td key={colIdx} className="empty">-</td>;
+                    const firstColIdx = col.originalIndices[0];
+                    const cellData = row[firstColIdx];
+
+                    // If no data or beyond working years, show "-"
+                    if (!cellData) {
+                      return <td key={colIdx} className="empty">-</td>;
+                    }
+
+                    // If there's data (even if $0), show "$0" with tooltip
+                    const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+
+                    return (
+                      <td
+                        key={colIdx}
+                        className="value"
+                        style={{ position: 'relative' }}
+                        ref={isHovered ? cellRef : null}
+                        onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
+                        onMouseLeave={handleCellMouseLeave}
+                      >
+                        {formatCurrency(cellData.total)}
+
+                        {isHovered && tooltipData && (
+                          <div
+                            ref={tooltipRef}
+                            className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
+                            style={{
+                              ...tooltipPosition,
+                              position: 'absolute',
+                              minWidth: '300px',
+                              zIndex: 10000,
+                              pointerEvents: 'none'
+                            }}
+                          >
+                            <div className="tooltip-label" style={{ marginBottom: '12px' }}>
+                              {hasHistoricFunds ? (
+                                <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+                              ) : (
+                                <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+                              )}
+                            </div>
+
+                            {tooltipData.fundBreakdowns.map((fb, idx) => (
+                              <div
+                                key={idx}
+                                style={{
+                                  marginBottom: '12px',
+                                  ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
+                                }}
+                              >
+                                <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em', textAlign: 'left' }}>
+                                  {fb.name}
+                                </div>
+                                {fb.vintages.map((v, vIdx) => (
+                                  <div
+                                    key={vIdx}
+                                    style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '12px' }}
+                                  >
+                                    <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
+                                    <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
+                                  </div>
+                                ))}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>
+                                  <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{fb.name} Total:</span>
+                                  <span style={{ color: 'white', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
+                                </div>
+                              </div>
+                            ))}
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
+                              <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
+                              <span style={{ fontWeight: 700, color: '#a5b4fc' }}>{formatCurrency(tooltipData.total)}</span>
+                            </div>
+                          </div>
+                        )}
+                      </td>
+                    );
                   }
 
                   // For regular columns, show the data
