@@ -395,7 +395,7 @@ function FundCard({ fund, index }: FundCardProps) {
               type="number"
               value={fund.carryAllocationPercent}
               onChange={(e) => handleFieldChange('carryAllocationPercent', parseFloat(e.target.value))}
-              step="0.1"
+              step="0.5"
               placeholder="5"
               style={{ paddingRight: '35px' }}
             />
