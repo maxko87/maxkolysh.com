@@ -13,7 +13,7 @@ const getInitialState = (): CalculatorState => {
   }
 
   // Default state
-  const defaultFund = createDefaultFund(0, 'My Fund');
+  const defaultFund = createDefaultFund(0, 'Example Fund');
   return {
     funds: [defaultFund],
     selectedScenarios: { 0: defaultFund.scenarios[0].id }

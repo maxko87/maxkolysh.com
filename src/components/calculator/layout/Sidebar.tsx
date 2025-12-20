@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { createDefaultFund } from '../../../types/calculator';
 import FundCard from '../fund/FundCard';
@@ -41,7 +42,7 @@ function Sidebar() {
           color: '#94a3b8',
           marginBottom: 'var(--spacing-md)'
         }}>
-          Made with 🤖 by Max Kolysh
+          Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
