@@ -141,8 +141,9 @@ function ResultsTable() {
 
                     // Show $0 if years worked is within the collapsed range
                     if (yearsWorked <= numZeroColumns) {
-                      const firstColIdx = col.originalIndices[0];
-                      const cellData = row[firstColIdx];
+                      // For row N, check column N-1 (the year that equals yearsWorked)
+                      const relevantColIdx = yearsWorked - 1;
+                      const cellData = row[relevantColIdx];
 
                       if (!cellData) {
                         return <td key={colIdx} className="empty">-</td>;
@@ -178,9 +179,9 @@ function ResultsTable() {
                             >
                               <div className="tooltip-label" style={{ marginBottom: '12px' }}>
                                 {hasHistoricFunds ? (
-                                  <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry during {yearRange}.</>
+                                  <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you made {formatCurrency(tooltipData.total)} in carry during the early years ({yearRange}) because carry distributions had not yet started.</>
                                 ) : (
-                                  <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry during {yearRange}.</>
+                                  <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry during the early years ({yearRange}) because carry distributions won't have started yet.</>
                                 )}
                               </div>
 
