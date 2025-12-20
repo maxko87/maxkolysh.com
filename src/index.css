@@ -641,10 +641,10 @@ body {
 }
 
 .results-table table {
-    width: 100%;
+    width: auto;
     border-collapse: collapse;
     font-size: 0.88em;
-    table-layout: fixed;
+    table-layout: auto;
 }
 
 .results-table th,

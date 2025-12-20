@@ -1,4 +1,5 @@
 - Never run `npm run dev` - the user is already running the server in dev.
-- when i say "commit" (and ONLY when i say it): 
+- Never make commits unless explicitly asked by the user.
+- When i say "commit":
 	- run `npx tsc && npx vite build` to test your changes and fix the errors.
 	- run 'git add .; git commit -am XXX; git push' and add a message based on this chat history (since the last commit). be thorough in your message.
