@@ -654,12 +654,14 @@ body {
     border: 1px solid var(--border-color);
     width: 80px;
     min-width: 80px;
+    max-width: 80px;
 }
 
 .results-table th:first-child,
 .results-table td:first-child {
     width: 90px;
     min-width: 90px;
+    max-width: 90px;
     background: var(--bg-secondary);
     font-weight: 600;
     color: var(--text-secondary);

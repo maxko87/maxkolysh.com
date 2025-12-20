@@ -135,49 +135,54 @@ function ResultsTable() {
               <tr key={rowIdx}>
                 <td>{rowIdx + 1}</td>
                 {headerColumns.map((col, colIdx) => {
-                  // For collapsed columns, check first year's data
+                  // For collapsed columns, check if this row should show data
                   if (col.isCollapsed) {
-                    const firstColIdx = col.originalIndices[0];
-                    const cellData = row[firstColIdx];
+                    const yearsWorked = rowIdx + 1;
 
-                    // If no data or beyond working years, show "-"
-                    if (!cellData) {
-                      return <td key={colIdx} className="empty">-</td>;
-                    }
+                    // Show $0 if years worked is within the collapsed range
+                    if (yearsWorked <= numZeroColumns) {
+                      const firstColIdx = col.originalIndices[0];
+                      const cellData = row[firstColIdx];
 
-                    // If there's data (even if $0), show "$0" with tooltip
-                    const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+                      if (!cellData) {
+                        return <td key={colIdx} className="empty">-</td>;
+                      }
 
-                    return (
-                      <td
-                        key={colIdx}
-                        className="value"
-                        style={{ position: 'relative' }}
-                        ref={isHovered ? cellRef : null}
-                        onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
-                        onMouseLeave={handleCellMouseLeave}
-                      >
-                        {formatCurrency(cellData.total)}
+                      const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+                      const startYear = baseYear + 1;
+                      const endYear = baseYear + numZeroColumns;
+                      const yearRange = numZeroColumns === 1 ? `${startYear}` : `${startYear}-${endYear}`;
 
-                        {isHovered && tooltipData && (
-                          <div
-                            ref={tooltipRef}
-                            className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
-                            style={{
-                              ...tooltipPosition,
-                              position: 'absolute',
-                              minWidth: '300px',
-                              zIndex: 10000,
-                              pointerEvents: 'none'
-                            }}
-                          >
-                            <div className="tooltip-label" style={{ marginBottom: '12px' }}>
-                              {hasHistoricFunds ? (
-                                <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
-                              ) : (
-                                <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
-                              )}
-                            </div>
+                      return (
+                        <td
+                          key={colIdx}
+                          className="value"
+                          style={{ position: 'relative' }}
+                          ref={isHovered ? cellRef : null}
+                          onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
+                          onMouseLeave={handleCellMouseLeave}
+                        >
+                          {formatCurrency(cellData.total)}
+
+                          {isHovered && tooltipData && (
+                            <div
+                              ref={tooltipRef}
+                              className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
+                              style={{
+                                ...tooltipPosition,
+                                position: 'absolute',
+                                minWidth: '300px',
+                                zIndex: 10000,
+                                pointerEvents: 'none'
+                              }}
+                            >
+                              <div className="tooltip-label" style={{ marginBottom: '12px' }}>
+                                {hasHistoricFunds ? (
+                                  <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry during {yearRange}.</>
+                                ) : (
+                                  <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry during {yearRange}.</>
+                                )}
+                              </div>
 
                             {tooltipData.fundBreakdowns.map((fb, idx) => (
                               <div
@@ -214,6 +219,10 @@ function ResultsTable() {
                         )}
                       </td>
                     );
+                    }
+
+                    // Beyond the collapsed range, show "-"
+                    return <td key={colIdx} className="empty">-</td>;
                   }
 
                   // For regular columns, show the data
