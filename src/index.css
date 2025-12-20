@@ -460,14 +460,14 @@ body {
 
 .btn-danger {
     background: transparent;
-    color: var(--text-tertiary);
+    color: var(--danger-color);
     padding: 4px 8px;
     font-size: 0.85em;
     border: none;
 }
 
 .btn-danger:hover {
-    color: var(--danger-color);
+    color: var(--danger-hover);
 }
 
 .btn-share {
@@ -815,7 +815,7 @@ body {
     background: transparent;
     border: none;
     font-size: 1.5em;
-    color: var(--text-tertiary);
+    color: var(--danger-color);
     cursor: pointer;
     padding: var(--spacing-xs);
     line-height: 1;
@@ -829,7 +829,7 @@ body {
 }
 
 .modal-close:hover {
-    color: var(--text-primary);
+    color: var(--danger-hover);
     background: var(--bg-secondary);
 }
 

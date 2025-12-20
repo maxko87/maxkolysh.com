@@ -311,7 +311,7 @@ function FundCard({ fund, index }: FundCardProps) {
         </div>
         {index > 0 && isExpanded && (
           <button className="btn btn-danger" onClick={handleRemove} style={{ alignSelf: 'flex-end' }}>
-            Remove
+            ✕
           </button>
         )}
       </div>
@@ -436,20 +436,8 @@ function FundCard({ fund, index }: FundCardProps) {
           const irr = parseFloat(irrString);
           return (
             <div key={scenario.id} className="scenario-card">
-              <div className="scenario-card-header">
-                <div style={{ flex: 1 }}></div>
-                <div style={{ width: '50px', display: 'flex', justifyContent: 'flex-end' }}>
-                  {idx > 0 && (
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--spacing-md)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)', flex: 1 }}>
                 <div className="scenario-field">
                   <label>Expected MOIC</label>
                   <div style={{ position: 'relative' }}>
@@ -524,6 +512,17 @@ function FundCard({ fund, index }: FundCardProps) {
                     <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
                   </div>
                 </div>
+              </div>
+              {idx > 0 && (
+                <div style={{ paddingTop: '24px' }}>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => dispatch({ type: 'REMOVE_SCENARIO', payload: { fundId: fund.id, scenarioId: scenario.id } })}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
               </div>
             </div>
           );
