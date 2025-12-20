@@ -1,3 +1,2 @@
-# Build Instructions
-
-Never run `npm run build` or `npm run dev` - the user is already running the server live.
+- Never run `npm run build` or `npm run dev` - the user is already running the server live.
+- when i say "commit", run 'git add .; git commit -am ' and add a message based on this chat history (since the last commit)

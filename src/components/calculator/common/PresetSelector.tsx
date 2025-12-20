@@ -235,8 +235,6 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                         flexWrap: 'wrap',
                         alignItems: 'center'
                       }}>
-                        <span>{preset.strategy}</span>
-                        <span>•</span>
                         <span>{formatCurrency(preset.size)} fund</span>
                         <span>•</span>
                         {preset.sourceUrl ? (
