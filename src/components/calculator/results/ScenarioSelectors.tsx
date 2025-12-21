@@ -56,10 +56,10 @@ function ScenarioSelectors() {
   if (state.funds.length === 0) return null;
 
   return (
-    <div className="scenario-tabs" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+    <div className="scenario-tabs" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: 'var(--spacing-md)' }}>
       {state.funds.map(fund => (
-        <div key={fund.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <label style={{ margin: 0 }}>{fund.name}:</label>
+        <div key={fund.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <label style={{ margin: 0, fontSize: '0.95em', whiteSpace: 'nowrap' }}>{fund.name}:</label>
           <select
             value={state.selectedScenarios[fund.id]}
             onChange={(e) =>
@@ -68,7 +68,16 @@ function ScenarioSelectors() {
                 payload: { fundId: fund.id, scenarioId: parseInt(e.target.value) }
               })
             }
-            style={{ padding: '6px 12px', borderRadius: '6px', border: '1.5px solid #e2e8f0', fontSize: '0.99em' }}
+            className="scenario-select"
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              border: '1.5px solid var(--border-color)',
+              fontSize: '0.95em',
+              backgroundColor: 'var(--bg-primary)',
+              cursor: 'pointer',
+              minWidth: '80px'
+            }}
           >
             {fund.scenarios.map(scenario => (
               <option key={scenario.id} value={scenario.id}>
@@ -78,10 +87,10 @@ function ScenarioSelectors() {
           </select>
         </div>
       ))}
-      <button className="btn btn-secondary" onClick={handleExportCSV} style={{ flexShrink: 0, alignSelf: 'center' }}>
+      <button className="btn btn-secondary" onClick={handleExportCSV} style={{ flexShrink: 0 }}>
         Export to CSV
       </button>
-      <button className="btn btn-secondary" onClick={handleShare} style={{ flexShrink: 0, alignSelf: 'center' }}>
+      <button className="btn btn-secondary" onClick={handleShare} style={{ flexShrink: 0 }}>
         Share
       </button>
 

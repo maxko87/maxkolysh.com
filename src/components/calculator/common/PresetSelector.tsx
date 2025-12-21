@@ -10,9 +10,7 @@ function PresetSelector() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'notable' | 'alphabetical' | 'size' | 'multiple'>('notable');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const [formData, setFormData] = useState({
     fundName: '',
@@ -24,20 +22,14 @@ function PresetSelector() {
   });
 
   useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 4,
-        left: rect.left
-      });
-      // Focus search input when dropdown opens
-      setTimeout(() => searchInputRef.current?.focus(), 0);
-    }
-    if (!isOpen) {
+    if (isOpen) {
+      // Focus search input when modal opens
+      setTimeout(() => searchInputRef.current?.focus(), 100);
+    } else {
       setSearchQuery('');
     }
 
-    // Handle escape key to close dropdown
+    // Handle escape key to close modal
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
@@ -168,7 +160,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
     setIsModalOpen(false);
   };
 
-  const dropdownContent = isOpen && position.top > 0 && createPortal(
+  const dropdownContent = isOpen && createPortal(
     <>
       <div
         style={{
@@ -177,6 +169,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
           left: 0,
           right: 0,
           bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           zIndex: 10001
         }}
         onClick={() => setIsOpen(false)}
@@ -184,17 +177,19 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
       <div
         style={{
           position: 'fixed',
-          top: position.top,
-          left: position.left,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          top: '20%',
           backgroundColor: 'var(--bg-primary)',
-          border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-md)',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
-          maxHeight: '600px',
-          overflowY: 'auto',
-          width: '380px',
-          zIndex: 10002
+          borderRadius: '16px 16px 0 0',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          zIndex: 10002,
+          animation: 'slideUp 0.3s ease-out'
         }}
+        onClick={(e) => e.stopPropagation()}
       >
             <div style={{
               position: 'sticky',
@@ -567,18 +562,16 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
   );
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <>
       <button
-        ref={buttonRef}
         className="btn btn-secondary"
         onClick={() => setIsOpen(!isOpen)}
-        style={{ marginLeft: 'var(--spacing-sm)' }}
       >
-        Select Historic Fund ▾
+        Select Historic Fund
       </button>
       {dropdownContent}
       {modalContent}
-    </div>
+    </>
   );
 }
 
