@@ -4,7 +4,10 @@ export function formatCurrency(value: number): string {
     return '$0.0M';
   }
 
-  if (value < 100) {
+  if (value > 0 && value < 0.1) {
+    // Very small values: show 2 decimals to avoid showing $0.0M for non-zero values
+    return `$${value.toFixed(2)}M`;
+  } else if (value < 100) {
     // Less than $100M: show 1 decimal
     return `$${value.toFixed(1)}M`;
   } else if (value < 1000) {

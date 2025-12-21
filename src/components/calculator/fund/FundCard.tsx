@@ -615,8 +615,8 @@ function FundCard({ fund, index }: FundCardProps) {
             </div>
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
-              <div className="fund-section-header">
-                <span>Hurdles</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Hurdles</span>
                 <Tooltip text="Performance thresholds that increase carry % at higher return multiples"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               {fund.hurdles.map((hurdle, idx) => (
