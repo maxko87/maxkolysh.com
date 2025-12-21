@@ -455,6 +455,7 @@ function FundCard({ fund, index }: FundCardProps) {
                   onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
                   step="0.5"
                   placeholder="2"
+                  min="0"
                   style={{ paddingRight: '35px' }}
                 />
                 <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -558,6 +559,7 @@ function FundCard({ fund, index }: FundCardProps) {
                       }}
                       step="0.5"
                       placeholder="0"
+                      min="-99"
                       style={{ paddingRight: '35px' }}
                     />
                     <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
