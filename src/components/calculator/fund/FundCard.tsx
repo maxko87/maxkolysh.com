@@ -363,6 +363,7 @@ function FundCard({ fund, index }: FundCardProps) {
               value={fund.size}
               onChange={(e) => handleFieldChange('size', parseFloat(e.target.value))}
               placeholder="200"
+              min="0"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>$M</span>
@@ -376,10 +377,14 @@ function FundCard({ fund, index }: FundCardProps) {
           <div style={{ position: 'relative' }}>
             <input
               type="number"
-              value={fund.carryPercent}
-              onChange={(e) => handleFieldChange('carryPercent', parseFloat(e.target.value))}
+              value={isNaN(fund.carryPercent) ? '' : fund.carryPercent}
+              onChange={(e) => {
+                const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
+                dispatch({ type: 'UPDATE_FUND_FIELD', payload: { fundId: fund.id, field: 'carryPercent', value } });
+              }}
               step="0.1"
               placeholder="20"
+              min="0"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
@@ -397,6 +402,7 @@ function FundCard({ fund, index }: FundCardProps) {
               onChange={(e) => handleFieldChange('carryAllocationPercent', parseFloat(e.target.value))}
               step="0.5"
               placeholder="5"
+              min="0"
               style={{ paddingRight: '35px' }}
             />
             <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
@@ -430,6 +436,7 @@ function FundCard({ fund, index }: FundCardProps) {
                 value={fund.years}
                 onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
                 placeholder="10"
+                min="0"
                 style={{ paddingRight: '35px' }}
               />
               <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -590,6 +597,7 @@ function FundCard({ fund, index }: FundCardProps) {
                     onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
                     step="0.5"
                     placeholder="4"
+                    min="0"
                     style={{ paddingRight: '35px' }}
                   />
                   <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
@@ -607,6 +615,7 @@ function FundCard({ fund, index }: FundCardProps) {
                     onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
                     step="0.5"
                     placeholder="1"
+                    min="0"
                     style={{ paddingRight: '35px' }}
                   />
                   <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
