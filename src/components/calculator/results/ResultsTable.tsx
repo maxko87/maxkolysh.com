@@ -8,14 +8,7 @@ function ResultsTable() {
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
   const [clickedCell, setClickedCell] = useState<{ row: number; col: number } | null>(null);
   const [tooltipData, setTooltipData] = useState<CellData | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState<{ top?: string; bottom?: string; left: string; transform: string; marginTop?: string; marginBottom?: string }>({
-    top: '100%',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    marginTop: '8px'
-  });
-  const tooltipRef = useRef<HTMLDivElement>(null);
-  const cellRef = useRef<HTMLTableCellElement>(null);
+  const tooltipSidebarRef = useRef<HTMLDivElement>(null);
 
   const maxYears = 20;
   const currentYear = new Date().getFullYear();
@@ -43,42 +36,6 @@ function ResultsTable() {
     return count;
   }, [calculations, maxYears]);
 
-  useEffect(() => {
-    if (tooltipRef.current && cellRef.current) {
-      const tooltip = tooltipRef.current;
-      const cell = cellRef.current;
-      const cellRect = cell.getBoundingClientRect();
-      const tooltipRect = tooltip.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
-
-      const spaceBelow = viewportHeight - cellRect.bottom;
-      const spaceAbove = cellRect.top;
-
-      const position: any = { left: '50%', transform: 'translateX(-50%)' };
-
-      if (spaceBelow >= tooltipRect.height || spaceBelow > spaceAbove) {
-        position.top = '100%';
-        position.bottom = 'auto';
-        position.marginTop = '8px';
-      } else {
-        position.bottom = '100%';
-        position.top = 'auto';
-        position.marginBottom = '8px';
-      }
-
-      setTooltipPosition(position);
-
-      setTimeout(() => {
-        const tooltipRectAfter = tooltip.getBoundingClientRect();
-        if (tooltipRectAfter.left < 0) {
-          setTooltipPosition(prev => ({ ...prev, left: '0', transform: 'translateX(0)' }));
-        } else if (tooltipRectAfter.right > viewportWidth) {
-          setTooltipPosition(prev => ({ ...prev, left: 'auto', right: '0', transform: 'translateX(0)' }));
-        }
-      }, 0);
-    }
-  }, [tooltipData, hoveredCell]);
 
   const handleCellMouseEnter = (rowIdx: number, colIdx: number, data: CellData | null) => {
     if (data && !clickedCell) {
@@ -109,12 +66,25 @@ function ResultsTable() {
     }
   };
 
+  // Auto-scroll to tooltip sidebar on mobile when a cell is clicked
+  useEffect(() => {
+    if (tooltipData && tooltipSidebarRef.current && window.innerWidth <= 768) {
+      setTimeout(() => {
+        tooltipSidebarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [tooltipData]);
+
   // Click outside to close tooltip
   useEffect(() => {
-    const handleClickOutside = () => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (clickedCell) {
-        setClickedCell(null);
-        setTooltipData(null);
+        const target = e.target as HTMLElement;
+        // Don't close if clicking inside the sidebar
+        if (!target.closest('.tooltip-sidebar')) {
+          setClickedCell(null);
+          setTooltipData(null);
+        }
       }
     };
 
@@ -150,8 +120,9 @@ function ResultsTable() {
   }, [numZeroColumns, maxYears, baseYear]);
 
   return (
-    <div className="results-container">
-      <div className="results-table">
+    <div className="results-layout">
+      <div className="results-container">
+        <div className="results-table">
         <table>
           <thead>
             <tr>
@@ -182,79 +153,24 @@ function ResultsTable() {
 
                       const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
                       const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
-                      const showTooltip = isHovered || isClicked;
-                      const startYear = baseYear + 1;
-                      const endYear = baseYear + numZeroColumns;
-                      const yearRange = numZeroColumns === 1 ? `${startYear}` : `${startYear}-${endYear}`;
+                      const isActive = isHovered || isClicked;
 
                       return (
                         <td
                           key={colIdx}
                           className="value"
-                          style={{ position: 'relative', cursor: 'pointer' }}
-                          ref={showTooltip ? cellRef : null}
+                          style={{
+                            position: 'relative',
+                            cursor: 'pointer',
+                            background: isActive ? '#f0f4ff' : undefined
+                          }}
                           onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                           onMouseLeave={handleCellMouseLeave}
                           onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e)}
                         >
                           {formatCurrency(cellData.total)}
-
-                          {showTooltip && tooltipData && (
-                            <div
-                              ref={tooltipRef}
-                              className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
-                              style={{
-                                ...tooltipPosition,
-                                position: 'absolute',
-                                minWidth: '300px',
-                                zIndex: 10000,
-                                pointerEvents: isClicked ? 'auto' : 'none'
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <div className="tooltip-label" style={{ marginBottom: '12px' }}>
-                                {hasHistoricFunds ? (
-                                  <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you made {formatCurrency(tooltipData.total)} in carry during the early years ({yearRange}) because carry distributions had not yet started.</>
-                                ) : (
-                                  <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry during the early years ({yearRange}) because carry distributions won't have started yet.</>
-                                )}
-                              </div>
-
-                            {tooltipData.fundBreakdowns.map((fb, idx) => (
-                              <div
-                                key={idx}
-                                style={{
-                                  marginBottom: '12px',
-                                  ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
-                                }}
-                              >
-                                <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em', textAlign: 'left' }}>
-                                  {fb.name}
-                                </div>
-                                {fb.vintages.map((v, vIdx) => (
-                                  <div
-                                    key={vIdx}
-                                    style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '12px' }}
-                                  >
-                                    <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
-                                    <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
-                                  </div>
-                                ))}
-                                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>
-                                  <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{fb.name} Total:</span>
-                                  <span style={{ color: 'white', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
-                                </div>
-                              </div>
-                            ))}
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
-                              <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
-                              <span style={{ fontWeight: 700, color: '#a5b4fc' }}>{formatCurrency(tooltipData.total)}</span>
-                            </div>
-                          </div>
-                        )}
-                      </td>
-                    );
+                        </td>
+                      );
                     }
 
                     // Beyond the collapsed range, show "-"
@@ -271,74 +187,22 @@ function ResultsTable() {
 
                   const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
                   const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
-                  const showTooltip = isHovered || isClicked;
+                  const isActive = isHovered || isClicked;
 
                   return (
                     <td
                       key={colIdx}
                       className="value"
-                      style={{ position: 'relative', cursor: 'pointer' }}
-                      ref={showTooltip ? cellRef : null}
+                      style={{
+                        position: 'relative',
+                        cursor: 'pointer',
+                        background: isActive ? '#f0f4ff' : undefined
+                      }}
                       onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                       onMouseLeave={handleCellMouseLeave}
                       onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e)}
                     >
                       {formatCurrency(cellData.total)}
-
-                      {showTooltip && tooltipData && (
-                        <div
-                          ref={tooltipRef}
-                          className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
-                          style={{
-                            ...tooltipPosition,
-                            position: 'absolute',
-                            minWidth: '300px',
-                            zIndex: 10000,
-                            pointerEvents: isClicked ? 'auto' : 'none'
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <div className="tooltip-label" style={{ marginBottom: '12px' }}>
-                            {hasHistoricFunds ? (
-                              <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
-                            ) : (
-                              <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
-                            )}
-                          </div>
-
-                          {tooltipData.fundBreakdowns.map((fb, idx) => (
-                            <div
-                              key={idx}
-                              style={{
-                                marginBottom: '12px',
-                                ...(idx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.2)' } : {})
-                              }}
-                            >
-                              <div style={{ fontWeight: 700, color: '#a5b4fc', marginBottom: '6px', fontSize: '0.95em', textAlign: 'left' }}>
-                                {fb.name}
-                              </div>
-                              {fb.vintages.map((v, vIdx) => (
-                                <div
-                                  key={vIdx}
-                                  style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', fontSize: '0.85em', marginBottom: '4px', paddingLeft: '12px' }}
-                                >
-                                  <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
-                                  <span style={{ color: 'white', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
-                                </div>
-                              ))}
-                              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '8px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>
-                                <span style={{ color: 'rgba(255, 255, 255, 0.9)' }}>{fb.name} Total:</span>
-                                <span style={{ color: 'white', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
-                              </div>
-                            </div>
-                          ))}
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '24px', marginTop: '12px', paddingTop: '12px', borderTop: '2px solid rgba(255,255,255,0.4)', fontSize: '1.05em' }}>
-                            <span style={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)' }}>Grand Total:</span>
-                            <span style={{ fontWeight: 700, color: '#a5b4fc' }}>{formatCurrency(tooltipData.total)}</span>
-                          </div>
-                        </div>
-                      )}
                     </td>
                   );
                 })}
@@ -347,6 +211,74 @@ function ResultsTable() {
           </tbody>
         </table>
       </div>
+    </div>
+
+    {tooltipData && (
+      <div
+        ref={tooltipSidebarRef}
+        className="tooltip-sidebar"
+        style={{
+          width: '350px',
+          minWidth: '350px',
+          background: 'var(--bg-primary)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius-lg)',
+          padding: 'var(--spacing-xl)',
+          overflowY: 'auto',
+          height: 'fit-content',
+          position: 'sticky',
+          top: 'var(--spacing-2xl)'
+        }}
+      >
+        <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '2px solid var(--border-color)', fontSize: '1.05em', color: 'var(--text-primary)', lineHeight: '1.6', fontWeight: 500 }}>
+          {hasHistoricFunds ? (
+            tooltipData.yearsFromToday ? (
+              <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+            ) : (
+              <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you made {formatCurrency(tooltipData.total)} in carry during the early years because carry distributions had not yet started.</>
+            )
+          ) : (
+            tooltipData.yearsFromToday ? (
+              <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+            ) : (
+              <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry during the early years because carry distributions won't have started yet.</>
+            )
+          )}
+        </div>
+
+        {tooltipData.fundBreakdowns.map((fb, idx) => (
+          <div
+            key={idx}
+            style={{
+              marginBottom: '16px',
+              ...(idx > 0 ? { marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' } : {})
+            }}
+          >
+            <div style={{ fontWeight: 700, color: 'var(--primary-color)', marginBottom: '8px', fontSize: '0.95em' }}>
+              {fb.name}
+            </div>
+            {fb.vintages.map((v, vIdx) => (
+              <div
+                key={vIdx}
+                style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '0.85em', marginBottom: '6px', paddingLeft: '12px' }}
+              >
+                <span style={{ color: 'var(--text-tertiary)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
+              </div>
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border-color)', fontWeight: 600 }}>
+              <span style={{ color: 'var(--text-secondary)' }}>{fb.name} Total:</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
+            </div>
+          </div>
+        ))}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '16px', paddingTop: '16px', borderTop: '2px solid var(--border-color)', fontSize: '1.05em' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>Grand Total:</span>
+          <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{formatCurrency(tooltipData.total)}</span>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

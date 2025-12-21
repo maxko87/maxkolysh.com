@@ -222,8 +222,7 @@ body {
 /* Layout */
 .app-layout {
     display: flex;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     background: var(--bg-secondary);
 }
 
@@ -233,8 +232,11 @@ body {
     max-width: 438px;
     background: var(--bg-primary);
     border-right: 1px solid var(--border-color);
-    overflow-y: auto;
     padding: var(--spacing-2xl);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -257,10 +259,10 @@ body {
 .main-content {
     flex: 1;
     background: var(--bg-secondary);
-    overflow-y: auto;
     padding: var(--spacing-2xl);
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Typography for Calculator */
@@ -614,12 +616,21 @@ body {
 }
 
 /* Results Table */
+.results-layout {
+    display: flex;
+    gap: var(--spacing-xl);
+    flex: 1;
+    align-items: flex-start;
+}
+
 .results-container {
     overflow-x: auto;
     background: var(--bg-primary);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
     padding: var(--spacing-lg);
+    width: fit-content;
+    max-width: 100%;
 }
 
 .results-container::-webkit-scrollbar {
@@ -942,16 +953,34 @@ body {
 @media (max-width: 1024px) {
     .app-layout {
         flex-direction: column;
-        height: auto;
         min-height: 100vh;
     }
 
     .sidebar {
         width: 100%;
+        min-width: 100%;
         max-width: 100%;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
-        max-height: none;
+        position: static;
+        height: auto;
+        overflow-x: hidden;
+    }
+
+    .sidebar * {
+        max-width: 100%;
+    }
+
+    .sidebar input,
+    .sidebar button,
+    .sidebar .btn {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .scenario-card {
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .main-content {
@@ -992,6 +1021,17 @@ body {
     .btn-share {
         width: 100%;
         justify-content: center;
+    }
+
+    .results-layout {
+        flex-direction: column;
+    }
+
+    .tooltip-sidebar {
+        width: 100% !important;
+        min-width: 100% !important;
+        position: static !important;
+        margin-top: var(--spacing-xl);
     }
 
     .results-table table {
