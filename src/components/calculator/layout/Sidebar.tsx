@@ -42,7 +42,7 @@ function Sidebar() {
           color: '#94a3b8',
           marginBottom: 'var(--spacing-md)'
         }}>
-          Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>
+          Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>. <a href="mailto:maxkolysh@gmail.com" style={{ color: 'inherit', textDecoration: 'underline' }}>Send feedback.</a>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
