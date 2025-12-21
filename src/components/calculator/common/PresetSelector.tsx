@@ -1,17 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { PRESET_FUNDS, createFundDataFromPreset, generateDisplayName } from '../../../data/presetFunds';
 import { formatCurrency } from '../../../utils/formatCurrency';
 
-function PresetSelector() {
-  const { dispatch } = useCalculator();
+const PresetSelector = forwardRef<HTMLButtonElement>((_props, ref) => {
+  const { state, dispatch } = useCalculator();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'notable' | 'alphabetical' | 'size' | 'multiple'>('notable');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const internalButtonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = (ref as React.RefObject<HTMLButtonElement>) || internalButtonRef;
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
@@ -115,11 +116,19 @@ function PresetSelector() {
 
   const handleSelectPreset = (presetIndex: number) => {
     const preset = PRESET_FUNDS[presetIndex];
+    // Find the highest existing fund number to avoid duplicates
+    const existingNumbers = state.funds.map(f => {
+      const match = f.name.match(/^Fund (\d+)/);
+      return match ? parseInt(match[1], 10) : 0;
+    });
+    const maxNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) : 0;
+    const fundNumber = maxNumber + 1;
+    const fundName = `Fund ${fundNumber}: ${preset.fundName}`;
 
     // Create fund with defaults + unique preset data + vintage year
     const presetFund = {
       id: 0,
-      name: preset.fundName,
+      name: fundName,
       ...createFundDataFromPreset(preset),
       vintageYear: preset.vintage, // Add vintage year for historic funds
     };
@@ -192,7 +201,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
           right: 0,
           bottom: 0,
           backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
-          zIndex: 10001
+          zIndex: 10000 // Dropdown backdrop
         }}
         onClick={() => setIsOpen(false)}
       />
@@ -220,7 +229,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
           flexDirection: 'column',
           overflow: 'hidden',
           overflowY: 'auto',
-          zIndex: 10002
+          zIndex: 11000 // Dropdown content
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -402,7 +411,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 10003
+          zIndex: 50000 // Modal - same as HowToUseModal
         }}
         onClick={() => setIsModalOpen(false)}
       >
@@ -601,12 +610,14 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
         className="btn btn-secondary"
         onClick={() => setIsOpen(!isOpen)}
       >
-        Select Historic Fund
+        + Historic
       </button>
       {dropdownContent}
       {modalContent}
     </>
   );
-}
+});
+
+PresetSelector.displayName = 'PresetSelector';
 
 export default PresetSelector;

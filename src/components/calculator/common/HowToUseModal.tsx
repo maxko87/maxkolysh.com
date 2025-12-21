@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface HowToUseModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
@@ -105,7 +106,8 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
           <button className="btn btn-primary" onClick={onClose}>Got it!</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

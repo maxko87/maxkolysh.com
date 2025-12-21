@@ -246,6 +246,22 @@ function ResultsTable() {
     return columns;
   }, [numZeroColumns, maxYears, baseYear]);
 
+  // If no funds, show empty state
+  if (state.funds.length === 0) {
+    return (
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--text-tertiary)',
+        fontSize: '0.95em'
+      }}>
+        Add a fund!
+      </div>
+    );
+  }
+
   return (
     <div className="results-layout">
       {!exploreMode && tooltipData && (
@@ -491,7 +507,7 @@ function ResultsTable() {
                                 padding: '4px 8px',
                                 fontSize: '0.75em',
                                 whiteSpace: 'nowrap',
-                                zIndex: 1000,
+                                zIndex: 1000, // Tooltips - above content, below dropdowns
                                 pointerEvents: 'none',
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                               }}
@@ -547,7 +563,7 @@ function ResultsTable() {
                             padding: '4px 8px',
                             fontSize: '0.75em',
                             whiteSpace: 'nowrap',
-                            zIndex: 1000,
+                            zIndex: 1000, // Tooltips - above content, below dropdowns
                             pointerEvents: 'none',
                             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                           }}
@@ -738,7 +754,7 @@ function ResultsTable() {
                         }}
                       >
                         <div style={{ fontWeight: 600, marginBottom: '10px', color: 'var(--text-secondary)', fontSize: '0.95em' }}>
-                          Vintage {v.vintage} (deployed {deploymentYear})
+                          Vintage {v.vintage} (deployed starting {deploymentYear})
                         </div>
 
                         {/* Scenario & Time */}
