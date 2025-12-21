@@ -37,8 +37,9 @@ function FundCard({ fund }: FundCardProps) {
   };
 
   const handleFieldChange = (field: keyof Fund, value: any) => {
-    // If value is NaN or invalid, use the default placeholder value
-    if (typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
+    // Allow empty string to clear the field - calculations will use defaults
+    // Only replace with default if value is explicitly NaN (not empty string)
+    if (value !== '' && typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
       value = fieldDefaults[field] ?? value;
     }
     dispatch({ type: 'UPDATE_FUND_FIELD', payload: { fundId: fund.id, field, value } });
@@ -94,7 +95,7 @@ function FundCard({ fund }: FundCardProps) {
     const height = 160;
     const padding = 30;
     const topPadding = 20;
-    const fundYears = fund.years;
+    const fundYears = isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years;
 
     canvas.width = width;
     canvas.height = height;
@@ -221,7 +222,7 @@ function FundCard({ fund }: FundCardProps) {
     const height = 160;
     const padding = 30;
     const topPadding = 20;
-    const deploymentTimeline = fund.deploymentTimeline;
+    const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) || fund.deploymentTimeline <= 0 ? 2.5 : fund.deploymentTimeline;
 
     canvas.width = width;
     canvas.height = height;
@@ -386,8 +387,8 @@ function FundCard({ fund }: FundCardProps) {
           <div style={{ position: 'relative' }}>
             <input
               type="number"
-              value={fund.size}
-              onChange={(e) => handleFieldChange('size', parseFloat(e.target.value))}
+              value={isNaN(fund.size) ? '' : fund.size}
+              onChange={(e) => handleFieldChange('size', e.target.value === '' ? '' : parseFloat(e.target.value))}
               placeholder="200"
               min="0"
               style={{ paddingRight: '35px' }}
@@ -424,8 +425,8 @@ function FundCard({ fund }: FundCardProps) {
           <div style={{ position: 'relative' }}>
             <input
               type="number"
-              value={fund.carryAllocationPercent}
-              onChange={(e) => handleFieldChange('carryAllocationPercent', parseFloat(e.target.value))}
+              value={isNaN(fund.carryAllocationPercent) ? '' : fund.carryAllocationPercent}
+              onChange={(e) => handleFieldChange('carryAllocationPercent', e.target.value === '' ? '' : parseFloat(e.target.value))}
               step="0.5"
               placeholder="5"
               min="0"
@@ -460,8 +461,8 @@ function FundCard({ fund }: FundCardProps) {
               <div style={{ position: 'relative' }}>
                 <input
                   type="number"
-                  value={fund.fundCycle}
-                  onChange={(e) => handleFieldChange('fundCycle', parseFloat(e.target.value))}
+                  value={isNaN(fund.fundCycle) ? '' : fund.fundCycle}
+                  onChange={(e) => handleFieldChange('fundCycle', e.target.value === '' ? '' : parseFloat(e.target.value))}
                   step="0.5"
                   placeholder="2"
                   min="0"
@@ -604,8 +605,8 @@ function FundCard({ fund }: FundCardProps) {
                 <div style={{ position: 'relative' }}>
                   <input
                     type="number"
-                    value={fund.vestingPeriod}
-                    onChange={(e) => handleFieldChange('vestingPeriod', parseFloat(e.target.value))}
+                    value={isNaN(fund.vestingPeriod) ? '' : fund.vestingPeriod}
+                    onChange={(e) => handleFieldChange('vestingPeriod', e.target.value === '' ? '' : parseFloat(e.target.value))}
                     step="0.5"
                     placeholder="4"
                     min="0"
@@ -622,8 +623,8 @@ function FundCard({ fund }: FundCardProps) {
                 <div style={{ position: 'relative' }}>
                   <input
                     type="number"
-                    value={fund.cliffPeriod}
-                    onChange={(e) => handleFieldChange('cliffPeriod', parseFloat(e.target.value))}
+                    value={isNaN(fund.cliffPeriod) ? '' : fund.cliffPeriod}
+                    onChange={(e) => handleFieldChange('cliffPeriod', e.target.value === '' ? '' : parseFloat(e.target.value))}
                     step="0.5"
                     placeholder="1"
                     min="0"
@@ -690,8 +691,8 @@ function FundCard({ fund }: FundCardProps) {
                 <div style={{ position: 'relative' }}>
                   <input
                     type="number"
-                    value={fund.deploymentTimeline}
-                    onChange={(e) => handleFieldChange('deploymentTimeline', parseFloat(e.target.value))}
+                    value={isNaN(fund.deploymentTimeline) ? '' : fund.deploymentTimeline}
+                    onChange={(e) => handleFieldChange('deploymentTimeline', e.target.value === '' ? '' : parseFloat(e.target.value))}
                     step="0.5"
                     placeholder="2.5"
                     min="0"
@@ -732,8 +733,8 @@ function FundCard({ fund }: FundCardProps) {
                 <div style={{ position: 'relative' }}>
                   <input
                     type="number"
-                    value={fund.years}
-                    onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
+                    value={isNaN(fund.years) ? '' : fund.years}
+                    onChange={(e) => handleFieldChange('years', e.target.value === '' ? '' : parseFloat(e.target.value))}
                     placeholder="10"
                     min="0"
                     style={{ paddingRight: '35px' }}
