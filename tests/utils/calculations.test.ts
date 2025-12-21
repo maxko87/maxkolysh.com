@@ -366,18 +366,18 @@ describe('Fund Carry with Hurdles', () => {
     })
 
     it('should use first hurdle rate at 2x', () => {
-      // 2.0x, profit = $100M, use 25% = $25M
-      expect(calculateFundCarry(mockFundWithHurdles, 200)).toBe(25)
+      // 2.0x, profit = $100M, incremental: $100M × 20% = $20M
+      expect(calculateFundCarry(mockFundWithHurdles, 200)).toBe(20)
     })
 
     it('should use second hurdle rate at 3x', () => {
-      // 3.0x, profit = $200M, use 30% = $60M
-      expect(calculateFundCarry(mockFundWithHurdles, 300)).toBe(60)
+      // 3.0x, profit = $200M, incremental: $100M × 20% + $100M × 25% = $45M
+      expect(calculateFundCarry(mockFundWithHurdles, 300)).toBe(45)
     })
 
     it('should use highest hurdle beyond last threshold', () => {
-      // 5.0x, profit = $400M, use 30% = $120M
-      expect(calculateFundCarry(mockFundWithHurdles, 500)).toBe(120)
+      // 5.0x, profit = $400M, incremental: $100M × 20% + $100M × 25% + $200M × 30% = $105M
+      expect(calculateFundCarry(mockFundWithHurdles, 500)).toBe(105)
     })
 
     it('should handle returns just below hurdle', () => {
@@ -386,8 +386,21 @@ describe('Fund Carry with Hurdles', () => {
     })
 
     it('should handle returns just above hurdle', () => {
-      // 2.01x, should use 25% rate
-      expect(calculateFundCarry(mockFundWithHurdles, 201)).toBeCloseTo(25.25, 1)
+      // 2.01x, incremental: $100M × 20% + $1M × 25% = $20.25M
+      expect(calculateFundCarry(mockFundWithHurdles, 201)).toBeCloseTo(20.25, 1)
+    })
+
+    it('should handle multiple hurdles correctly', () => {
+      // 2.5x, profit = $150M, incremental: $100M × 20% + $50M × 25% = $32.5M
+      expect(calculateFundCarry(mockFundWithHurdles, 250)).toBeCloseTo(32.5, 1)
+    })
+
+    it('should return zero for exactly 1x', () => {
+      expect(calculateFundCarry(mockFundWithHurdles, 100)).toBe(0)
+    })
+
+    it('should return zero for losses', () => {
+      expect(calculateFundCarry(mockFundWithHurdles, 50)).toBe(0)
     })
   })
 
@@ -450,8 +463,9 @@ describe('Vintage Calculation Steps', () => {
     const highScenario = { id: 2, name: 'High', grossReturnMultiple: 4.0 }
     const steps = calculateVintageSteps(mockFundWithHurdles, highScenario, 0, 5, 7)
 
-    // 4x multiple exceeds 2.5x hurdle
-    expect(steps.effectiveCarryRate).toBe(0.30)
+    // 4x multiple with incremental hurdles: $100M×20% + $100M×25% + $100M×30% = $75M
+    // Effective rate: $75M / $300M profit = 0.25 (25%)
+    expect(steps.effectiveCarryRate).toBe(0.25)
     expect(steps.totalFundCarry).toBeGreaterThan(steps.fundProfit * 0.20)
   })
 

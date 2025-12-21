@@ -1,4 +1,4 @@
-import type { Fund, Scenario, CellData, FundBreakdown, VintageBreakdown, VintageCalculationSteps } from '../types/calculator';
+import type { Fund, Scenario, CellData, FundBreakdown, VintageBreakdown, VintageCalculationSteps, Hurdle } from '../types/calculator';
 
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
@@ -83,25 +83,75 @@ export function calculateYearsToClear1X(
   return 14;
 }
 
+/**
+ * Calculate carry using incremental hurdle logic.
+ * Each profit band gets its corresponding carry rate.
+ *
+ * Example: $100M fund at 3x with hurdles [2x/25%, 3x/30%], base 20%
+ * - Band 1x-2x: $100M × 20% = $20M
+ * - Band 2x-3x: $100M × 25% = $25M
+ * - Total carry: $45M
+ */
+function calculateIncrementalCarry(
+  fundSize: number,
+  totalReturns: number,
+  baseCarryPercent: number,
+  sortedHurdles: Hurdle[]
+): number {
+  const profit = totalReturns - fundSize;
+  if (profit <= 0) return 0;
+
+  const multiple = totalReturns / fundSize;
+  let totalCarry = 0;
+
+  // Create bands: [{ fromMultiple, toMultiple, ratePercent }]
+  const bands: Array<{ fromMultiple: number; toMultiple: number; ratePercent: number }> = [];
+
+  // First band: 1x to first hurdle (or infinity if no hurdles)
+  let prevMultiple = 1.0;
+  let prevRate = baseCarryPercent;
+
+  for (const hurdle of sortedHurdles) {
+    bands.push({
+      fromMultiple: prevMultiple,
+      toMultiple: hurdle.multiple,
+      ratePercent: prevRate
+    });
+    prevMultiple = hurdle.multiple;
+    prevRate = hurdle.carryPercent;
+  }
+
+  // Last band: from last hurdle to infinity
+  bands.push({
+    fromMultiple: prevMultiple,
+    toMultiple: Infinity,
+    ratePercent: prevRate
+  });
+
+  // Calculate carry for each band crossed
+  for (const band of bands) {
+    if (multiple <= band.fromMultiple) break;
+
+    const effectiveToMultiple = Math.min(multiple, band.toMultiple);
+    const profitInBand = fundSize * (effectiveToMultiple - band.fromMultiple);
+    const carryInBand = profitInBand * (band.ratePercent / 100);
+
+    totalCarry += carryInBand;
+
+    if (multiple <= band.toMultiple) break;
+  }
+
+  return totalCarry;
+}
+
 // Calculate carry for a fund
 export function calculateFundCarry(fund: Fund, returns: number): number {
   // Use default values for NaN fields
   const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
   const carryPercent = isNaN(fund.carryPercent) || !isFinite(fund.carryPercent) ? 20 : fund.carryPercent;
 
-  const multiple = returns / fundSize;
-  const profit = returns - fundSize;
-
-  let carryRate = carryPercent / 100;
   const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
-
-  for (const hurdle of sortedHurdles) {
-    if (multiple >= hurdle.multiple) {
-      carryRate = hurdle.carryPercent / 100;
-    }
-  }
-
-  return carryRate * Math.max(0, profit);
+  return calculateIncrementalCarry(fundSize, returns, carryPercent, sortedHurdles);
 }
 
 // Calculate vesting
@@ -268,17 +318,12 @@ export function calculateVintageSteps(
   // Step 4: Calculate fund profit
   const fundProfit = Math.max(0, grossReturns - fundSize);
 
-  // Step 5: Determine effective carry rate (with hurdles)
-  let effectiveCarryRate = baseCarryPercent / 100;
+  // Step 5 & 6: Calculate total fund carry (with incremental hurdles)
   const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
-  for (const hurdle of sortedHurdles) {
-    if (actualMultiple >= hurdle.multiple) {
-      effectiveCarryRate = hurdle.carryPercent / 100;
-    }
-  }
+  const totalFundCarry = calculateIncrementalCarry(fundSize, grossReturns, baseCarryPercent, sortedHurdles);
 
-  // Step 6: Calculate total fund carry
-  const totalFundCarry = fundProfit * effectiveCarryRate;
+  // Calculate effective carry rate for display (as decimal, e.g., 0.20 for 20%)
+  const effectiveCarryRate = fundProfit > 0 ? totalFundCarry / fundProfit : baseCarryPercent / 100;
 
   // Step 7: Calculate your share of carry pool
   const yourCarryPoolShare = totalFundCarry * (carryAllocationPercent / 100);
