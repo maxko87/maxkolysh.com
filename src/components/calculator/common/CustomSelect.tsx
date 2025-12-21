@@ -37,7 +37,7 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
           onClick={() => setIsOpen(!isOpen)}
           style={{
             padding: '8px 12px',
-            paddingLeft: '28px',
+            paddingRight: '32px',
             borderRadius: '6px',
             border: '1.5px solid var(--border-color)',
             fontSize: '0.95em',
@@ -52,9 +52,10 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
             WebkitAppearance: 'none'
           }}
         >
+          {selectedOption?.label}
           <span style={{
             position: 'absolute',
-            left: '10px',
+            right: '10px',
             top: '50%',
             transform: 'translateY(-50%)',
             pointerEvents: 'none',
@@ -63,7 +64,6 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
           }}>
             ▼
           </span>
-          {selectedOption?.label}
         </button>
 
         {isOpen && (
