@@ -1,5 +1,5 @@
 import type { CalculatorState, Fund } from '../types/calculator';
-import { CURVE_PRESETS, DEFAULT_REALIZATION_CURVE, DEPLOYMENT_PRESETS, DEFAULT_DEPLOYMENT_CURVE, DEFAULT_YEARS_TO_CLEAR_1X } from '../types/calculator';
+import { CURVE_PRESETS, DEFAULT_REALIZATION_CURVE, DEPLOYMENT_PRESETS, DEFAULT_DEPLOYMENT_CURVE, DEFAULT_DEPLOYMENT_TIMELINE, DEFAULT_YEARS_TO_CLEAR_1X } from '../types/calculator';
 
 export function compressState(state: CalculatorState): string {
   try {
@@ -14,6 +14,7 @@ export function compressState(state: CalculatorState): string {
       params.set(`${prefix}_carry`, fund.carryPercent.toString());
       params.set(`${prefix}_mgmt`, fund.mgmtFeePercent.toString());
       params.set(`${prefix}_life`, fund.years.toString());
+      params.set(`${prefix}_deploy_timeline`, fund.deploymentTimeline.toString());
       params.set(`${prefix}_alloc`, fund.carryAllocationPercent.toString());
       params.set(`${prefix}_vest`, fund.vestingPeriod.toString());
       params.set(`${prefix}_cliff`, fund.cliffPeriod.toString());
@@ -34,7 +35,7 @@ export function compressState(state: CalculatorState): string {
         params.set(`${prefix}_s${sIdx + 1}`, `${scenarioName}:${scenario.grossReturnMultiple}`);
       });
 
-      // Realization curve: detect preset or store custom
+      // Realization schedule: detect preset or store custom
       const curvePreset = Object.entries(CURVE_PRESETS).find(([_, curve]) =>
         JSON.stringify(curve) === JSON.stringify(fund.realizationCurve)
       );
@@ -110,6 +111,7 @@ export function decompressState(queryString: string): CalculatorState | null {
             cliffPeriod: f.cl || 1,
             realizationCurve: f.rc || [...DEFAULT_REALIZATION_CURVE],
             deploymentCurve: f.dc || [...DEFAULT_DEPLOYMENT_CURVE],
+            deploymentTimeline: f.dt ?? DEFAULT_DEPLOYMENT_TIMELINE,
             yearsToClear1X: f.y1x || DEFAULT_YEARS_TO_CLEAR_1X,
             years: f.fy || 10,
             raiseContinuously: f.rco !== undefined ? f.rco : true
@@ -169,7 +171,7 @@ export function decompressState(queryString: string): CalculatorState | null {
         sIdx++;
       }
 
-      // Parse realization curve
+      // Parse realization schedule
       const curveParam = params.get(`${prefix}_curve`) || 'standard';
       let realizationCurve: number[];
       if (curveParam in CURVE_PRESETS) {
@@ -197,8 +199,9 @@ export function decompressState(queryString: string): CalculatorState | null {
         mgmtFeePercent: parseFloat(params.get(`${prefix}_mgmt`) || '2'),
         fundCycle: parseFloat(params.get(`${prefix}_cycle`) || '2'),
         years: parseFloat(params.get(`${prefix}_life`) || '10'),
+        deploymentTimeline: parseFloat(params.get(`${prefix}_deploy_timeline`) || DEFAULT_DEPLOYMENT_TIMELINE.toString()),
         hurdles,
-        scenarios: scenarios.length > 0 ? scenarios : [{ id: arrayIdx * 100, name: 'Base Case', grossReturnMultiple: 5 }],
+        scenarios: scenarios.length > 0 ? scenarios : [{ id: arrayIdx * 100, name: 'Base Case', grossReturnMultiple: 3 }],
         carryAllocationPercent: parseFloat(params.get(`${prefix}_alloc`) || '5'),
         vestingPeriod: parseFloat(params.get(`${prefix}_vest`) || '4'),
         cliffPeriod: parseFloat(params.get(`${prefix}_cliff`) || '1'),
