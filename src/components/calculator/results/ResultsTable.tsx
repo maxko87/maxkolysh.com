@@ -8,6 +8,7 @@ function ResultsTable() {
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
   const [clickedCell, setClickedCell] = useState<{ row: number; col: number } | null>(null);
   const [tooltipData, setTooltipData] = useState<CellData | null>(null);
+  const [exploreMode, setExploreMode] = useState<{ colIdx: number; year: string } | null>(null);
   const tooltipSidebarRef = useRef<HTMLDivElement>(null);
 
   const maxYears = 20;
@@ -40,30 +41,36 @@ function ResultsTable() {
   const handleCellMouseEnter = (rowIdx: number, colIdx: number, data: CellData | null) => {
     if (data && !clickedCell) {
       setHoveredCell({ row: rowIdx, col: colIdx });
-      setTooltipData(data);
     }
   };
 
   const handleCellMouseLeave = () => {
     if (!clickedCell) {
       setHoveredCell(null);
-      setTooltipData(null);
     }
   };
 
-  const handleCellClick = (rowIdx: number, colIdx: number, data: CellData | null, e: React.MouseEvent) => {
+  const handleCellClick = (rowIdx: number, colIdx: number, data: CellData | null, e: React.MouseEvent, year: string) => {
     e.stopPropagation();
     if (data) {
       // If clicking the same cell, close it
       if (clickedCell?.row === rowIdx && clickedCell?.col === colIdx) {
         setClickedCell(null);
         setTooltipData(null);
+        setExploreMode(null);
       } else {
         setClickedCell({ row: rowIdx, col: colIdx });
         setHoveredCell(null);
         setTooltipData(data);
+        setExploreMode({ colIdx, year });
       }
     }
+  };
+
+  const handleGoBack = () => {
+    setClickedCell(null);
+    setTooltipData(null);
+    setExploreMode(null);
   };
 
   // Auto-scroll to tooltip sidebar on mobile when a cell is clicked
@@ -121,8 +128,153 @@ function ResultsTable() {
 
   return (
     <div className="results-layout">
+      {!exploreMode && tooltipData && (
+        <div
+          ref={tooltipSidebarRef}
+          className="tooltip-sidebar"
+          style={{
+            width: '350px',
+            minWidth: '350px',
+            background: 'var(--bg-primary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'var(--spacing-xl)',
+            overflowY: 'auto',
+            height: 'fit-content',
+            position: 'sticky',
+            top: 'var(--spacing-2xl)'
+          }}
+        >
+          <div style={{ marginBottom: '16px', paddingBottom: '16px', borderBottom: '2px solid var(--border-color)', fontSize: '1.05em', color: 'var(--text-primary)', lineHeight: '1.6', fontWeight: 500 }}>
+            {hasHistoricFunds ? (
+              tooltipData.yearsFromToday ? (
+                <>If you worked for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you'd have made {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+              ) : (
+                <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting in {baseYear}, you made {formatCurrency(tooltipData.total)} in carry during the early years because carry distributions had not yet started.</>
+              )
+            ) : (
+              tooltipData.yearsFromToday ? (
+                <>If you work for {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry in {tooltipData.yearsFromToday} year{tooltipData.yearsFromToday !== 1 ? 's' : ''}.</>
+              ) : (
+                <>Working {tooltipData.yearsWorked} year{tooltipData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make {formatCurrency(tooltipData.total)} in carry during the early years because carry distributions won't have started yet.</>
+              )
+            )}
+          </div>
+
+          {tooltipData.fundBreakdowns.map((fb, idx) => (
+            <div
+              key={idx}
+              style={{
+                marginBottom: '16px',
+                ...(idx > 0 ? { marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' } : {})
+              }}
+            >
+              <div style={{ fontWeight: 700, color: 'var(--primary-color)', marginBottom: '8px', fontSize: '0.95em' }}>
+                {fb.name}
+              </div>
+              {fb.vintages.map((v, vIdx) => (
+                <div
+                  key={vIdx}
+                  style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '0.85em', marginBottom: '6px', paddingLeft: '12px' }}
+                >
+                  <span style={{ color: 'var(--text-tertiary)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% realized)</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
+                </div>
+              ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border-color)', fontWeight: 600 }}>
+                <span style={{ color: 'var(--text-secondary)' }}>{fb.name} Total:</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
+              </div>
+            </div>
+          ))}
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '16px', paddingTop: '16px', borderTop: '2px solid var(--border-color)', fontSize: '1.05em' }}>
+            <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>Grand Total:</span>
+            <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{formatCurrency(tooltipData.total)}</span>
+          </div>
+        </div>
+      )}
+
       <div className="results-container">
         <div className="results-table">
+        {exploreMode && clickedCell ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Years at Fund</th>
+                {(() => {
+                  const cols = [];
+                  const startCol = Math.max(0, clickedCell.col - 2);
+                  const endCol = Math.min(headerColumns.length - 1, clickedCell.col + 2);
+
+                  for (let i = startCol; i <= endCol; i++) {
+                    cols.push(<th key={i}>{headerColumns[i].label}</th>);
+                  }
+                  return cols;
+                })()}
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const rows = [];
+                const startRow = Math.max(0, clickedCell.row - 2);
+                const endRow = Math.min(maxYears - 1, clickedCell.row + 2);
+
+                for (let rowIdx = startRow; rowIdx <= endRow; rowIdx++) {
+                  const row = calculations[rowIdx];
+                  if (!row) continue;
+
+                  const startCol = Math.max(0, clickedCell.col - 2);
+                  const endCol = Math.min(headerColumns.length - 1, clickedCell.col + 2);
+
+                  rows.push(
+                    <tr key={rowIdx}>
+                      <td>{rowIdx + 1}</td>
+                      {(() => {
+                        const cells = [];
+                        for (let colIdx = startCol; colIdx <= endCol; colIdx++) {
+                          const col = headerColumns[colIdx];
+                          const originalColIdx = col.isCollapsed ? Math.min(rowIdx, col.originalIndices.length - 1) : col.originalIndices[0];
+                          const cellData = row[originalColIdx];
+
+                          const isClickedCell = rowIdx === clickedCell.row && colIdx === clickedCell.col;
+
+                          if (!cellData) {
+                            cells.push(<td key={colIdx} className="empty">-</td>);
+                            continue;
+                          }
+
+                          cells.push(
+                            <td
+                              key={colIdx}
+                              className="value"
+                              style={{
+                                cursor: 'pointer',
+                                background: isClickedCell ? '#f0f4ff' : undefined
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isClickedCell) {
+                                  handleGoBack();
+                                } else {
+                                  handleCellClick(rowIdx, colIdx, cellData, e, col.label);
+                                }
+                              }}
+                            >
+                              {formatCurrency(cellData.total)}
+                            </td>
+                          );
+                        }
+                        return cells;
+                      })()}
+                    </tr>
+                  );
+                }
+                return rows;
+              })()}
+            </tbody>
+          </table>
+        ) : (
         <table>
           <thead>
             <tr>
@@ -166,9 +318,31 @@ function ResultsTable() {
                           }}
                           onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                           onMouseLeave={handleCellMouseLeave}
-                          onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e)}
+                          onClick={(e) => handleCellClick(rowIdx, relevantColIdx, cellData, e, col.label)}
                         >
                           {formatCurrency(cellData.total)}
+                          {isHovered && !clickedCell && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                marginTop: '4px',
+                                background: 'var(--bg-primary)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: '4px 8px',
+                                fontSize: '0.75em',
+                                whiteSpace: 'nowrap',
+                                zIndex: 1000,
+                                pointerEvents: 'none',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                              }}
+                            >
+                              Click to explore
+                            </div>
+                          )}
                         </td>
                       );
                     }
@@ -200,9 +374,31 @@ function ResultsTable() {
                       }}
                       onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                       onMouseLeave={handleCellMouseLeave}
-                      onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e)}
+                      onClick={(e) => handleCellClick(rowIdx, originalColIdx, cellData, e, col.label)}
                     >
                       {formatCurrency(cellData.total)}
+                      {isHovered && !clickedCell && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            marginTop: '4px',
+                            background: 'var(--bg-primary)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: 'var(--radius-md)',
+                            padding: '4px 8px',
+                            fontSize: '0.75em',
+                            whiteSpace: 'nowrap',
+                            zIndex: 1000,
+                            pointerEvents: 'none',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          Click to explore
+                        </div>
+                      )}
                     </td>
                   );
                 })}
@@ -210,10 +406,11 @@ function ResultsTable() {
             ))}
           </tbody>
         </table>
+        )}
       </div>
     </div>
 
-    {tooltipData && (
+    {exploreMode && tooltipData && (
       <div
         ref={tooltipSidebarRef}
         className="tooltip-sidebar"
@@ -276,6 +473,20 @@ function ResultsTable() {
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '16px', paddingTop: '16px', borderTop: '2px solid var(--border-color)', fontSize: '1.05em' }}>
           <span style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>Grand Total:</span>
           <span style={{ fontWeight: 700, color: 'var(--primary-color)' }}>{formatCurrency(tooltipData.total)}</span>
+        </div>
+
+        <div
+          onClick={handleGoBack}
+          style={{
+            marginTop: 'var(--spacing-lg)',
+            textAlign: 'center',
+            cursor: 'pointer',
+            color: '#94a3b8',
+            fontSize: '0.9em',
+            padding: 'var(--spacing-sm)'
+          }}
+        >
+          ← Back to full view
         </div>
       </div>
     )}
