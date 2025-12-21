@@ -6,6 +6,7 @@ import type { CellData } from '../../../types/calculator';
 function ResultsTable() {
   const { calculations, state } = useCalculator();
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
+  const [clickedCell, setClickedCell] = useState<{ row: number; col: number } | null>(null);
   const [tooltipData, setTooltipData] = useState<CellData | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top?: string; bottom?: string; left: string; transform: string; marginTop?: string; marginBottom?: string }>({
     top: '100%',
@@ -80,16 +81,46 @@ function ResultsTable() {
   }, [tooltipData, hoveredCell]);
 
   const handleCellMouseEnter = (rowIdx: number, colIdx: number, data: CellData | null) => {
-    if (data) {
+    if (data && !clickedCell) {
       setHoveredCell({ row: rowIdx, col: colIdx });
       setTooltipData(data);
     }
   };
 
   const handleCellMouseLeave = () => {
-    setHoveredCell(null);
-    setTooltipData(null);
+    if (!clickedCell) {
+      setHoveredCell(null);
+      setTooltipData(null);
+    }
   };
+
+  const handleCellClick = (rowIdx: number, colIdx: number, data: CellData | null, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (data) {
+      // If clicking the same cell, close it
+      if (clickedCell?.row === rowIdx && clickedCell?.col === colIdx) {
+        setClickedCell(null);
+        setTooltipData(null);
+      } else {
+        setClickedCell({ row: rowIdx, col: colIdx });
+        setHoveredCell(null);
+        setTooltipData(data);
+      }
+    }
+  };
+
+  // Click outside to close tooltip
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (clickedCell) {
+        setClickedCell(null);
+        setTooltipData(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [clickedCell]);
 
   // Build header columns
   const headerColumns = useMemo(() => {
@@ -150,6 +181,8 @@ function ResultsTable() {
                       }
 
                       const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+                      const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
+                      const showTooltip = isHovered || isClicked;
                       const startYear = baseYear + 1;
                       const endYear = baseYear + numZeroColumns;
                       const yearRange = numZeroColumns === 1 ? `${startYear}` : `${startYear}-${endYear}`;
@@ -158,14 +191,15 @@ function ResultsTable() {
                         <td
                           key={colIdx}
                           className="value"
-                          style={{ position: 'relative' }}
-                          ref={isHovered ? cellRef : null}
+                          style={{ position: 'relative', cursor: 'pointer' }}
+                          ref={showTooltip ? cellRef : null}
                           onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                           onMouseLeave={handleCellMouseLeave}
+                          onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e)}
                         >
                           {formatCurrency(cellData.total)}
 
-                          {isHovered && tooltipData && (
+                          {showTooltip && tooltipData && (
                             <div
                               ref={tooltipRef}
                               className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
@@ -174,8 +208,9 @@ function ResultsTable() {
                                 position: 'absolute',
                                 minWidth: '300px',
                                 zIndex: 10000,
-                                pointerEvents: 'none'
+                                pointerEvents: isClicked ? 'auto' : 'none'
                               }}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <div className="tooltip-label" style={{ marginBottom: '12px' }}>
                                 {hasHistoricFunds ? (
@@ -235,19 +270,22 @@ function ResultsTable() {
                   }
 
                   const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
+                  const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
+                  const showTooltip = isHovered || isClicked;
 
                   return (
                     <td
                       key={colIdx}
                       className="value"
-                      style={{ position: 'relative' }}
-                      ref={isHovered ? cellRef : null}
+                      style={{ position: 'relative', cursor: 'pointer' }}
+                      ref={showTooltip ? cellRef : null}
                       onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                       onMouseLeave={handleCellMouseLeave}
+                      onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e)}
                     >
                       {formatCurrency(cellData.total)}
 
-                      {isHovered && tooltipData && (
+                      {showTooltip && tooltipData && (
                         <div
                           ref={tooltipRef}
                           className={`cell-tooltip ${tooltipPosition.top === '100%' ? 'below' : ''}`}
@@ -256,8 +294,9 @@ function ResultsTable() {
                             position: 'absolute',
                             minWidth: '300px',
                             zIndex: 10000,
-                            pointerEvents: 'none'
+                            pointerEvents: isClicked ? 'auto' : 'none'
                           }}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <div className="tooltip-label" style={{ marginBottom: '12px' }}>
                             {hasHistoricFunds ? (
