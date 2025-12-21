@@ -1,41 +1,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { formatCurrency } from '../../../utils/formatCurrency';
-import { getDeploymentAtYear, getRealizationAtYear, calculateYearsToClear1X } from '../../../utils/calculations';
-import type { CellData, Fund, Scenario, VintageBreakdown } from '../../../types/calculator';
-
-interface DetailedBreakdown {
-  fundSize: number;
-  mgmtFeePercent: number;
-  fundCycle: number;
-  fundYears: number;
-  deploymentTimeline: number;
-  raiseContinuously: boolean;
-  grossReturnMultiple: number;
-  scenarioName: string;
-  vintageAgeInYears: number;
-  yearsIntoThisVintage: number;
-  baseCarryPercent: number;
-  hurdles: { multiple: number; carryPercent: number }[];
-  effectiveCarryRate: number;
-  carryAllocationPercent: number;
-  deploymentPercent: number;
-  realizationPercent: number;
-  vestingProgress: number;
-  cliffPeriod: number;
-  vestingPeriod: number;
-  yearsToClear1X: number;
-  cliffMet: boolean;
-  // Calculated values
-  deployedCapital: number;
-  grossReturns: number;
-  actualMultiple: number;
-  fundProfit: number;
-  totalFundCarry: number;
-  yourCarryPoolShare: number;
-  realizedCarry: number;
-  yourVestedCarry: number;
-}
+import { calculateVintageSteps } from '../../../utils/calculations';
+import type { CellData } from '../../../types/calculator';
 
 function ResultsTable() {
   const { calculations, state } = useCalculator();
@@ -54,92 +21,6 @@ function ResultsTable() {
   const baseYear = hasHistoricFunds && state.funds[0]?.vintageYear
     ? state.funds[0].vintageYear
     : currentYear;
-
-  // Helper to get detailed breakdown for a vintage
-  const getDetailedBreakdown = (
-    fund: Fund,
-    scenario: Scenario,
-    vintage: VintageBreakdown,
-    yearsWorked: number,
-    yearsFromToday: number
-  ): DetailedBreakdown => {
-    const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
-    const vestingPeriod = isNaN(fund.vestingPeriod) || !isFinite(fund.vestingPeriod) ? 4 : fund.vestingPeriod;
-    const cliffPeriod = isNaN(fund.cliffPeriod) || !isFinite(fund.cliffPeriod) ? 1 : fund.cliffPeriod;
-    const fundYears = isNaN(fund.years) || !isFinite(fund.years) ? 10 : fund.years;
-    const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) ? 2.5 : fund.deploymentTimeline;
-    const carryAllocationPercent = isNaN(fund.carryAllocationPercent) || !isFinite(fund.carryAllocationPercent) ? 5 : fund.carryAllocationPercent;
-    const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
-    const baseCarryPercent = isNaN(fund.carryPercent) || !isFinite(fund.carryPercent) ? 20 : fund.carryPercent;
-    const mgmtFeePercent = isNaN(fund.mgmtFeePercent) || !isFinite(fund.mgmtFeePercent) ? 2 : fund.mgmtFeePercent;
-    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 3 : scenario.grossReturnMultiple;
-
-    // Calculate vintage age
-    const vintageIndex = vintage.vintage - 1;
-    const fundStartYear = vintageIndex * fundCycle;
-    const vintageAgeInYears = yearsFromToday - fundStartYear;
-    const yearsIntoThisVintage = yearsWorked - fundStartYear;
-
-    // Get deployment and realization
-    const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
-    const yearsToClear = calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
-    const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
-
-    // Calculate vesting
-    const vestingProgress = Math.min(yearsIntoThisVintage / vestingPeriod, 1);
-    const cliffMet = yearsIntoThisVintage >= cliffPeriod;
-
-    // Calculate carry with hurdles
-    const deployedCapital = fundSize * deploymentPercent;
-    const grossReturns = deployedCapital * multiple;
-    const actualMultiple = grossReturns / fundSize;
-    const fundProfit = Math.max(0, grossReturns - fundSize);
-
-    let effectiveCarryRate = baseCarryPercent / 100;
-    const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
-    for (const hurdle of sortedHurdles) {
-      if (actualMultiple >= hurdle.multiple) {
-        effectiveCarryRate = hurdle.carryPercent / 100;
-      }
-    }
-
-    const totalFundCarry = effectiveCarryRate * fundProfit;
-    const yourCarryPoolShare = totalFundCarry * (carryAllocationPercent / 100);
-    const realizedCarry = yourCarryPoolShare * realizationPercent;
-    const yourVestedCarry = realizedCarry * vestingProgress;
-
-    return {
-      fundSize,
-      mgmtFeePercent,
-      fundCycle,
-      fundYears,
-      deploymentTimeline,
-      raiseContinuously: fund.raiseContinuously,
-      grossReturnMultiple: multiple,
-      scenarioName: scenario.name,
-      vintageAgeInYears,
-      yearsIntoThisVintage,
-      baseCarryPercent,
-      hurdles: sortedHurdles,
-      effectiveCarryRate: effectiveCarryRate * 100,
-      carryAllocationPercent,
-      deploymentPercent,
-      realizationPercent,
-      vestingProgress,
-      cliffPeriod,
-      vestingPeriod,
-      yearsToClear1X: yearsToClear,
-      cliffMet,
-      deployedCapital,
-      grossReturns,
-      actualMultiple,
-      fundProfit,
-      totalFundCarry,
-      yourCarryPoolShare,
-      realizedCarry,
-      yourVestedCarry
-    };
-  };
 
   // Find how many leading columns are all zeros/empty
   const numZeroColumns = useMemo(() => {
@@ -739,8 +620,11 @@ function ResultsTable() {
                   </div>
 
                   {fb.vintages.map((v, vIdx) => {
-                    const breakdown = getDetailedBreakdown(fund, scenario, v, tooltipData.yearsWorked, tooltipData.yearsFromToday);
-                    const deploymentYear = baseYear + (v.vintage - 1) * breakdown.fundCycle;
+                    // Use calculateVintageSteps for single source of truth!
+                    const breakdown = calculateVintageSteps(fund, scenario, v.vintage - 1, tooltipData.yearsWorked, tooltipData.yearsFromToday);
+                    const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
+                    const deploymentYear = baseYear + (v.vintage - 1) * fundCycle;
+                    const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
 
                     return (
                       <div
@@ -760,7 +644,7 @@ function ResultsTable() {
                         {/* Scenario & Time */}
                         <div style={{ marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid var(--border-color)' }}>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '4px 12px', color: 'var(--text-tertiary)', lineHeight: '1.6' }}>
-                            <span>Scenario:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{breakdown.scenarioName} ({breakdown.grossReturnMultiple}x)</span>
+                            <span>Scenario:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{scenario.name} ({breakdown.grossReturnMultiple}x)</span>
                             <span>Vintage Age:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{breakdown.vintageAgeInYears.toFixed(1)} years</span>
                             <span>Years Worked:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{breakdown.yearsIntoThisVintage.toFixed(1)} years</span>
                           </div>
@@ -817,12 +701,12 @@ function ResultsTable() {
                             <div>
                               <div style={{ color: 'var(--text-secondary)' }}>
                                 Total Fund Carry = Fund Profit × Effective Carry Rate
-                                {breakdown.hurdles.length > 0 && breakdown.effectiveCarryRate !== breakdown.baseCarryPercent && (
+                                {sortedHurdles.length > 0 && breakdown.effectiveCarryRate * 100 !== breakdown.baseCarryPercent && (
                                   <span style={{ fontSize: '0.85em', fontStyle: 'italic' }}> (using hurdle at {breakdown.actualMultiple.toFixed(1)}x)</span>
                                 )}
                               </div>
                               <div style={{ fontFamily: 'monospace', color: 'var(--text-tertiary)', fontSize: '0.9em' }}>
-                                [${breakdown.fundProfit.toFixed(1)}M × {breakdown.effectiveCarryRate.toFixed(0)}%] = <strong style={{ color: 'var(--text-primary)' }}>${breakdown.totalFundCarry.toFixed(2)}M</strong>
+                                [${breakdown.fundProfit.toFixed(1)}M × {(breakdown.effectiveCarryRate * 100).toFixed(0)}%] = <strong style={{ color: 'var(--text-primary)' }}>${breakdown.totalFundCarry.toFixed(2)}M</strong>
                               </div>
                             </div>
 

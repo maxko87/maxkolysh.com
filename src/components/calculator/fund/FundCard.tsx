@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
 import { calculateIRR, calculateMultipleFromIRR, calculateYearsToClear1X } from '../../../utils/calculations';
-import { DEPLOYMENT_PRESETS, type DeploymentPreset } from '../../../types/calculator';
+import { type DeploymentPreset } from '../../../types/calculator';
 import Tooltip from '../common/Tooltip';
+import NumericInputWithUnit from '../common/NumericInputWithUnit';
+import CurveChart from '../common/CurveChart';
 
 interface FundCardProps {
   fund: Fund;
@@ -16,8 +18,6 @@ function FundCard({ fund }: FundCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'linear'>('standard');
   const [selectedDeploymentPreset, setSelectedDeploymentPreset] = useState<DeploymentPreset>('linear');
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const deploymentCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleRemove = () => {
     dispatch({ type: 'REMOVE_FUND', payload: fund.id });
@@ -81,231 +81,6 @@ function FundCard({ fund }: FundCardProps) {
     setSelectedDeploymentPreset(preset);
     dispatch({ type: 'SET_DEPLOYMENT_PRESET', payload: { fundId: fund.id, preset } });
   };
-
-  useEffect(() => {
-    if (!showAdvanced || !canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Use the fund's actual realization schedule (not the preset) for consistency
-    const curve = fund.realizationCurve;
-    const width = 300;
-    const height = 160;
-    const padding = 30;
-    const topPadding = 20;
-    const fundYears = isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years;
-
-    canvas.width = width;
-    canvas.height = height;
-
-    const chartWidth = width - 2 * padding;
-    const chartHeight = height - padding - topPadding;
-
-    ctx.clearRect(0, 0, width, height);
-
-    // Draw axes
-    ctx.strokeStyle = '#cbd5e0';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(padding, topPadding);
-    ctx.lineTo(padding, height - padding);
-    ctx.lineTo(width - padding, height - padding);
-    ctx.stroke();
-
-    // Draw grid and labels
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = '#718096';
-    ctx.textAlign = 'center';
-
-    const numLabels = 5;
-    const step = Math.ceil(fundYears / numLabels);
-    for (let i = 0; i <= fundYears; i += step) {
-      const x = padding + (i / fundYears) * chartWidth;
-      const y = height - padding;
-
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, topPadding);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      ctx.fillText(`Y${i}`, x, y + 15);
-    }
-
-    ctx.textAlign = 'right';
-    for (let i = 0; i <= 10; i += 5) {
-      const y = height - padding - (i / 10) * chartHeight;
-
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(width - padding, y);
-      ctx.stroke();
-
-      ctx.fillText(`${i * 10}%`, padding - 5, y + 3);
-    }
-
-    // Draw curve
-    ctx.strokeStyle = '#667eea';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-
-    for (let i = 0; i <= 10; i++) {
-      const yearPosition = (i / 10) * fundYears;
-      const x = padding + (yearPosition / fundYears) * chartWidth;
-      const y = height - padding - (curve[i] || 0) * chartHeight;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    }
-    ctx.stroke();
-
-    // Draw vertical line showing when carry begins (when DPI crosses 1.0x)
-    // Calculate based on first scenario's return multiple AND the realization schedule
-    const firstScenario = fund.scenarios[0];
-    if (firstScenario) {
-      const returnMultiple = firstScenario.grossReturnMultiple;
-
-      // Use the actual fund's realization schedule (not the preset) for accurate calculation
-      const carryStartYear = calculateYearsToClear1X(returnMultiple, fund.realizationCurve, fundYears);
-
-      if (isFinite(carryStartYear) && carryStartYear <= fundYears) {
-        const carryStartX = padding + (carryStartYear / fundYears) * chartWidth;
-
-        // Draw dashed vertical line
-        ctx.strokeStyle = '#ef4444'; // Red color
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]); // Dashed line
-        ctx.beginPath();
-        ctx.moveTo(carryStartX, topPadding);
-        ctx.lineTo(carryStartX, height - padding);
-        ctx.stroke();
-        ctx.setLineDash([]); // Reset to solid line
-
-        // Add label with year
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`Carry Y${Math.round(carryStartYear * 10) / 10}`, carryStartX, topPadding - 5);
-      }
-    }
-
-    // Draw control points
-    for (let i = 0; i <= 10; i++) {
-      const yearPosition = (i / 10) * fundYears;
-      const x = padding + (yearPosition / fundYears) * chartWidth;
-      const y = height - padding - (curve[i] || 0) * chartHeight;
-
-      ctx.fillStyle = '#667eea';
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }, [showAdvanced, selectedPreset, fund.years, fund.scenarios, fund.realizationCurve]);
-
-  useEffect(() => {
-    if (!showAdvanced || !deploymentCanvasRef.current) return;
-
-    const canvas = deploymentCanvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const curve = DEPLOYMENT_PRESETS[selectedDeploymentPreset];
-    const width = 300;
-    const height = 160;
-    const padding = 30;
-    const topPadding = 20;
-    const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) || fund.deploymentTimeline <= 0 ? 2.5 : fund.deploymentTimeline;
-
-    canvas.width = width;
-    canvas.height = height;
-
-    const chartWidth = width - 2 * padding;
-    const chartHeight = height - padding - topPadding;
-
-    ctx.clearRect(0, 0, width, height);
-
-    // Draw axes
-    ctx.strokeStyle = '#cbd5e0';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(padding, topPadding);
-    ctx.lineTo(padding, height - padding);
-    ctx.lineTo(width - padding, height - padding);
-    ctx.stroke();
-
-    // Draw grid and labels
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = '#718096';
-    ctx.textAlign = 'center';
-
-    const numLabels = 5;
-    const step = Math.ceil(deploymentTimeline / numLabels);
-    for (let i = 0; i <= deploymentTimeline; i += step) {
-      const x = padding + (i / deploymentTimeline) * chartWidth;
-      const y = height - padding;
-
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, topPadding);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      ctx.fillText(`Y${i}`, x, y + 15);
-    }
-
-    ctx.textAlign = 'right';
-    for (let i = 0; i <= 10; i += 5) {
-      const y = height - padding - (i / 10) * chartHeight;
-
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(width - padding, y);
-      ctx.stroke();
-
-      ctx.fillText(`${i * 10}%`, padding - 5, y + 3);
-    }
-
-    // Draw curve
-    ctx.strokeStyle = '#10b981';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-
-    for (let i = 0; i <= 10; i++) {
-      const yearPosition = (i / 10) * deploymentTimeline;
-      const x = padding + (yearPosition / deploymentTimeline) * chartWidth;
-      const y = height - padding - (curve[i] || 0) * chartHeight;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    }
-    ctx.stroke();
-
-    // Draw control points
-    for (let i = 0; i <= 10; i++) {
-      const yearPosition = (i / 10) * deploymentTimeline;
-      const x = padding + (yearPosition / deploymentTimeline) * chartWidth;
-      const y = height - padding - (curve[i] || 0) * chartHeight;
-
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }, [showAdvanced, selectedDeploymentPreset, fund.deploymentTimeline]);
 
   return (
     <div className="fund-card">
@@ -384,56 +159,41 @@ function FundCard({ fund }: FundCardProps) {
                   <span className="tooltip-icon">?</span>
                 </Tooltip>
               </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={isNaN(fund.size) ? '' : fund.size}
-              onChange={(e) => handleFieldChange('size', e.target.value === '' ? '' : parseFloat(e.target.value))}
-              placeholder="200"
-              min="0"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>$M</span>
-          </div>
+          <NumericInputWithUnit
+            value={isNaN(fund.size) ? '' : fund.size}
+            onChange={(value) => handleFieldChange('size', value)}
+            placeholder="200"
+            unit="$M"
+          />
         </div>
         <div className="form-group">
           <label>
             <span>Carry</span>
             <Tooltip text="Base carried interest percentage before any hurdles"><span className="tooltip-icon">?</span></Tooltip>
           </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={isNaN(fund.carryPercent) ? '' : fund.carryPercent}
-              onChange={(e) => {
-                const value = e.target.value === '' ? NaN : parseFloat(e.target.value);
-                dispatch({ type: 'UPDATE_FUND_FIELD', payload: { fundId: fund.id, field: 'carryPercent', value } });
-              }}
-              step="0.1"
-              placeholder="20"
-              min="0"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
-          </div>
+          <NumericInputWithUnit
+            value={isNaN(fund.carryPercent) ? '' : fund.carryPercent}
+            onChange={(value) => {
+              const finalValue = value === '' ? NaN : value;
+              dispatch({ type: 'UPDATE_FUND_FIELD', payload: { fundId: fund.id, field: 'carryPercent', value: finalValue } });
+            }}
+            step="0.1"
+            placeholder="20"
+            unit="%"
+          />
         </div>
         <div className="form-group">
           <label>
             <span>Per GP Carry</span>
             <Tooltip text="Percentage of total fund carry allocated to one General Partner. Typical is 5% for larger funds. Calculate by dividing total carry allocated to all GPs (excluding junior partners, staff, etc) by total number of GPs."><span className="tooltip-icon">?</span></Tooltip>
           </label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="number"
-              value={isNaN(fund.carryAllocationPercent) ? '' : fund.carryAllocationPercent}
-              onChange={(e) => handleFieldChange('carryAllocationPercent', e.target.value === '' ? '' : parseFloat(e.target.value))}
-              step="0.5"
-              placeholder="5"
-              min="0"
-              style={{ paddingRight: '35px' }}
-            />
-            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>%</span>
-          </div>
+          <NumericInputWithUnit
+            value={isNaN(fund.carryAllocationPercent) ? '' : fund.carryAllocationPercent}
+            onChange={(value) => handleFieldChange('carryAllocationPercent', value)}
+            step="0.5"
+            placeholder="5"
+            unit="%"
+          />
         </div>
       </div>
 
@@ -458,18 +218,13 @@ function FundCard({ fund }: FundCardProps) {
                 <span>Fund Cycle</span>
                 <Tooltip text="Time between raising consecutive funds"><span className="tooltip-icon">?</span></Tooltip>
               </label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="number"
-                  value={isNaN(fund.fundCycle) ? '' : fund.fundCycle}
-                  onChange={(e) => handleFieldChange('fundCycle', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                  step="0.5"
-                  placeholder="2"
-                  min="0"
-                  style={{ paddingRight: '35px' }}
-                />
-                <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-              </div>
+              <NumericInputWithUnit
+                value={isNaN(fund.fundCycle) ? '' : fund.fundCycle}
+                onChange={(value) => handleFieldChange('fundCycle', value)}
+                step="0.5"
+                placeholder="2"
+                unit="Yrs"
+              />
             </div>
           </div>
         )}
@@ -602,36 +357,26 @@ function FundCard({ fund }: FundCardProps) {
                   <span>Vesting Period</span>
                   <Tooltip text="Years required to fully vest carry allocation"><span className="tooltip-icon">?</span></Tooltip>
                 </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="number"
-                    value={isNaN(fund.vestingPeriod) ? '' : fund.vestingPeriod}
-                    onChange={(e) => handleFieldChange('vestingPeriod', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                    step="0.5"
-                    placeholder="4"
-                    min="0"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-                </div>
+                <NumericInputWithUnit
+                  value={isNaN(fund.vestingPeriod) ? '' : fund.vestingPeriod}
+                  onChange={(value) => handleFieldChange('vestingPeriod', value)}
+                  step="0.5"
+                  placeholder="4"
+                  unit="Yrs"
+                />
               </div>
               <div className="form-group">
                 <label>
                   <span>Cliff</span>
                   <Tooltip text="Years before any carry vests (all-or-nothing threshold)"><span className="tooltip-icon">?</span></Tooltip>
                 </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="number"
-                    value={isNaN(fund.cliffPeriod) ? '' : fund.cliffPeriod}
-                    onChange={(e) => handleFieldChange('cliffPeriod', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                    step="0.5"
-                    placeholder="1"
-                    min="0"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-                </div>
+                <NumericInputWithUnit
+                  value={isNaN(fund.cliffPeriod) ? '' : fund.cliffPeriod}
+                  onChange={(value) => handleFieldChange('cliffPeriod', value)}
+                  step="0.5"
+                  placeholder="1"
+                  unit="Yrs"
+                />
               </div>
             </div>
 
@@ -688,18 +433,13 @@ function FundCard({ fund }: FundCardProps) {
                 <Tooltip text="Years to fully invest fund capital (typically 2-3 years)"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="form-group">
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="number"
-                    value={isNaN(fund.deploymentTimeline) ? '' : fund.deploymentTimeline}
-                    onChange={(e) => handleFieldChange('deploymentTimeline', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                    step="0.5"
-                    placeholder="2.5"
-                    min="0"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-                </div>
+                <NumericInputWithUnit
+                  value={isNaN(fund.deploymentTimeline) ? '' : fund.deploymentTimeline}
+                  onChange={(value) => handleFieldChange('deploymentTimeline', value)}
+                  step="0.5"
+                  placeholder="2.5"
+                  unit="Yrs"
+                />
               </div>
             </div>
 
@@ -720,7 +460,11 @@ function FundCard({ fund }: FundCardProps) {
                 ))}
               </div>
               <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
-                <canvas ref={deploymentCanvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
+                <CurveChart
+                  curve={fund.deploymentCurve}
+                  timelineYears={isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) || fund.deploymentTimeline <= 0 ? 2.5 : fund.deploymentTimeline}
+                  color="#10b981"
+                />
               </div>
             </div>
 
@@ -730,17 +474,12 @@ function FundCard({ fund }: FundCardProps) {
                 <Tooltip text="Expected fund lifespan until full distribution of returns (typically 10-15 years)"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="form-group">
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="number"
-                    value={isNaN(fund.years) ? '' : fund.years}
-                    onChange={(e) => handleFieldChange('years', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                    placeholder="10"
-                    min="0"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-                </div>
+                <NumericInputWithUnit
+                  value={isNaN(fund.years) ? '' : fund.years}
+                  onChange={(value) => handleFieldChange('years', value)}
+                  placeholder="10"
+                  unit="Yrs"
+                />
               </div>
             </div>
 
@@ -761,7 +500,30 @@ function FundCard({ fund }: FundCardProps) {
                 ))}
               </div>
               <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
-                <canvas ref={canvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
+                <CurveChart
+                  curve={fund.realizationCurve}
+                  timelineYears={isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years}
+                  color="#667eea"
+                  markerLine={
+                    fund.scenarios[0]
+                      ? (() => {
+                          const fundYears = isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years;
+                          const carryStartYear = calculateYearsToClear1X(
+                            fund.scenarios[0].grossReturnMultiple,
+                            fund.realizationCurve,
+                            fundYears
+                          );
+                          return carryStartYear && isFinite(carryStartYear) && carryStartYear <= fundYears
+                            ? {
+                                year: carryStartYear,
+                                label: `Carry Y${Math.round(carryStartYear * 10) / 10}`,
+                                color: '#ef4444',
+                              }
+                            : undefined;
+                        })()
+                      : undefined
+                  }
+                />
               </div>
             </div>
           </>

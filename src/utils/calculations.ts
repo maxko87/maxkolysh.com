@@ -1,4 +1,4 @@
-import type { Fund, CellData, FundBreakdown, VintageBreakdown } from '../types/calculator';
+import type { Fund, Scenario, CellData, FundBreakdown, VintageBreakdown, VintageCalculationSteps } from '../types/calculator';
 
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
@@ -220,6 +220,102 @@ export function calculateWeightedRealization(
   return weightedRealization;
 }
 
+// Calculate detailed steps for a single vintage (for math visibility)
+// This function exposes every intermediate calculation step
+export function calculateVintageSteps(
+  fund: Fund,
+  scenario: Scenario,
+  vintageIndex: number,
+  yearsWorked: number,
+  yearsFromToday: number
+): VintageCalculationSteps {
+  // Use default values for any NaN fund fields
+  const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
+  const vestingPeriod = isNaN(fund.vestingPeriod) || !isFinite(fund.vestingPeriod) ? 4 : fund.vestingPeriod;
+  const cliffPeriod = isNaN(fund.cliffPeriod) || !isFinite(fund.cliffPeriod) ? 1 : fund.cliffPeriod;
+  const fundYears = isNaN(fund.years) || !isFinite(fund.years) ? 10 : fund.years;
+  const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) ? 2.5 : fund.deploymentTimeline;
+  const carryAllocationPercent = isNaN(fund.carryAllocationPercent) || !isFinite(fund.carryAllocationPercent) ? 5 : fund.carryAllocationPercent;
+  const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
+  const baseCarryPercent = isNaN(fund.carryPercent) || !isFinite(fund.carryPercent) ? 20 : fund.carryPercent;
+  const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 3 : scenario.grossReturnMultiple;
+
+  // Calculate vintage timing
+  const fundStartYear = vintageIndex * fundCycle;
+  const vintageAgeInYears = yearsFromToday - fundStartYear;
+  const yearsIntoThisVintage = yearsWorked - fundStartYear;
+
+  // Get deployment and realization percentages
+  const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
+  const yearsToClear = calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
+  const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
+
+  // Calculate vesting
+  const vestingProgress = Math.min(yearsIntoThisVintage / vestingPeriod, 1);
+  const cliffMet = yearsIntoThisVintage >= cliffPeriod;
+
+  // MATH FLOW - Step by step calculations (this is the key for math visibility!)
+
+  // Step 1: Calculate deployed capital
+  const deployedCapital = fundSize * deploymentPercent;
+
+  // Step 2: Calculate gross returns
+  const grossReturns = deployedCapital * multiple;
+
+  // Step 3: Calculate actual multiple on fund size
+  const actualMultiple = grossReturns / fundSize;
+
+  // Step 4: Calculate fund profit
+  const fundProfit = Math.max(0, grossReturns - fundSize);
+
+  // Step 5: Determine effective carry rate (with hurdles)
+  let effectiveCarryRate = baseCarryPercent / 100;
+  const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
+  for (const hurdle of sortedHurdles) {
+    if (actualMultiple >= hurdle.multiple) {
+      effectiveCarryRate = hurdle.carryPercent / 100;
+    }
+  }
+
+  // Step 6: Calculate total fund carry
+  const totalFundCarry = fundProfit * effectiveCarryRate;
+
+  // Step 7: Calculate your share of carry pool
+  const yourCarryPoolShare = totalFundCarry * (carryAllocationPercent / 100);
+
+  // Step 8: Apply realization percentage
+  const realizedCarry = yourCarryPoolShare * realizationPercent;
+
+  // Step 9: Apply vesting (if cliff is met)
+  const yourVestedCarry = cliffMet ? realizedCarry * vestingProgress : 0;
+
+  return {
+    // Inputs
+    fundSize,
+    deploymentPercent,
+    realizationPercent,
+    grossReturnMultiple: multiple,
+    baseCarryPercent,
+    effectiveCarryRate,
+    carryAllocationPercent,
+    vestingProgress,
+    cliffMet,
+    yearsToClear1X: yearsToClear,
+    vintageAgeInYears,
+    yearsIntoThisVintage,
+
+    // Calculated steps
+    deployedCapital,
+    grossReturns,
+    actualMultiple,
+    fundProfit,
+    totalFundCarry,
+    yourCarryPoolShare,
+    realizedCarry,
+    yourVestedCarry,
+  };
+}
+
 // Main calculation function - generates cell data for one cell in the results table
 export function calculateCell(
   yearsWorked: number,
@@ -241,19 +337,11 @@ export function calculateCell(
     if (!scenario) return;
 
     // Use default values for any NaN fund fields (matching placeholders)
-    const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
     const vestingPeriod = isNaN(fund.vestingPeriod) || !isFinite(fund.vestingPeriod) ? 4 : fund.vestingPeriod;
     const cliffPeriod = isNaN(fund.cliffPeriod) || !isFinite(fund.cliffPeriod) ? 1 : fund.cliffPeriod;
-    const fundYears = isNaN(fund.years) || !isFinite(fund.years) ? 10 : fund.years;
-    const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) ? 2.5 : fund.deploymentTimeline;
-    const carryAllocationPercent = isNaN(fund.carryAllocationPercent) || !isFinite(fund.carryAllocationPercent) ? 5 : fund.carryAllocationPercent;
     const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
 
-    // Handle NaN or invalid multiples - use default of 3x
-    // Allow any non-negative multiple including < 1 (e.g., 0.8x for a loss)
-    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 3 : scenario.grossReturnMultiple;
-
-    // Calculate vintage breakdowns
+    // Calculate vintage breakdowns using the centralized calculateVintageSteps function
     const vintageBreakdowns: VintageBreakdown[] = [];
     let fundStartYear = 0;
     let vintageIndex = 0;
@@ -263,37 +351,17 @@ export function calculateCell(
       const vestingProgress = Math.min(yearsIntoThisVintage / vestingPeriod, 1);
 
       if (vestingProgress > 0 && yearsIntoThisVintage >= cliffPeriod) {
-        const vintageAgeInYears = yearsFromToday - fundStartYear;
-
-        // Get deployment percentage - only deployed capital generates returns
-        const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
-
-        // Calculate returns based on deployed capital only
-        const deployedCapital = fundSize * deploymentPercent;
-        const returns = deployedCapital * multiple;
-        const carry = calculateFundCarry(fund, returns);
-
-        // Calculate per GP share for this vintage
-        const perGPShare = carry * (carryAllocationPercent / 100);
-
-        // Auto-calculate yearsToClear1X from the scenario's return multiple and realization schedule
-        const yearsToClear = calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
-
-        const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
-
-        // Total carry for this vintage before vesting
-        const totalVintageCarry = realizationPercent * perGPShare;
-        // Your vested fraction
-        const vestedVintageCarry = vestingProgress * totalVintageCarry;
+        // Use calculateVintageSteps for all calculations (single source of truth!)
+        const steps = calculateVintageSteps(fund, scenario, vintageIndex, yearsWorked, yearsFromToday);
 
         // Always add vintage breakdown to explain why carry is zero (e.g., 0% realized)
         vintageBreakdowns.push({
           vintage: vintageIndex + 1,
-          yearsIn: Math.round(vintageAgeInYears * 10) / 10,
-          realization: Math.round(realizationPercent * 100),
-          amount: vestedVintageCarry,
-          totalCarry: totalVintageCarry,
-          vestedCarry: vestedVintageCarry
+          yearsIn: Math.round(steps.vintageAgeInYears * 10) / 10,
+          realization: Math.round(steps.realizationPercent * 100),
+          amount: steps.yourVestedCarry,
+          totalCarry: steps.realizedCarry,
+          vestedCarry: steps.yourVestedCarry
         });
       }
 
