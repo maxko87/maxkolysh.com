@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useCalculator } from '../../../hooks/useCalculator';
-import { PRESET_FUNDS, createFundDataFromPreset } from '../../../data/presetFunds';
+import { PRESET_FUNDS, createFundDataFromPreset, generateDisplayName } from '../../../data/presetFunds';
 import { formatCurrency } from '../../../utils/formatCurrency';
 
 function PresetSelector() {
@@ -15,12 +15,9 @@ function PresetSelector() {
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const [formData, setFormData] = useState({
-    displayName: '',
     fundName: '',
     vintage: new Date().getFullYear(),
-    strategy: '',
     source: '',
-    sourceUrl: '',
     size: '',
     grossReturnMultiple: '',
     irr: ''
@@ -74,7 +71,7 @@ function PresetSelector() {
   };
 
   const filteredFunds = PRESET_FUNDS.filter((preset) => {
-    const searchText = `${preset.fundName} ${preset.displayName} ${preset.strategy} ${preset.source} ${preset.vintage}`;
+    const searchText = `${preset.fundName} ${preset.source} ${preset.vintage}`;
     const matchesSearch = fuzzyMatch(searchText, searchQuery);
 
     // If there's a search query, show all matching funds regardless of filter
@@ -84,17 +81,14 @@ function PresetSelector() {
 
     // If no search and "Notable" filter is selected, only show starred funds
     if (sortBy === 'notable') {
-      return preset.displayName.startsWith('⭐');
+      return preset.isNotable;
     }
 
     return matchesSearch;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'alphabetical':
-        // Remove stars before comparing for alphabetical sort
-        const aName = a.displayName.replace(/^⭐\s*/, '');
-        const bName = b.displayName.replace(/^⭐\s*/, '');
-        return aName.localeCompare(bName);
+        return a.fundName.localeCompare(b.fundName);
       case 'size':
         return b.size - a.size; // Descending order (largest first)
       case 'multiple':
@@ -136,16 +130,21 @@ function PresetSelector() {
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Calculate display name
+    const displayName = generateDisplayName(
+      formData.fundName,
+      formData.vintage,
+      parseFloat(formData.grossReturnMultiple)
+    );
+
     // Build email body
     const emailBody = `
 Fund Submission:
 
-Display Name: ${formData.displayName}
+Display Name: ${displayName}
 Fund Name: ${formData.fundName}
 Vintage Year: ${formData.vintage}
-Strategy: ${formData.strategy}
 Source: ${formData.source}
-Source URL: ${formData.sourceUrl || 'N/A'}
 Fund Size: $${formData.size}M
 Gross Return Multiple (TVPI): ${formData.grossReturnMultiple}x
 IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
@@ -159,12 +158,9 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
 
     // Reset form and close modal
     setFormData({
-      displayName: '',
       fundName: '',
       vintage: new Date().getFullYear(),
-      strategy: '',
       source: '',
-      sourceUrl: '',
       size: '',
       grossReturnMultiple: '',
       irr: ''
@@ -294,7 +290,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                       }}
                     >
                       <div style={{ fontWeight: 500, marginBottom: '2px' }}>
-                        {preset.displayName}
+                        {generateDisplayName(preset.fundName, preset.vintage, preset.grossReturnMultiple, preset.isNotable)}
                       </div>
                       <div style={{
                         fontSize: '0.85em',
@@ -395,58 +391,36 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 style={{ marginTop: 0, marginBottom: 'var(--spacing-lg)' }}>
+          <h2 style={{ marginTop: 0, marginBottom: 'var(--spacing-lg)', color: 'var(--color-text)' }}>
             Submit a Historic Fund
           </h2>
           <form onSubmit={handleSubmitForm}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                  Display Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.displayName}
-                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                  placeholder="e.g., Apollo Investment Fund X (2023) - 1.16x"
-                  style={{
-                    width: '100%',
-                    padding: 'var(--spacing-sm)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '1em',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text)'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                  Fund Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.fundName}
-                  onChange={(e) => setFormData({ ...formData, fundName: e.target.value })}
-                  placeholder="e.g., Apollo Investment Fund X, L.P."
-                  style={{
-                    width: '100%',
-                    padding: 'var(--spacing-sm)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '1em',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text)'
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--spacing-md)' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
+                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500, color: 'var(--color-text)' }}>
+                    Fund Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.fundName}
+                    onChange={(e) => setFormData({ ...formData, fundName: e.target.value })}
+                    placeholder="Apollo Investment Fund X, L.P."
+                    style={{
+                      width: '100%',
+                      padding: 'var(--spacing-sm)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.95em',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-text)'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500, color: 'var(--color-text)' }}>
                     Vintage Year *
                   </label>
                   <input
@@ -454,37 +428,15 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                     required
                     value={formData.vintage}
                     onChange={(e) => setFormData({ ...formData, vintage: parseInt(e.target.value) })}
-                    placeholder="e.g., 2023"
+                    placeholder="2023"
                     min="1990"
-                    max={new Date().getFullYear()}
+                    max={new Date().getFullYear() + 1}
                     style={{
                       width: '100%',
                       padding: 'var(--spacing-sm)',
                       border: '1px solid var(--color-border)',
                       borderRadius: 'var(--radius-sm)',
-                      fontSize: '1em',
-                      backgroundColor: 'var(--color-background)',
-                      color: 'var(--color-text)'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                    Strategy *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.strategy}
-                    onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
-                    placeholder="e.g., Private Equity"
-                    style={{
-                      width: '100%',
-                      padding: 'var(--spacing-sm)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '1em',
+                      fontSize: '0.95em',
                       backgroundColor: 'var(--color-background)',
                       color: 'var(--color-text)'
                     }}
@@ -493,7 +445,82 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
+                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500, color: 'var(--color-text)' }}>
+                  Fund Size (millions) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.size}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/,/g, '');
+                    if (value === '' || !isNaN(Number(value))) {
+                      setFormData({ ...formData, size: value });
+                    }
+                  }}
+                  placeholder="25,000"
+                  style={{
+                    width: '100%',
+                    padding: 'var(--spacing-sm)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.95em',
+                    backgroundColor: 'var(--color-background)',
+                    color: 'var(--color-text)'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500, color: 'var(--color-text)' }}>
+                    Gross MOIC (TVPI) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    value={formData.grossReturnMultiple}
+                    onChange={(e) => setFormData({ ...formData, grossReturnMultiple: e.target.value })}
+                    placeholder="1.16"
+                    min="0"
+                    step="0.01"
+                    style={{
+                      width: '100%',
+                      padding: 'var(--spacing-sm)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.95em',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-text)'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500, color: 'var(--color-text)' }}>
+                    IRR (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.irr}
+                    onChange={(e) => setFormData({ ...formData, irr: e.target.value })}
+                    placeholder="15.5"
+                    step="0.1"
+                    style={{
+                      width: '100%',
+                      padding: 'var(--spacing-sm)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '0.95em',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-text)'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500, color: 'var(--color-text)' }}>
                   Source *
                 </label>
                 <input
@@ -501,116 +528,17 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                   required
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                  placeholder="e.g., CalPERS"
+                  placeholder="CalPERS"
                   style={{
                     width: '100%',
                     padding: 'var(--spacing-sm)',
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius-sm)',
-                    fontSize: '1em',
+                    fontSize: '0.95em',
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)'
                   }}
                 />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                  Source URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.sourceUrl}
-                  onChange={(e) => setFormData({ ...formData, sourceUrl: e.target.value })}
-                  placeholder="https://..."
-                  style={{
-                    width: '100%',
-                    padding: 'var(--spacing-sm)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '1em',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text)'
-                  }}
-                />
-                <div style={{ fontSize: '0.85em', color: 'var(--color-text-secondary)', marginTop: 'var(--spacing-xs)' }}>
-                  Optional. Only include public information. For non-public/private data, leave blank.
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                    Fund Size (millions) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.size}
-                    onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                    placeholder="e.g., 25000"
-                    min="0"
-                    step="0.01"
-                    style={{
-                      width: '100%',
-                      padding: 'var(--spacing-sm)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '1em',
-                      backgroundColor: 'var(--color-background)',
-                      color: 'var(--color-text)'
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                    Gross Return MOIC (TVPI) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.grossReturnMultiple}
-                    onChange={(e) => setFormData({ ...formData, grossReturnMultiple: e.target.value })}
-                    placeholder="e.g., 1.16"
-                    min="0"
-                    step="0.01"
-                    style={{
-                      width: '100%',
-                      padding: 'var(--spacing-sm)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '1em',
-                      backgroundColor: 'var(--color-background)',
-                      color: 'var(--color-text)'
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 'var(--spacing-xs)', fontWeight: 500 }}>
-                  IRR (%)
-                </label>
-                <input
-                  type="number"
-                  value={formData.irr}
-                  onChange={(e) => setFormData({ ...formData, irr: e.target.value })}
-                  placeholder="e.g., 15.5"
-                  step="0.1"
-                  style={{
-                    width: '100%',
-                    padding: 'var(--spacing-sm)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '1em',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text)'
-                  }}
-                />
-                <div style={{ fontSize: '0.85em', color: 'var(--color-text-secondary)', marginTop: 'var(--spacing-xs)' }}>
-                  Optional reference field
-                </div>
               </div>
 
               <div style={{ display: 'flex', gap: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
@@ -619,7 +547,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                   className="btn btn-primary"
                   style={{ flex: 1 }}
                 >
-                  Submit via Email
+                  Submit
                 </button>
                 <button
                   type="button"

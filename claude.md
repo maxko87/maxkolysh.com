@@ -3,3 +3,4 @@
 - When i say "commit":
 	- run `npx tsc && npx vite build` to test your changes and fix the errors.
 	- run 'git add .; git commit -am XXX; git push' and add a message based on this chat history (since the last commit). be thorough in your message.
+- Any one-off scripts go into data-processing folder.
