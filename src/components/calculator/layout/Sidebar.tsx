@@ -50,12 +50,8 @@ function Sidebar() {
           color: '#94a3b8',
           marginBottom: 'var(--spacing-md)'
         }}>
-          Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>. <a href="mailto:maxkolysh@gmail.com?subject=Fund GP Comp Calculator Feedback" style={{ color: 'inherit', textDecoration: 'underline' }}>Send feedback.</a>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
-          <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
-            How to Use
-          </button>
+          <div>Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>.</div>
+          <div><a href="#" onClick={(e) => { e.preventDefault(); setShowModal(true); }} style={{ color: 'inherit', textDecoration: 'underline' }}>Read the quickstart</a> or <a href="mailto:maxkolysh@gmail.com?subject=Fund GP Comp Calculator Feedback" style={{ color: 'inherit', textDecoration: 'underline' }}>send feedback</a>.</div>
         </div>
       </div>
 

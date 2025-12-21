@@ -26,14 +26,14 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Quick Start</h2>
+          <h2>What is this?</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
         <div className="modal-body">
           <section className="modal-section">
             <p>
-              Model your carry from multiple fund vintages. Configure fund parameters, add return scenarios, and see comp projections over 20 years.
+              If you're a general partner (or planning to become a GP) in venture or private equity, this calculator lets you fully model your carry compensation. Configure fund parameters, add multiple funds at once, model return scenarios, and see your comp projections over 20 years.
             </p>
           </section>
 
