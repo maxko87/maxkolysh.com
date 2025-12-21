@@ -486,7 +486,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                       setFormData({ ...formData, size: value });
                     }
                   }}
-                  placeholder="25,000"
+                  placeholder="250"
                   style={{
                     width: '100%',
                     padding: 'var(--spacing-sm)',
