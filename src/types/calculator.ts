@@ -48,6 +48,33 @@ export interface VintageBreakdown {
   vestedCarry: number;       // Your vested fraction of carry
 }
 
+// Detailed calculation steps for a single vintage (for math visibility)
+export interface VintageCalculationSteps {
+  // Input parameters (for visibility)
+  fundSize: number;
+  deploymentPercent: number;
+  realizationPercent: number;
+  grossReturnMultiple: number;
+  baseCarryPercent: number;
+  effectiveCarryRate: number;
+  carryAllocationPercent: number;
+  vestingProgress: number;
+  cliffMet: boolean;
+  yearsToClear1X: number;
+  vintageAgeInYears: number;
+  yearsIntoThisVintage: number;
+
+  // Step-by-step calculated values (the math flow)
+  deployedCapital: number;       // = fundSize × deploymentPercent
+  grossReturns: number;          // = deployedCapital × multiple
+  actualMultiple: number;        // = grossReturns / fundSize
+  fundProfit: number;            // = max(0, grossReturns - fundSize)
+  totalFundCarry: number;        // = fundProfit × effectiveCarryRate
+  yourCarryPoolShare: number;    // = totalFundCarry × carryAllocationPercent
+  realizedCarry: number;         // = yourCarryPoolShare × realizationPercent
+  yourVestedCarry: number;       // = realizedCarry × vestingProgress (if cliff met)
+}
+
 export interface FundBreakdown {
   name: string;
   amount: number;
