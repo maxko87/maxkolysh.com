@@ -567,7 +567,7 @@ function FundCard({ fund, index }: FundCardProps) {
           style={{ cursor: 'pointer', userSelect: 'none' }}
           onClick={() => setShowAdvanced(!showAdvanced)}
         >
-          <span>Advanced {showAdvanced ? '▼' : '▶'}</span>
+          <span>{showAdvanced ? '▼' : '▶'} Advanced</span>
         </div>
         {showAdvanced && (
           <>
