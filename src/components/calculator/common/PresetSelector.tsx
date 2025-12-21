@@ -10,7 +10,10 @@ function PresetSelector() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'notable' | 'alphabetical' | 'size' | 'multiple'>('notable');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const [formData, setFormData] = useState({
     fundName: '',
@@ -21,15 +24,34 @@ function PresetSelector() {
     irr: ''
   });
 
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
-      // Focus search input when modal opens
-      setTimeout(() => searchInputRef.current?.focus(), 100);
+      // Update dropdown position for desktop
+      if (!isMobile && buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.bottom + 4,
+          left: rect.left
+        });
+      }
+      // Focus search input when dropdown opens
+      setTimeout(() => searchInputRef.current?.focus(), isMobile ? 100 : 0);
     } else {
       setSearchQuery('');
     }
 
-    // Handle escape key to close modal
+    // Handle escape key to close dropdown
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
@@ -38,7 +60,7 @@ function PresetSelector() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   // Search: checks if query words match text or start of words in text
   const fuzzyMatch = (text: string, query: string): boolean => {
@@ -160,7 +182,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
     setIsModalOpen(false);
   };
 
-  const dropdownContent = isOpen && createPortal(
+  const dropdownContent = isOpen && (isMobile || position.top > 0) && createPortal(
     <>
       <div
         style={{
@@ -169,7 +191,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
           zIndex: 10001
         }}
         onClick={() => setIsOpen(false)}
@@ -177,17 +199,28 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
       <div
         style={{
           position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          top: '20%',
+          ...(isMobile ? {
+            bottom: 0,
+            left: 0,
+            right: 0,
+            top: '20%',
+            borderRadius: '16px 16px 0 0',
+            animation: 'slideUp 0.3s ease-out'
+          } : {
+            top: position.top,
+            left: position.left,
+            width: '380px',
+            maxHeight: '600px',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
+          }),
           backgroundColor: 'var(--bg-primary)',
-          borderRadius: '16px 16px 0 0',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          zIndex: 10002,
-          animation: 'slideUp 0.3s ease-out'
+          overflowY: 'auto',
+          zIndex: 10002
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -564,6 +597,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
   return (
     <>
       <button
+        ref={buttonRef}
         className="btn btn-secondary"
         onClick={() => setIsOpen(!isOpen)}
       >
