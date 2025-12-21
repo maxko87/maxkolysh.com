@@ -587,10 +587,12 @@ function ResultsTable() {
         ref={tooltipSidebarRef}
         className="tooltip-sidebar"
         style={{
-          width: showAdvanced ? '100%' : 'min(400px, 90vw)',
-          maxWidth: showAdvanced ? '100%' : '400px',
-          minWidth: showAdvanced ? 'auto' : '300px',
-          flex: showAdvanced ? '1 1 auto' : '0 0 auto',
+          width: 'fit-content',
+          maxWidth: showAdvanced
+            ? `${Math.min(tooltipData.fundBreakdowns.length * 540, 90)}vw`
+            : '400px',
+          minWidth: '300px',
+          flex: '0 0 auto',
           background: 'var(--bg-primary)',
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--radius-lg)',
@@ -701,9 +703,10 @@ function ResultsTable() {
           // Advanced mode - detailed breakdown
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 500px))',
+            gridTemplateColumns: `repeat(${tooltipData.fundBreakdowns.length}, minmax(380px, 500px))`,
             gap: '16px',
-            width: '100%'
+            width: 'fit-content',
+            maxWidth: '100%'
           }}>
             {tooltipData.fundBreakdowns.map((fb, fbIdx) => {
               const fund = state.funds.find(f => f.name === fb.name);
