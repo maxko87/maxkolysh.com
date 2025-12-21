@@ -324,8 +324,15 @@ function ResultsTable() {
                 <th>Years at Fund</th>
                 {(() => {
                   const cols = [];
-                  const startCol = Math.max(0, clickedCell.col - 2);
-                  const endCol = Math.min(headerColumns.length - 1, clickedCell.col + 2);
+                  // Convert data column index to visual column index
+                  let visualColIdx = clickedCell.col;
+                  if (numZeroColumns > 0 && clickedCell.col < numZeroColumns) {
+                    visualColIdx = 0; // Collapsed column
+                  } else if (numZeroColumns > 0) {
+                    visualColIdx = clickedCell.col - numZeroColumns + 1;
+                  }
+                  const startCol = Math.max(0, visualColIdx - 2);
+                  const endCol = Math.min(headerColumns.length - 1, visualColIdx + 2);
 
                   for (let i = startCol; i <= endCol; i++) {
                     cols.push(<th key={i}>{headerColumns[i].label}</th>);
@@ -340,12 +347,20 @@ function ResultsTable() {
                 const startRow = Math.max(0, clickedCell.row - 2);
                 const endRow = Math.min(maxYears - 1, clickedCell.row + 2);
 
+                // Convert data column index to visual column index
+                let visualColIdx = clickedCell.col;
+                if (numZeroColumns > 0 && clickedCell.col < numZeroColumns) {
+                  visualColIdx = 0; // Collapsed column
+                } else if (numZeroColumns > 0) {
+                  visualColIdx = clickedCell.col - numZeroColumns + 1;
+                }
+
                 for (let rowIdx = startRow; rowIdx <= endRow; rowIdx++) {
                   const row = calculations[rowIdx];
                   if (!row) continue;
 
-                  const startCol = Math.max(0, clickedCell.col - 2);
-                  const endCol = Math.min(headerColumns.length - 1, clickedCell.col + 2);
+                  const startCol = Math.max(0, visualColIdx - 2);
+                  const endCol = Math.min(headerColumns.length - 1, visualColIdx + 2);
 
                   rows.push(
                     <tr key={rowIdx}>
@@ -370,7 +385,15 @@ function ResultsTable() {
                             cellData = row[originalColIdx];
                           }
 
-                          const isClickedCell = rowIdx === clickedCell.row && colIdx === clickedCell.col;
+                          // Check if this is the clicked cell (compare data column indices)
+                          let dataColIdx;
+                          if (col.isCollapsed) {
+                            const yearsWorked = rowIdx + 1;
+                            dataColIdx = yearsWorked - 1;
+                          } else {
+                            dataColIdx = col.originalIndices[0];
+                          }
+                          const isClickedCell = rowIdx === clickedCell.row && dataColIdx === clickedCell.col;
 
                           if (!cellData) {
                             cells.push(<td key={colIdx} className="empty">-</td>);
@@ -390,7 +413,7 @@ function ResultsTable() {
                                 if (isClickedCell) {
                                   handleGoBack();
                                 } else {
-                                  handleCellClick(rowIdx, colIdx, cellData, e, col.label);
+                                  handleCellClick(rowIdx, dataColIdx, cellData, e, col.label);
                                 }
                               }}
                             >
@@ -451,7 +474,7 @@ function ResultsTable() {
                           }}
                           onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                           onMouseLeave={handleCellMouseLeave}
-                          onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e, col.label)}
+                          onClick={(e) => handleCellClick(rowIdx, relevantColIdx, cellData, e, col.label)}
                         >
                           {formatCurrency(cellData.total)}
                           {isHovered && !clickedCell && (
@@ -507,7 +530,7 @@ function ResultsTable() {
                       }}
                       onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                       onMouseLeave={handleCellMouseLeave}
-                      onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e, col.label)}
+                      onClick={(e) => handleCellClick(rowIdx, originalColIdx, cellData, e, col.label)}
                     >
                       {formatCurrency(cellData.total)}
                       {isHovered && !clickedCell && (
@@ -678,7 +701,7 @@ function ResultsTable() {
           // Advanced mode - detailed breakdown
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 500px))',
             gap: '16px',
             width: '100%'
           }}>

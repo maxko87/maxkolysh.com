@@ -636,24 +636,6 @@ function FundCard({ fund, index }: FundCardProps) {
                   <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
                 </div>
               </div>
-              <div className="form-group">
-                <label>
-                  <span>Deployment Timeline</span>
-                  <Tooltip text="Years to fully deploy fund capital (typically 2-3 years)"><span className="tooltip-icon">?</span></Tooltip>
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="number"
-                    value={fund.deploymentTimeline}
-                    onChange={(e) => handleFieldChange('deploymentTimeline', parseFloat(e.target.value))}
-                    step="0.5"
-                    placeholder="2.5"
-                    min="0"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-                </div>
-              </div>
             </div>
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
@@ -704,11 +686,53 @@ function FundCard({ fund, index }: FundCardProps) {
             </div>
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Timeline</span>
+                <Tooltip text="Years to fully deploy fund capital (typically 2-3 years)"><span className="tooltip-icon">?</span></Tooltip>
+              </div>
               <div className="form-group">
-                <label>
-                  <span>Fund Life</span>
-                  <Tooltip text="Expected fund lifespan until full realization of returns (typically 10-15 years)"><span className="tooltip-icon">?</span></Tooltip>
-                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="number"
+                    value={fund.deploymentTimeline}
+                    onChange={(e) => handleFieldChange('deploymentTimeline', parseFloat(e.target.value))}
+                    step="0.5"
+                    placeholder="2.5"
+                    min="0"
+                    style={{ paddingRight: '35px' }}
+                  />
+                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Schedule</span>
+                <Tooltip text="Pattern of when fund capital is deployed over time. Fast means 25% deployed by year 1. Fastest means 80% deployed by year 1."><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              <div className="curve-presets">
+                {(['linear', 'fast', 'fastest'] as const).map((preset) => (
+                  <button
+                    key={preset}
+                    className={`btn btn-small curve-preset-btn ${selectedDeploymentPreset === preset ? 'btn-primary' : ''}`}
+                    onClick={() => handleDeploymentPresetClick(preset)}
+                  >
+                    {preset === 'fast' ? 'Fast' : preset === 'fastest' ? 'Fastest' : 'Linear'}
+                  </button>
+                ))}
+              </div>
+              <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
+                <canvas ref={deploymentCanvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Fund Life</span>
+                <Tooltip text="Expected fund lifespan until full realization of returns (typically 10-15 years)"><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              <div className="form-group">
                 <div style={{ position: 'relative' }}>
                   <input
                     type="number"
@@ -741,29 +765,6 @@ function FundCard({ fund, index }: FundCardProps) {
               </div>
               <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
                 <canvas ref={canvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
-              </div>
-            </div>
-
-            {/* Years to Clear 1X is now auto-calculated per scenario based on return multiple */}
-
-            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Schedule</span>
-                <Tooltip text="Pattern of when fund capital is deployed over time. Fast means 25% deployed by year 1. Fastest means 80% deployed by year 1."><span className="tooltip-icon">?</span></Tooltip>
-              </div>
-              <div className="curve-presets">
-                {(['linear', 'fast', 'fastest'] as const).map((preset) => (
-                  <button
-                    key={preset}
-                    className={`btn btn-small curve-preset-btn ${selectedDeploymentPreset === preset ? 'btn-primary' : ''}`}
-                    onClick={() => handleDeploymentPresetClick(preset)}
-                  >
-                    {preset === 'fast' ? 'Fast' : preset === 'fastest' ? 'Fastest' : 'Linear'}
-                  </button>
-                ))}
-              </div>
-              <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
-                <canvas ref={deploymentCanvasRef} className="curve-preview-canvas" style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }} />
               </div>
             </div>
           </>
