@@ -19,6 +19,7 @@ export interface Fund {
   mgmtFeePercent: number;          // Management fee %
   fundCycle: number;               // Years between funds
   years: number;                   // Fund duration
+  deploymentTimeline: number;      // Years to deploy capital (typically 2-3)
   hurdles: Hurdle[];
   scenarios: Scenario[];
   carryAllocationPercent: number;  // % of total carry allocated to one GP
@@ -74,6 +75,7 @@ export interface CompressedFund {
   m: number;    // mgmtFeePercent
   y: number;    // fundCycle
   fy: number;   // years
+  dt: number;   // deploymentTimeline
   h: Hurdle[];  // hurdles
   sc: CompressedScenario[]; // scenarios
   ca: number;   // carryAllocationPercent
@@ -129,6 +131,7 @@ export const DEPLOYMENT_PRESETS: Record<DeploymentPreset, number[]> = {
 // Default values
 export const DEFAULT_REALIZATION_CURVE = CURVE_PRESETS.standard;
 export const DEFAULT_DEPLOYMENT_CURVE = DEPLOYMENT_PRESETS.linear;
+export const DEFAULT_DEPLOYMENT_TIMELINE = 2.5;
 export const DEFAULT_YEARS_TO_CLEAR_1X = 5;
 
 export const createDefaultFund = (id: number, name: string, templateFund?: Fund): Fund => {
@@ -141,10 +144,11 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
       scenarios: [{
         id: Date.now(),
         name: 'Base Case',
-        grossReturnMultiple: templateFund.scenarios[0]?.grossReturnMultiple || 5
+        grossReturnMultiple: templateFund.scenarios[0]?.grossReturnMultiple || 3
       }],
       realizationCurve: [...templateFund.realizationCurve],
       deploymentCurve: [...(templateFund.deploymentCurve || DEFAULT_DEPLOYMENT_CURVE)],
+      deploymentTimeline: templateFund.deploymentTimeline ?? DEFAULT_DEPLOYMENT_TIMELINE,
       yearsToClear1X: templateFund.yearsToClear1X ?? DEFAULT_YEARS_TO_CLEAR_1X,
     };
   }
@@ -158,12 +162,13 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     fundCycle: 2,
     years: 15,
     hurdles: [],
-    scenarios: [{ id: Date.now(), name: 'Base Case', grossReturnMultiple: 5 }],
+    scenarios: [{ id: Date.now(), name: 'Base Case', grossReturnMultiple: 3 }],
     carryAllocationPercent: 5,
     vestingPeriod: 4,
     cliffPeriod: 1,
     realizationCurve: [...DEFAULT_REALIZATION_CURVE],
     deploymentCurve: [...DEFAULT_DEPLOYMENT_CURVE],
+    deploymentTimeline: DEFAULT_DEPLOYMENT_TIMELINE,
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
     raiseContinuously: true,
   };

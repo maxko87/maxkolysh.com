@@ -33,6 +33,7 @@ function FundCard({ fund, index }: FundCardProps) {
     vestingPeriod: 4,
     cliffPeriod: 1,
     years: 10,
+    deploymentTimeline: 2.5,
     fundCycle: 2,
     yearsToClear1X: 5
   };
@@ -55,7 +56,7 @@ function FundCard({ fund, index }: FundCardProps) {
   const handleAddScenario = () => {
     if (fund.scenarios.length < 5) {
       const lastScenario = fund.scenarios[fund.scenarios.length - 1];
-      const lastMultiple = isNaN(lastScenario.grossReturnMultiple) ? 5 : lastScenario.grossReturnMultiple;
+      const lastMultiple = isNaN(lastScenario.grossReturnMultiple) ? 3 : lastScenario.grossReturnMultiple;
       const newMultiple = lastMultiple * 2;
 
       dispatch({
@@ -89,7 +90,7 @@ function FundCard({ fund, index }: FundCardProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Use the fund's actual realization curve (not the preset) for consistency
+    // Use the fund's actual realization schedule (not the preset) for consistency
     const curve = fund.realizationCurve;
     const width = 300;
     const height = 160;
@@ -168,12 +169,12 @@ function FundCard({ fund, index }: FundCardProps) {
     ctx.stroke();
 
     // Draw vertical line showing when carry begins (when DPI crosses 1.0x)
-    // Calculate based on first scenario's return multiple AND the realization curve
+    // Calculate based on first scenario's return multiple AND the realization schedule
     const firstScenario = fund.scenarios[0];
     if (firstScenario) {
       const returnMultiple = firstScenario.grossReturnMultiple;
 
-      // Use the actual fund's realization curve (not the preset) for accurate calculation
+      // Use the actual fund's realization schedule (not the preset) for accurate calculation
       const carryStartYear = calculateYearsToClear1X(returnMultiple, fund.realizationCurve, fundYears);
 
       if (isFinite(carryStartYear) && carryStartYear <= fundYears) {
@@ -222,7 +223,7 @@ function FundCard({ fund, index }: FundCardProps) {
     const height = 160;
     const padding = 30;
     const topPadding = 20;
-    const fundYears = fund.years;
+    const deploymentTimeline = fund.deploymentTimeline;
 
     canvas.width = width;
     canvas.height = height;
@@ -247,9 +248,9 @@ function FundCard({ fund, index }: FundCardProps) {
     ctx.textAlign = 'center';
 
     const numLabels = 5;
-    const step = Math.ceil(fundYears / numLabels);
-    for (let i = 0; i <= fundYears; i += step) {
-      const x = padding + (i / fundYears) * chartWidth;
+    const step = Math.ceil(deploymentTimeline / numLabels);
+    for (let i = 0; i <= deploymentTimeline; i += step) {
+      const x = padding + (i / deploymentTimeline) * chartWidth;
       const y = height - padding;
 
       ctx.strokeStyle = '#e2e8f0';
@@ -282,8 +283,8 @@ function FundCard({ fund, index }: FundCardProps) {
     ctx.beginPath();
 
     for (let i = 0; i <= 10; i++) {
-      const yearPosition = (i / 10) * fundYears;
-      const x = padding + (yearPosition / fundYears) * chartWidth;
+      const yearPosition = (i / 10) * deploymentTimeline;
+      const x = padding + (yearPosition / deploymentTimeline) * chartWidth;
       const y = height - padding - (curve[i] || 0) * chartHeight;
 
       if (i === 0) {
@@ -296,8 +297,8 @@ function FundCard({ fund, index }: FundCardProps) {
 
     // Draw control points
     for (let i = 0; i <= 10; i++) {
-      const yearPosition = (i / 10) * fundYears;
-      const x = padding + (yearPosition / fundYears) * chartWidth;
+      const yearPosition = (i / 10) * deploymentTimeline;
+      const x = padding + (yearPosition / deploymentTimeline) * chartWidth;
       const y = height - padding - (curve[i] || 0) * chartHeight;
 
       ctx.fillStyle = '#10b981';
@@ -305,7 +306,7 @@ function FundCard({ fund, index }: FundCardProps) {
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
     }
-  }, [showAdvanced, selectedDeploymentPreset, fund.years]);
+  }, [showAdvanced, selectedDeploymentPreset, fund.deploymentTimeline]);
 
   return (
     <div className="fund-card">
@@ -453,25 +454,8 @@ function FundCard({ fund, index }: FundCardProps) {
           </label>
         </div>
 
-        <div className="form-grid">
-          <div className="form-group">
-            <label>
-              <span>Fund Life</span>
-              <Tooltip text="Expected lifespan of the fund before full realization"><span className="tooltip-icon">?</span></Tooltip>
-            </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="number"
-                value={fund.years}
-                onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
-                placeholder="10"
-                min="0"
-                style={{ paddingRight: '35px' }}
-              />
-              <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
-            </div>
-          </div>
-          {fund.raiseContinuously && (
+        {fund.raiseContinuously && (
+          <div className="form-grid">
             <div className="form-group">
               <label>
                 <span>Fund Cycle</span>
@@ -490,8 +474,8 @@ function FundCard({ fund, index }: FundCardProps) {
                 <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="section">
@@ -652,6 +636,24 @@ function FundCard({ fund, index }: FundCardProps) {
                   <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
                 </div>
               </div>
+              <div className="form-group">
+                <label>
+                  <span>Deployment Timeline</span>
+                  <Tooltip text="Years to fully deploy fund capital (typically 2-3 years)"><span className="tooltip-icon">?</span></Tooltip>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="number"
+                    value={fund.deploymentTimeline}
+                    onChange={(e) => handleFieldChange('deploymentTimeline', parseFloat(e.target.value))}
+                    step="0.5"
+                    placeholder="2.5"
+                    min="0"
+                    style={{ paddingRight: '35px' }}
+                  />
+                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+                </div>
+              </div>
             </div>
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
@@ -702,8 +704,28 @@ function FundCard({ fund, index }: FundCardProps) {
             </div>
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div className="form-group">
+                <label>
+                  <span>Fund Life</span>
+                  <Tooltip text="Expected fund lifespan until full realization of returns (typically 10-15 years)"><span className="tooltip-icon">?</span></Tooltip>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="number"
+                    value={fund.years}
+                    onChange={(e) => handleFieldChange('years', parseFloat(e.target.value))}
+                    placeholder="10"
+                    min="0"
+                    style={{ paddingRight: '35px' }}
+                  />
+                  <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#718096', fontSize: '0.9em', pointerEvents: 'none' }}>Yrs</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Curve</span>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Schedule</span>
                 <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">

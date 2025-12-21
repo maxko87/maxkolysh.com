@@ -590,7 +590,7 @@ body {
     font-size: 0.88em;
 }
 
-/* Realization Curve */
+/* Realization Schedule */
 .curve-presets {
     display: flex;
     gap: var(--spacing-sm);

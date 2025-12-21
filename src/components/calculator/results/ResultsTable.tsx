@@ -9,6 +9,7 @@ interface DetailedBreakdown {
   mgmtFeePercent: number;
   fundCycle: number;
   fundYears: number;
+  deploymentTimeline: number;
   raiseContinuously: boolean;
   grossReturnMultiple: number;
   scenarioName: string;
@@ -66,11 +67,12 @@ function ResultsTable() {
     const vestingPeriod = isNaN(fund.vestingPeriod) || !isFinite(fund.vestingPeriod) ? 4 : fund.vestingPeriod;
     const cliffPeriod = isNaN(fund.cliffPeriod) || !isFinite(fund.cliffPeriod) ? 1 : fund.cliffPeriod;
     const fundYears = isNaN(fund.years) || !isFinite(fund.years) ? 10 : fund.years;
+    const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) ? 2.5 : fund.deploymentTimeline;
     const carryAllocationPercent = isNaN(fund.carryAllocationPercent) || !isFinite(fund.carryAllocationPercent) ? 5 : fund.carryAllocationPercent;
     const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
     const baseCarryPercent = isNaN(fund.carryPercent) || !isFinite(fund.carryPercent) ? 20 : fund.carryPercent;
     const mgmtFeePercent = isNaN(fund.mgmtFeePercent) || !isFinite(fund.mgmtFeePercent) ? 2 : fund.mgmtFeePercent;
-    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 5 : scenario.grossReturnMultiple;
+    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 3 : scenario.grossReturnMultiple;
 
     // Calculate vintage age
     const vintageIndex = vintage.vintage - 1;
@@ -79,7 +81,7 @@ function ResultsTable() {
     const yearsIntoThisVintage = yearsWorked - fundStartYear;
 
     // Get deployment and realization
-    const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, fundYears);
+    const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
     const yearsToClear = calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
     const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
 
@@ -111,6 +113,7 @@ function ResultsTable() {
       mgmtFeePercent,
       fundCycle,
       fundYears,
+      deploymentTimeline,
       raiseContinuously: fund.raiseContinuously,
       grossReturnMultiple: multiple,
       scenarioName: scenario.name,
@@ -351,8 +354,21 @@ function ResultsTable() {
                         const cells = [];
                         for (let colIdx = startCol; colIdx <= endCol; colIdx++) {
                           const col = headerColumns[colIdx];
-                          const originalColIdx = col.isCollapsed ? Math.min(rowIdx, col.originalIndices.length - 1) : col.originalIndices[0];
-                          const cellData = row[originalColIdx];
+                          // Use the same logic as main table for data retrieval
+                          let cellData;
+                          if (col.isCollapsed) {
+                            const yearsWorked = rowIdx + 1;
+                            // Only show data if years worked is within the collapsed range
+                            if (yearsWorked <= numZeroColumns) {
+                              const relevantColIdx = yearsWorked - 1;
+                              cellData = row[relevantColIdx];
+                            } else {
+                              cellData = null; // Beyond collapsed range, show empty
+                            }
+                          } else {
+                            const originalColIdx = col.originalIndices[0];
+                            cellData = row[originalColIdx];
+                          }
 
                           const isClickedCell = rowIdx === clickedCell.row && colIdx === clickedCell.col;
 
@@ -435,7 +451,7 @@ function ResultsTable() {
                           }}
                           onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                           onMouseLeave={handleCellMouseLeave}
-                          onClick={(e) => handleCellClick(rowIdx, relevantColIdx, cellData, e, col.label)}
+                          onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e, col.label)}
                         >
                           {formatCurrency(cellData.total)}
                           {isHovered && !clickedCell && (
@@ -491,7 +507,7 @@ function ResultsTable() {
                       }}
                       onMouseEnter={() => handleCellMouseEnter(rowIdx, colIdx, cellData)}
                       onMouseLeave={handleCellMouseLeave}
-                      onClick={(e) => handleCellClick(rowIdx, originalColIdx, cellData, e, col.label)}
+                      onClick={(e) => handleCellClick(rowIdx, colIdx, cellData, e, col.label)}
                     >
                       {formatCurrency(cellData.total)}
                       {isHovered && !clickedCell && (

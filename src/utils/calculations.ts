@@ -16,14 +16,14 @@ export function calculateMultipleFromIRR(irrPercent: number, years: number): num
   return Math.pow(1 + irr, years);
 }
 
-// Calculate years to clear 1X based on gross multiple and realization curve
+// Calculate years to clear 1X based on gross multiple and realization schedule
 // Finds the year when realization% × returnMultiple = 1.0x (DPI crosses 1.0x)
 export function calculateYearsToClear1X(
   grossMultiple: number,
   realizationCurve?: number[],
   fundYears?: number
 ): number {
-  // If we have the realization curve, calculate precisely
+  // If we have the realization schedule, calculate precisely
   if (realizationCurve && fundYears) {
     // Handle edge cases
     if (grossMultiple < 1.0) return Infinity; // Zombies never clear
@@ -143,7 +143,7 @@ export function getRealizationAtYear(
   // No distributions until we clear 1X
   if (year <= yearsToClear1X) return 0;
 
-  // After clearing 1X, progress through the realization curve normally
+  // After clearing 1X, progress through the realization schedule normally
   // NO COMPRESSION - just shift the curve forward
   const yearsAfterClearing = year - yearsToClear1X;
   const remainingYears = fundYears - yearsToClear1X;
@@ -173,13 +173,13 @@ export function getRealizationAtYear(
 export function getDeploymentAtYear(
   year: number,
   deploymentCurve: number[],
-  fundYears: number
+  deploymentTimeline: number
 ): number {
   if (year <= 0) return 0;
-  if (year >= fundYears) return 1;
+  if (year >= deploymentTimeline) return 1;
 
   // Scale the year to curve position (curve goes from 0-10)
-  const curvePosition = (year / fundYears) * 10;
+  const curvePosition = (year / deploymentTimeline) * 10;
   const index = Math.floor(curvePosition);
   const fraction = curvePosition - index;
 
@@ -245,12 +245,13 @@ export function calculateCell(
     const vestingPeriod = isNaN(fund.vestingPeriod) || !isFinite(fund.vestingPeriod) ? 4 : fund.vestingPeriod;
     const cliffPeriod = isNaN(fund.cliffPeriod) || !isFinite(fund.cliffPeriod) ? 1 : fund.cliffPeriod;
     const fundYears = isNaN(fund.years) || !isFinite(fund.years) ? 10 : fund.years;
+    const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) ? 2.5 : fund.deploymentTimeline;
     const carryAllocationPercent = isNaN(fund.carryAllocationPercent) || !isFinite(fund.carryAllocationPercent) ? 5 : fund.carryAllocationPercent;
     const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
 
-    // Handle NaN or invalid multiples - use default of 5x
+    // Handle NaN or invalid multiples - use default of 3x
     // Allow any non-negative multiple including < 1 (e.g., 0.8x for a loss)
-    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 5 : scenario.grossReturnMultiple;
+    const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 3 : scenario.grossReturnMultiple;
 
     // Calculate vintage breakdowns
     const vintageBreakdowns: VintageBreakdown[] = [];
@@ -265,7 +266,7 @@ export function calculateCell(
         const vintageAgeInYears = yearsFromToday - fundStartYear;
 
         // Get deployment percentage - only deployed capital generates returns
-        const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, fundYears);
+        const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
 
         // Calculate returns based on deployed capital only
         const deployedCapital = fundSize * deploymentPercent;
@@ -275,7 +276,7 @@ export function calculateCell(
         // Calculate per GP share for this vintage
         const perGPShare = carry * (carryAllocationPercent / 100);
 
-        // Auto-calculate yearsToClear1X from the scenario's return multiple and realization curve
+        // Auto-calculate yearsToClear1X from the scenario's return multiple and realization schedule
         const yearsToClear = calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
 
         const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);

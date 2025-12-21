@@ -48,7 +48,7 @@ function HowToUseModal({ isOpen, onClose }: HowToUseModalProps) {
               <li><strong>Gross Return MOIC</strong> - Total return on the fund before fees (e.g., 3x means $300M returned on a $100M fund)</li>
               <li><strong>Vesting Period</strong> - Time required for GPs to fully earn their carry allocation, typically 4 years</li>
               <li><strong>Cliff</strong> - Minimum time before any carry vests, typically 1 year</li>
-              <li><strong>Realization Curve</strong> - Pattern of when fund returns are distributed over time</li>
+              <li><strong>Realization Schedule</strong> - Pattern of when fund returns are distributed over time</li>
             </ul>
           </section>
 

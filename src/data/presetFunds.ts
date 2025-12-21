@@ -6,6 +6,7 @@ const HISTORIC_FUND_DEFAULTS = {
   mgmtFeePercent: 2,
   fundCycle: 2,
   years: 10,
+  deploymentTimeline: 2.5,
   hurdles: [] as Hurdle[],
   carryAllocationPercent: 5,
   vestingPeriod: 5,
