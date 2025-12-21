@@ -4,6 +4,7 @@ import { useCalculator } from '../../../hooks/useCalculator';
 import { createDefaultFund } from '../../../types/calculator';
 import FundCard from '../fund/FundCard';
 import HowToUseModal from '../common/HowToUseModal';
+import FundTypeSelector from '../common/FundTypeSelector';
 import PresetSelector from '../common/PresetSelector';
 
 function Sidebar() {
@@ -11,7 +12,14 @@ function Sidebar() {
   const [showModal, setShowModal] = useState(false);
 
   const handleAddFund = () => {
-    const fundName = state.funds.length === 0 ? 'My Fund' : `My Fund ${state.funds.length + 1}`;
+    // Find the highest existing fund number to avoid duplicates
+    const existingNumbers = state.funds.map(f => {
+      const match = f.name.match(/^Fund (\d+)/);
+      return match ? parseInt(match[1], 10) : 0;
+    });
+    const maxNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) : 0;
+    const fundNumber = maxNumber + 1;
+    const fundName = `Fund ${fundNumber}`;
     const templateFund = state.funds[0];
     const newFund = createDefaultFund(
       state.funds.length,
@@ -45,10 +53,9 @@ function Sidebar() {
           Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>. <a href="mailto:maxkolysh@gmail.com?subject=Fund GP Comp Calculator Feedback" style={{ color: 'inherit', textDecoration: 'underline' }}>Send feedback.</a>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
             How to Use
           </button>
-          <PresetSelector />
         </div>
       </div>
 
@@ -57,9 +64,13 @@ function Sidebar() {
           <FundCard key={fund.id} fund={fund} index={index} />
         ))}
 
-        <button className="btn btn-primary" onClick={handleAddFund}>
-          + Add Fund
-        </button>
+        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 'var(--spacing-sm)', alignItems: 'center' }}>
+          <button className="btn btn-primary" onClick={handleAddFund}>
+            + Add Fund
+          </button>
+          <FundTypeSelector />
+          <PresetSelector />
+        </div>
       </div>
 
       <HowToUseModal isOpen={showModal} onClose={() => setShowModal(false)} />

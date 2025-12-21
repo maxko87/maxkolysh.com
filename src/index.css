@@ -433,6 +433,7 @@ body {
     background: var(--bg-tertiary);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
+    white-space: nowrap;
 }
 
 .btn:hover {
@@ -450,14 +451,14 @@ body {
 }
 
 .btn-secondary {
-    background: var(--bg-primary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e0;
 }
 
 .btn-secondary:hover {
-    background: var(--bg-secondary);
-    border-color: var(--border-hover);
+    background: #e2e8f0;
+    border-color: #94a3b8;
 }
 
 .btn-danger {
@@ -476,7 +477,7 @@ body {
     position: absolute;
     top: 8px;
     right: 8px;
-    z-index: 10;
+    z-index: 10; /* Base interactive elements */
     padding: 4px;
     font-size: 0.95em;
     line-height: 1;
@@ -685,7 +686,7 @@ body {
     font-size: 0.99em;
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 10; /* Sticky table header */
 }
 
 .results-table td {
@@ -716,7 +717,7 @@ body {
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-xl);
-    z-index: 10000;
+    z-index: 1000; /* Tooltips - above content, below dropdowns */
     min-width: 250px;
     font-size: 0.88em;
     line-height: 1.6;
@@ -775,7 +776,7 @@ body {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     font-weight: 600;
-    z-index: 1000;
+    z-index: 2000; /* Toast - above tooltips, below dropdowns */
     animation: slideIn var(--transition-slow) ease-out;
 }
 
@@ -802,7 +803,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: 50000; /* Modal - highest priority */
     padding: var(--spacing-2xl);
     overflow-y: auto;
 }

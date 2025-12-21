@@ -10,8 +10,8 @@ interface FundCardProps {
   index: number;
 }
 
-function FundCard({ fund, index }: FundCardProps) {
-  const { state, dispatch } = useCalculator();
+function FundCard({ fund }: FundCardProps) {
+  const { dispatch } = useCalculator();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'linear'>('standard');
@@ -20,9 +20,7 @@ function FundCard({ fund, index }: FundCardProps) {
   const deploymentCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleRemove = () => {
-    if (state.funds.length > 1) {
-      dispatch({ type: 'REMOVE_FUND', payload: fund.id });
-    }
+    dispatch({ type: 'REMOVE_FUND', payload: fund.id });
   };
 
   // Default values matching placeholders
@@ -310,11 +308,9 @@ function FundCard({ fund, index }: FundCardProps) {
 
   return (
     <div className="fund-card">
-      {index > 0 && (
-        <button className="btn btn-danger card-close-btn" onClick={handleRemove}>
-          ✕
-        </button>
-      )}
+      <button className="btn btn-danger card-close-btn" onClick={handleRemove}>
+        ✕
+      </button>
       <div className="fund-card-header" style={{ marginBottom: isExpanded ? undefined : 0 }}>
         <div style={{ flex: 1 }}>
           <div
@@ -589,10 +585,10 @@ function FundCard({ fund, index }: FundCardProps) {
         )}
       </div>
 
-      <div className="section">
+      <div className="section" style={{ marginBottom: showAdvanced ? undefined : 0 }}>
         <div
           className="fund-section-header"
-          style={{ cursor: 'pointer', userSelect: 'none' }}
+          style={{ cursor: 'pointer', userSelect: 'none', marginBottom: showAdvanced ? undefined : 0 }}
           onClick={() => setShowAdvanced(!showAdvanced)}
         >
           <span>{showAdvanced ? '▼' : '▶'} Advanced</span>
@@ -687,8 +683,8 @@ function FundCard({ fund, index }: FundCardProps) {
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Timeline</span>
-                <Tooltip text="Years to fully deploy fund capital (typically 2-3 years)"><span className="tooltip-icon">?</span></Tooltip>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Investment Period</span>
+                <Tooltip text="Years to fully invest fund capital (typically 2-3 years)"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="form-group">
                 <div style={{ position: 'relative' }}>
@@ -708,8 +704,8 @@ function FundCard({ fund, index }: FundCardProps) {
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Deployment Schedule</span>
-                <Tooltip text="Pattern of when fund capital is deployed over time. Fast means 25% deployed by year 1. Fastest means 80% deployed by year 1."><span className="tooltip-icon">?</span></Tooltip>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Investment Schedule</span>
+                <Tooltip text="Pattern of when fund capital is invested over time. Fast means 25% invested by year 1. Fastest means 80% invested by year 1."><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">
                 {(['linear', 'fast', 'fastest'] as const).map((preset) => (
@@ -730,7 +726,7 @@ function FundCard({ fund, index }: FundCardProps) {
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
                 <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Fund Life</span>
-                <Tooltip text="Expected fund lifespan until full realization of returns (typically 10-15 years)"><span className="tooltip-icon">?</span></Tooltip>
+                <Tooltip text="Expected fund lifespan until full distribution of returns (typically 10-15 years)"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="form-group">
                 <div style={{ position: 'relative' }}>
@@ -749,8 +745,8 @@ function FundCard({ fund, index }: FundCardProps) {
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Realization Schedule</span>
-                <Tooltip text="Pattern of when fund returns are realized over time"><span className="tooltip-icon">?</span></Tooltip>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Distribution Pace</span>
+                <Tooltip text="Pattern of how quickly returns are distributed to LPs"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">
                 {(['conservative', 'standard', 'linear'] as const).map((preset) => (

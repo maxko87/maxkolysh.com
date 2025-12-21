@@ -134,6 +134,115 @@ export const DEFAULT_DEPLOYMENT_CURVE = DEPLOYMENT_PRESETS.linear;
 export const DEFAULT_DEPLOYMENT_TIMELINE = 2.5;
 export const DEFAULT_YEARS_TO_CLEAR_1X = 5;
 
+// Fund type presets
+export type FundType = 'early-stage-vc' | 'growth-vc' | 'buyout' | 'secondaries' | 'custom';
+
+export interface FundTypePreset {
+  type: FundType;
+  label: string;
+  description: string;
+  scenarios: Array<{ name: string; grossReturnMultiple: number }>;
+  defaults: {
+    size: number;
+    years: number;
+    deploymentTimeline: number;
+    deploymentPreset: DeploymentPreset;
+    realizationPreset: CurvePreset;
+    fundCycle: number;
+  };
+}
+
+export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
+  'early-stage-vc': {
+    type: 'early-stage-vc',
+    label: 'Early-stage VC',
+    description: '12yr fund life, 3yr deployment, slow distributions',
+    scenarios: [
+      { name: 'Down', grossReturnMultiple: 1.7 },
+      { name: 'Base', grossReturnMultiple: 3.0 },
+      { name: 'Up', grossReturnMultiple: 4.5 },
+    ],
+    defaults: {
+      size: 100,
+      years: 12,
+      deploymentTimeline: 3,
+      deploymentPreset: 'fast',
+      realizationPreset: 'conservative',
+      fundCycle: 3,
+    },
+  },
+  'growth-vc': {
+    type: 'growth-vc',
+    label: 'Growth VC',
+    description: '10yr fund life, 2.5yr deployment, typical distributions',
+    scenarios: [
+      { name: 'Down', grossReturnMultiple: 1.6 },
+      { name: 'Base', grossReturnMultiple: 2.3 },
+      { name: 'Up', grossReturnMultiple: 3.0 },
+    ],
+    defaults: {
+      size: 200,
+      years: 10,
+      deploymentTimeline: 2.5,
+      deploymentPreset: 'fast',
+      realizationPreset: 'standard',
+      fundCycle: 2.5,
+    },
+  },
+  'buyout': {
+    type: 'buyout',
+    label: 'Buyout / Late-stage',
+    description: '10yr fund life, 3yr deployment, fast distributions',
+    scenarios: [
+      { name: 'Down', grossReturnMultiple: 1.6 },
+      { name: 'Base', grossReturnMultiple: 2.5 },
+      { name: 'Up', grossReturnMultiple: 3.0 },
+    ],
+    defaults: {
+      size: 500,
+      years: 10,
+      deploymentTimeline: 3,
+      deploymentPreset: 'linear',
+      realizationPreset: 'linear',
+      fundCycle: 2,
+    },
+  },
+  'secondaries': {
+    type: 'secondaries',
+    label: 'Secondaries',
+    description: '6.5yr fund life, 1.5yr deployment, fastest distributions',
+    scenarios: [
+      { name: 'Down', grossReturnMultiple: 1.3 },
+      { name: 'Base', grossReturnMultiple: 1.6 },
+      { name: 'Up', grossReturnMultiple: 1.8 },
+    ],
+    defaults: {
+      size: 300,
+      years: 6.5,
+      deploymentTimeline: 1.5,
+      deploymentPreset: 'fastest',
+      realizationPreset: 'linear',
+      fundCycle: 2,
+    },
+  },
+  'custom': {
+    type: 'custom',
+    label: 'Custom',
+    description: 'Create a fund with default parameters',
+    scenarios: [
+      { name: 'Base Case', grossReturnMultiple: 3.0 },
+    ],
+    defaults: {
+      size: 100,
+      years: 10,
+      deploymentTimeline: 2.5,
+      deploymentPreset: 'linear',
+      realizationPreset: 'standard',
+      fundCycle: 2,
+    },
+  },
+};
+
 export const createDefaultFund = (id: number, name: string, templateFund?: Fund): Fund => {
   if (templateFund) {
     return {
@@ -169,6 +278,37 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     realizationCurve: [...DEFAULT_REALIZATION_CURVE],
     deploymentCurve: [...DEFAULT_DEPLOYMENT_CURVE],
     deploymentTimeline: DEFAULT_DEPLOYMENT_TIMELINE,
+    yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
+    raiseContinuously: true,
+  };
+};
+
+export const createFundFromType = (id: number, name: string, fundType: FundType): Fund => {
+  const preset = FUND_TYPE_PRESETS[fundType];
+
+  // Create scenarios with unique IDs
+  const scenarios = preset.scenarios.map((scenario, index) => ({
+    id: Date.now() + index,
+    name: scenario.name,
+    grossReturnMultiple: scenario.grossReturnMultiple,
+  }));
+
+  return {
+    id,
+    name,
+    size: preset.defaults.size,
+    carryPercent: 20,
+    mgmtFeePercent: 2,
+    fundCycle: preset.defaults.fundCycle,
+    years: preset.defaults.years,
+    deploymentTimeline: preset.defaults.deploymentTimeline,
+    hurdles: [],
+    scenarios,
+    carryAllocationPercent: 5,
+    vestingPeriod: 4,
+    cliffPeriod: 1,
+    realizationCurve: [...CURVE_PRESETS[preset.defaults.realizationPreset]],
+    deploymentCurve: [...DEPLOYMENT_PRESETS[preset.defaults.deploymentPreset]],
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
     raiseContinuously: true,
   };

@@ -39,7 +39,6 @@ function calculatorReducer(state: CalculatorState, action: CalculatorAction): Ca
     }
 
     case 'REMOVE_FUND': {
-      if (state.funds.length <= 1) return state;
       const { [action.payload]: removed, ...restScenarios } = state.selectedScenarios;
       return {
         ...state,

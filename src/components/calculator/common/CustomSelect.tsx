@@ -77,7 +77,7 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
               border: '1.5px solid var(--border-color)',
               borderRadius: '6px',
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-              zIndex: 10000,
+              zIndex: 11000, // Dropdown content - above tooltips/toast, below modals
               maxHeight: '200px',
               overflowY: 'auto'
             }}
