@@ -279,7 +279,7 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     deploymentCurve: [...DEFAULT_DEPLOYMENT_CURVE],
     deploymentTimeline: DEFAULT_DEPLOYMENT_TIMELINE,
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
-    raiseContinuously: true,
+    raiseContinuously: false,
   };
 };
 
@@ -310,6 +310,6 @@ export const createFundFromType = (id: number, name: string, fundType: FundType)
     realizationCurve: [...CURVE_PRESETS[preset.defaults.realizationPreset]],
     deploymentCurve: [...DEPLOYMENT_PRESETS[preset.defaults.deploymentPreset]],
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
-    raiseContinuously: true,
+    raiseContinuously: false,
   };
 };
