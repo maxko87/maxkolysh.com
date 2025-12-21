@@ -419,8 +419,8 @@ function FundCard({ fund }: FundCardProps) {
         </div>
         <div className="form-group">
           <label>
-            <span>Carry Allocation per GP</span>
-            <Tooltip text="Percentage of total fund carry allocated to one General Partner. Typical is 5%. Calculate by dividing total carry allocated to all GPs (excluding junior partners, staff, etc) by total number of GPs."><span className="tooltip-icon">?</span></Tooltip>
+            <span>Per GP Carry</span>
+            <Tooltip text="Percentage of total fund carry allocated to one General Partner. Typical is 5% for larger funds. Calculate by dividing total carry allocated to all GPs (excluding junior partners, staff, etc) by total number of GPs."><span className="tooltip-icon">?</span></Tooltip>
           </label>
           <div style={{ position: 'relative' }}>
             <input
