@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import { compressState } from '../../../utils/stateCompression';
+import CustomSelect from '../common/CustomSelect';
 
 function ScenarioSelectors() {
   const { state, dispatch, calculations } = useCalculator();
@@ -58,34 +59,21 @@ function ScenarioSelectors() {
   return (
     <div className="scenario-tabs" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: 'var(--spacing-md)' }}>
       {state.funds.map(fund => (
-        <div key={fund.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          <label style={{ margin: 0, fontSize: '0.95em', whiteSpace: 'nowrap' }}>{fund.name}:</label>
-          <select
-            value={state.selectedScenarios[fund.id]}
-            onChange={(e) =>
-              dispatch({
-                type: 'SELECT_SCENARIO',
-                payload: { fundId: fund.id, scenarioId: parseInt(e.target.value) }
-              })
-            }
-            className="scenario-select"
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1.5px solid var(--border-color)',
-              fontSize: '0.95em',
-              backgroundColor: 'var(--bg-primary)',
-              cursor: 'pointer',
-              minWidth: '80px'
-            }}
-          >
-            {fund.scenarios.map(scenario => (
-              <option key={scenario.id} value={scenario.id}>
-                {scenario.grossReturnMultiple}x
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          key={fund.id}
+          label={fund.name}
+          value={state.selectedScenarios[fund.id]}
+          onChange={(scenarioId) =>
+            dispatch({
+              type: 'SELECT_SCENARIO',
+              payload: { fundId: fund.id, scenarioId }
+            })
+          }
+          options={fund.scenarios.map(scenario => ({
+            id: scenario.id,
+            label: `${scenario.grossReturnMultiple}x`
+          }))}
+        />
       ))}
       <button className="btn btn-secondary" onClick={handleExportCSV} style={{ flexShrink: 0 }}>
         Export to CSV
