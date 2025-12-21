@@ -316,25 +316,54 @@ function FundCard({ fund, index }: FundCardProps) {
       )}
       <div className="fund-card-header" style={{ marginBottom: isExpanded ? undefined : 0 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-            <span
-              onClick={() => setIsExpanded(!isExpanded)}
-              style={{
-                cursor: 'pointer',
-                userSelect: 'none',
-                fontSize: '0.94em',
-                fontWeight: 700,
-                color: 'var(--text-secondary)',
-                minWidth: '16px',
+          <div
+            onClick={() => setIsExpanded(!isExpanded)}
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: isExpanded ? '4px' : '2px' }}>
+              <span
+                style={{
+                  fontSize: '0.94em',
+                  fontWeight: 700,
+                  color: 'var(--text-secondary)',
+                  minWidth: '16px',
+                  display: 'flex',
+                  alignItems: 'center'
+                }}
+              >
+                {isExpanded ? '▼' : '▶'}
+              </span>
+              <span style={{ fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                {isExpanded ? 'Fund Name' : fund.name}
+              </span>
+            </div>
+            {!isExpanded && (
+              <div style={{
+                fontSize: '0.75em',
+                color: '#94a3b8',
+                paddingLeft: '22px',
                 display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap',
                 alignItems: 'center'
-              }}
-            >
-              {isExpanded ? '▼' : '▶'}
-            </span>
-            <span style={{ fontSize: '0.9em', fontWeight: 600, color: 'var(--text-secondary)' }}>
-              {isExpanded ? 'Fund Name' : fund.name}
-            </span>
+              }}>
+                <span>${fund.size}M</span>
+                <span>•</span>
+                <span>{fund.carryPercent}% carry</span>
+                <span>•</span>
+                <span>{fund.carryAllocationPercent}% per GP</span>
+                <span>•</span>
+                <span>{fund.years}y life</span>
+                {fund.raiseContinuously && (
+                  <>
+                    <span>•</span>
+                    <span>{fund.fundCycle}y cycle</span>
+                  </>
+                )}
+                <span>•</span>
+                <span>Scenarios: {fund.scenarios.map(s => `${isNaN(s.grossReturnMultiple) ? '?' : s.grossReturnMultiple}x`).join(', ')}</span>
+              </div>
+            )}
           </div>
           {isExpanded && (
             <input
