@@ -477,7 +477,10 @@ function FundCard({ fund, index }: FundCardProps) {
               )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
                 <div className="scenario-field">
-                  <label>Expected MOIC</label>
+                  <label>
+                    <span>Expected MOIC</span>
+                    <Tooltip text="Multiple On Invested Capital - the gross return multiple expected for the fund"><span className="tooltip-icon">?</span></Tooltip>
+                  </label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type="number"
@@ -500,7 +503,10 @@ function FundCard({ fund, index }: FundCardProps) {
                   </div>
                 </div>
                 <div className="scenario-field">
-                  <label>Expected IRR</label>
+                  <label>
+                    <span>Expected IRR</span>
+                    <Tooltip text="Internal Rate of Return - the annualized return rate for the fund"><span className="tooltip-icon">?</span></Tooltip>
+                  </label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type="number"
@@ -631,7 +637,7 @@ function FundCard({ fund, index }: FundCardProps) {
                       })
                     }
                     step="0.1"
-                    style={{ maxWidth: '60px' }}
+                    style={{ maxWidth: '75px' }}
                   />
                   <span style={{ color: '#718096', fontWeight: 600 }}>x</span>
                   <span style={{ color: '#718096' }}>→</span>
@@ -645,7 +651,7 @@ function FundCard({ fund, index }: FundCardProps) {
                       })
                     }
                     step="0.1"
-                    style={{ maxWidth: '60px' }}
+                    style={{ maxWidth: '75px' }}
                   />
                   <span style={{ color: '#718096', fontSize: '0.85em' }}>%</span>
                 </div>
