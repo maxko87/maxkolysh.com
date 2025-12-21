@@ -203,6 +203,19 @@ function ResultsTable() {
   // Keep explore view open - don't close on outside clicks
   // Users can interact with sidebar controls while explore view stays active
 
+  // Update tooltip data when calculations change (e.g., when funds are added/removed)
+  useEffect(() => {
+    if (clickedCell && exploreMode) {
+      const row = calculations[clickedCell.row];
+      if (row) {
+        const cellData = row[clickedCell.col];
+        if (cellData) {
+          setTooltipData(cellData);
+        }
+      }
+    }
+  }, [calculations, clickedCell, exploreMode]);
+
   // Build header columns
   const headerColumns = useMemo(() => {
     const columns = [];
