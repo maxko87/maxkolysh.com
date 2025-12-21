@@ -4,3 +4,8 @@
 	- run `npx tsc && npx vite build` to test your changes and fix the errors.
 	- run 'git add .; git commit -am XXX; git push' and add a message based on this chat history (since the last commit). be thorough in your message.
 - Any one-off scripts go into data-processing folder.
+
+## Testing
+- Tests are in `/tests` folder (centralized structure mirroring `/src`)
+- Run: `npm test` (watch mode) or `npm run test:run` (single run)
+- Coverage: `npm run test:coverage` (target: 80%+)
