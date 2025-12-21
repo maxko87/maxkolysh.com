@@ -16,7 +16,7 @@ function FundCard({ fund }: FundCardProps) {
   const { dispatch } = useCalculator();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'linear'>('standard');
+  const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'fast'>('standard');
   const [selectedDeploymentPreset, setSelectedDeploymentPreset] = useState<DeploymentPreset>('linear');
 
   const handleRemove = () => {
@@ -72,7 +72,7 @@ function FundCard({ fund }: FundCardProps) {
     }
   };
 
-  const handlePresetClick = (preset: 'standard' | 'conservative' | 'linear') => {
+  const handlePresetClick = (preset: 'standard' | 'conservative' | 'fast') => {
     setSelectedPreset(preset);
     dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } });
   };
@@ -489,7 +489,7 @@ function FundCard({ fund }: FundCardProps) {
                 <Tooltip text="Pattern of how quickly returns are distributed to LPs"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">
-                {(['conservative', 'standard', 'linear'] as const).map((preset) => (
+                {(['conservative', 'standard', 'fast'] as const).map((preset) => (
                   <button
                     key={preset}
                     className={`btn btn-small curve-preset-btn ${selectedPreset === preset ? 'btn-primary' : ''}`}

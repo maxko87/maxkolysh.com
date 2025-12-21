@@ -29,10 +29,9 @@ export function compressState(state: CalculatorState): string {
         params.set(`${prefix}_h${hIdx + 1}`, `${hurdle.multiple}_${hurdle.carryPercent}`);
       });
 
-      // Scenarios: format as "name:multiple" (e.g., "Base_Case:5")
+      // Scenarios: just the multiple (e.g., "5")
       fund.scenarios.forEach((scenario, sIdx) => {
-        const scenarioName = scenario.name.replace(/\s+/g, '_');
-        params.set(`${prefix}_s${sIdx + 1}`, `${scenarioName}:${scenario.grossReturnMultiple}`);
+        params.set(`${prefix}_s${sIdx + 1}`, scenario.grossReturnMultiple.toString());
       });
 
       // Realization schedule: detect preset or store custom
@@ -158,16 +157,19 @@ export function decompressState(queryString: string): CalculatorState | null {
         hIdx++;
       }
 
-      // Parse scenarios
+      // Parse scenarios - just the multiple
       const scenarios = [];
       let sIdx = 1;
       while (params.has(`${prefix}_s${sIdx}`)) {
-        const [name, multiple] = params.get(`${prefix}_s${sIdx}`)!.split(':');
-        scenarios.push({
-          id: arrayIdx * 100 + sIdx - 1,
-          name: name.replace(/_/g, ' '),
-          grossReturnMultiple: parseFloat(multiple)
-        });
+        const multipleStr = params.get(`${prefix}_s${sIdx}`)!;
+        const multipleNum = parseFloat(multipleStr);
+        if (!isNaN(multipleNum)) {
+          scenarios.push({
+            id: arrayIdx * 100 + sIdx - 1,
+            name: `${multipleNum}x`,
+            grossReturnMultiple: multipleNum
+          });
+        }
         sIdx++;
       }
 

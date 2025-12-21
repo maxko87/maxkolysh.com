@@ -120,7 +120,7 @@ export default function BreakdownPanel({
                   {/* Scenario & Time */}
                   <div style={{ marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid var(--border-color)' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '4px 12px', color: 'var(--text-tertiary)', lineHeight: '1.6' }}>
-                      <span>Scenario:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{scenario.name} ({breakdown.grossReturnMultiple}x)</span>
+                      <span>Return Multiple:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{breakdown.grossReturnMultiple}x</span>
                       <span>Vintage Age:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{breakdown.vintageAgeInYears.toFixed(1)} years</span>
                       <span>Years Worked:</span><span style={{ fontFamily: 'monospace', color: 'var(--text-primary)' }}>{breakdown.yearsIntoThisVintage.toFixed(1)} years</span>
                     </div>
