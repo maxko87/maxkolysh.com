@@ -17,6 +17,8 @@ interface GridViewProps {
   onCellMouseEnter: (rowIdx: number, colIdx: number, data: CellData | null) => void;
   onCellMouseLeave: () => void;
   onCellClick: (rowIdx: number, colIdx: number, data: CellData | null, e: React.MouseEvent, year: string) => void;
+  hasHistoricFunds: boolean;
+  baseYear: number;
 }
 
 function GridView({
@@ -28,13 +30,35 @@ function GridView({
   clickedCell,
   onCellMouseEnter,
   onCellMouseLeave,
-  onCellClick
+  onCellClick,
+  hasHistoricFunds,
+  baseYear
 }: GridViewProps) {
+  // Helper function to generate tooltip text similar to BreakdownPanel headerText
+  const getTooltipText = (cellData: CellData | null) => {
+    if (!cellData) return 'Click to explore';
+
+    const headerText = hasHistoricFunds ? (
+      cellData.yearsFromToday ? (
+        `If you worked for ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting in ${baseYear}, you'd have made ${formatCurrency(cellData.total)} in carry in ${cellData.yearsFromToday} year${cellData.yearsFromToday !== 1 ? 's' : ''}.`
+      ) : (
+        `Working ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting in ${baseYear}, you made ${formatCurrency(cellData.total)} in carry during the early years because carry distributions had not yet started.`
+      )
+    ) : (
+      cellData.yearsFromToday ? (
+        `If you work for ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make ${formatCurrency(cellData.total)} in carry in ${cellData.yearsFromToday} year${cellData.yearsFromToday !== 1 ? 's' : ''}.`
+      ) : (
+        `Working ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make ${formatCurrency(cellData.total)} in carry during the early years because carry distributions won't have started yet.`
+      )
+    );
+
+    return headerText + '\n\nClick to explore';
+  };
   return (
     <table>
       <thead>
         <tr>
-          <th>Years at Fund</th>
+          <th>Years Worked</th>
           {headerColumns.map((col, idx) => (
             <th key={idx}>{col.label}</th>
           ))}
@@ -84,19 +108,30 @@ function GridView({
                             top: '100%',
                             left: '50%',
                             transform: 'translateX(-50%)',
-                            marginTop: '4px',
+                            marginTop: '8px',
                             background: 'var(--bg-primary)',
                             border: '1px solid var(--border-color)',
-                            borderRadius: 'var(--radius-md)',
-                            padding: '4px 8px',
-                            fontSize: '0.75em',
-                            whiteSpace: 'nowrap',
+                            borderRadius: 'var(--radius-lg)',
+                            padding: '12px 16px',
+                            fontSize: '0.88em',
+                            whiteSpace: 'normal',
+                            minWidth: '280px',
+                            maxWidth: '400px',
                             zIndex: 1000,
                             pointerEvents: 'none',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            lineHeight: '1.5'
                           }}
                         >
-                          Click to explore
+                          {getTooltipText(cellData).split('\n\n').map((text, idx) => (
+                            <div key={idx} style={{
+                              marginBottom: idx === 0 ? '8px' : 0,
+                              fontWeight: idx === 1 ? 600 : 400,
+                              color: idx === 1 ? 'var(--primary-color)' : 'var(--text-primary)'
+                            }}>
+                              {text}
+                            </div>
+                          ))}
                         </div>
                       )}
                     </td>
@@ -140,19 +175,30 @@ function GridView({
                         top: '100%',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        marginTop: '4px',
+                        marginTop: '8px',
                         background: 'var(--bg-primary)',
                         border: '1px solid var(--border-color)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '4px 8px',
-                        fontSize: '0.75em',
-                        whiteSpace: 'nowrap',
+                        borderRadius: 'var(--radius-lg)',
+                        padding: '12px 16px',
+                        fontSize: '0.88em',
+                        whiteSpace: 'normal',
+                        minWidth: '280px',
+                        maxWidth: '400px',
                         zIndex: 1000,
                         pointerEvents: 'none',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        lineHeight: '1.5'
                       }}
                     >
-                      Click to explore
+                      {getTooltipText(cellData).split('\n\n').map((text, idx) => (
+                        <div key={idx} style={{
+                          marginBottom: idx === 0 ? '8px' : 0,
+                          fontWeight: idx === 1 ? 600 : 400,
+                          color: idx === 1 ? 'var(--primary-color)' : 'var(--text-primary)'
+                        }}>
+                          {text}
+                        </div>
+                      ))}
                     </div>
                   )}
                 </td>

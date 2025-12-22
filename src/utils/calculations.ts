@@ -97,12 +97,13 @@ function calculateIncrementalCarry(
   totalReturns: number,
   baseCarryPercent: number,
   sortedHurdles: Hurdle[]
-): number {
+): { totalCarry: number; bands: Array<{ fromMultiple: number; toMultiple: number; profitInBand: number; carryRate: number; carryAmount: number }> } {
   const profit = totalReturns - fundSize;
-  if (profit <= 0) return 0;
+  if (profit <= 0) return { totalCarry: 0, bands: [] };
 
   const multiple = totalReturns / fundSize;
   let totalCarry = 0;
+  const resultBands: Array<{ fromMultiple: number; toMultiple: number; profitInBand: number; carryRate: number; carryAmount: number }> = [];
 
   // Create bands: [{ fromMultiple, toMultiple, ratePercent }]
   const bands: Array<{ fromMultiple: number; toMultiple: number; ratePercent: number }> = [];
@@ -138,10 +139,21 @@ function calculateIncrementalCarry(
 
     totalCarry += carryInBand;
 
+    // Only add bands that were actually crossed (profitInBand > 0)
+    if (profitInBand > 0) {
+      resultBands.push({
+        fromMultiple: band.fromMultiple,
+        toMultiple: effectiveToMultiple,
+        profitInBand,
+        carryRate: band.ratePercent,
+        carryAmount: carryInBand
+      });
+    }
+
     if (multiple <= band.toMultiple) break;
   }
 
-  return totalCarry;
+  return { totalCarry, bands: resultBands };
 }
 
 // Calculate carry for a fund
@@ -151,7 +163,7 @@ export function calculateFundCarry(fund: Fund, returns: number): number {
   const carryPercent = isNaN(fund.carryPercent) || !isFinite(fund.carryPercent) ? 20 : fund.carryPercent;
 
   const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
-  return calculateIncrementalCarry(fundSize, returns, carryPercent, sortedHurdles);
+  return calculateIncrementalCarry(fundSize, returns, carryPercent, sortedHurdles).totalCarry;
 }
 
 // Calculate vesting
@@ -320,7 +332,7 @@ export function calculateVintageSteps(
 
   // Step 5 & 6: Calculate total fund carry (with incremental hurdles)
   const sortedHurdles = [...fund.hurdles].sort((a, b) => a.multiple - b.multiple);
-  const totalFundCarry = calculateIncrementalCarry(fundSize, grossReturns, baseCarryPercent, sortedHurdles);
+  const { totalCarry: totalFundCarry, bands: carryBands } = calculateIncrementalCarry(fundSize, grossReturns, baseCarryPercent, sortedHurdles);
 
   // Calculate effective carry rate for display (as decimal, e.g., 0.20 for 20%)
   const effectiveCarryRate = fundProfit > 0 ? totalFundCarry / fundProfit : baseCarryPercent / 100;
@@ -358,6 +370,9 @@ export function calculateVintageSteps(
     yourCarryPoolShare,
     realizedCarry,
     yourVestedCarry,
+
+    // Incremental hurdle breakdown (only populated if hurdles exist and profit > 0)
+    carryBands: carryBands.length > 0 ? carryBands : undefined,
   };
 }
 

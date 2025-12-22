@@ -10,12 +10,14 @@ import CurveChart from '../common/CurveChart';
 interface FundCardProps {
   fund: Fund;
   index: number;
+  loadedFromUrl?: boolean;
 }
 
-function FundCard({ fund }: FundCardProps) {
+function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
   const { dispatch } = useCalculator();
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
+  // Collapse by default if loaded from URL, expand otherwise
+  const [isExpanded, setIsExpanded] = useState(!loadedFromUrl);
   const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'fast'>('standard');
   const [selectedDeploymentPreset, setSelectedDeploymentPreset] = useState<DeploymentPreset>('linear');
 

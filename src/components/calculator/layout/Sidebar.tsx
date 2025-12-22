@@ -8,7 +8,7 @@ import FundTypeSelector from '../common/FundTypeSelector';
 import PresetSelector from '../common/PresetSelector';
 
 function Sidebar() {
-  const { state, dispatch } = useCalculator();
+  const { state, dispatch, loadedFromUrl } = useCalculator();
   const [showModal, setShowModal] = useState(false);
 
   const handleAddFund = () => {
@@ -57,7 +57,7 @@ function Sidebar() {
 
       <div className="section">
         {state.funds.map((fund, index) => (
-          <FundCard key={fund.id} fund={fund} index={index} />
+          <FundCard key={fund.id} fund={fund} index={index} loadedFromUrl={loadedFromUrl} />
         ))}
 
         <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 'var(--spacing-sm)', alignItems: 'center' }}>
