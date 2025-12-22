@@ -22,9 +22,7 @@ function HomePage() {
             <a href="https://feelme.app" target="_blank" rel="noopener noreferrer">
               Feel Me
             </a>
-            <a href="https://maxkolysh.com/learn" target="_blank" rel="noopener noreferrer">
-              Learned League Study Guide
-            </a>
+            <Link to="/learn">Learned League Study Guide</Link>
             <Link to="/carry-calc">GP Carry Calculator</Link>
           </div>
         </section>

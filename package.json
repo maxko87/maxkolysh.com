@@ -30,6 +30,7 @@
     "vitest": "^4.0.16"
   },
   "dependencies": {
+    "posthog-js": "^1.310.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",
