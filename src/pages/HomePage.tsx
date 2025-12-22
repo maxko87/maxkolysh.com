@@ -25,7 +25,7 @@ function HomePage() {
             <a href="https://maxkolysh.com/learn" target="_blank" rel="noopener noreferrer">
               Learned League Study Guide
             </a>
-            <Link to="/gp-comp">Fund GP Comp Calculator</Link>
+            <Link to="/carry-calc">GP Carry Calculator</Link>
           </div>
         </section>
 

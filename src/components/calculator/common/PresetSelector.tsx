@@ -14,7 +14,7 @@ const PresetSelector = forwardRef<HTMLButtonElement>((_props, ref) => {
   const internalButtonRef = useRef<HTMLButtonElement>(null);
   const buttonRef = (ref as React.RefObject<HTMLButtonElement>) || internalButtonRef;
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState<{ top?: number; bottom?: number; left: number; maxHeight?: number }>({ left: 0 });
 
   const [formData, setFormData] = useState({
     fundName: '',
@@ -36,16 +36,33 @@ const PresetSelector = forwardRef<HTMLButtonElement>((_props, ref) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      // Update dropdown position for desktop
-      if (!isMobile && buttonRef.current) {
-        const rect = buttonRef.current.getBoundingClientRect();
+  const calculatePosition = () => {
+    if (!isMobile && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const dropdownMaxHeight = 600;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      const showAbove = spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow;
+
+      if (showAbove) {
+        setPosition({
+          bottom: window.innerHeight - rect.top + 4,
+          left: rect.left,
+          maxHeight: Math.max(spaceAbove - 8, 200)
+        });
+      } else {
         setPosition({
           top: rect.bottom + 4,
-          left: rect.left
+          left: rect.left,
+          maxHeight: Math.max(spaceBelow - 8, 200)
         });
       }
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
       // Focus search input when dropdown opens
       setTimeout(() => searchInputRef.current?.focus(), isMobile ? 100 : 0);
     } else {
@@ -191,7 +208,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
     setIsModalOpen(false);
   };
 
-  const dropdownContent = isOpen && (isMobile || position.top > 0) && createPortal(
+  const dropdownContent = isOpen && (isMobile || position.top !== undefined || position.bottom !== undefined) && createPortal(
     <>
       <div
         style={{
@@ -216,10 +233,11 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
             borderRadius: '16px 16px 0 0',
             animation: 'slideUp 0.3s ease-out'
           } : {
-            top: position.top,
+            ...(position.top !== undefined ? { top: position.top } : {}),
+            ...(position.bottom !== undefined ? { bottom: position.bottom } : {}),
             left: position.left,
             width: '380px',
-            maxHeight: '600px',
+            maxHeight: position.maxHeight ? `${position.maxHeight}px` : '600px',
             border: '1px solid var(--border-color)',
             borderRadius: 'var(--radius-md)',
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
@@ -608,7 +626,12 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
       <button
         ref={buttonRef}
         className="btn btn-secondary"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen) {
+            calculatePosition();
+          }
+          setIsOpen(!isOpen);
+        }}
       >
         + Historic
       </button>

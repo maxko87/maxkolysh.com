@@ -33,7 +33,7 @@ function Sidebar() {
     <div className="sidebar">
       <div style={{ marginBottom: 'var(--spacing-2xl)' }}>
         <h1 style={{
-          marginBottom: 'var(--spacing-xs)',
+          marginBottom: 'var(--spacing-md)',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -43,14 +43,21 @@ function Sidebar() {
           letterSpacing: '-0.8px',
           lineHeight: 1.2
         }}>
-          Fund GP Comp Calculator
+          GP Carry Calculator
         </h1>
+        <div style={{
+          fontSize: '0.9em',
+          color: 'var(--text-secondary)',
+          marginBottom: 'var(--spacing-lg)',
+          lineHeight: 1.5
+        }}>
+          Explore how much GPs in VC/PE actually earn over time. Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>.
+        </div>
         <div style={{
           fontSize: '13px',
           color: '#94a3b8',
           marginBottom: 'var(--spacing-md)'
         }}>
-          <div>Made with 🤖 by <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Max Kolysh</Link>.</div>
           <div><a href="#" onClick={(e) => { e.preventDefault(); setShowModal(true); }} style={{ color: 'inherit', textDecoration: 'underline' }}>Read the quickstart</a> or <a href="mailto:maxkolysh@gmail.com?subject=Fund GP Comp Calculator Feedback" style={{ color: 'inherit', textDecoration: 'underline' }}>send feedback</a>.</div>
         </div>
       </div>

@@ -8,7 +8,7 @@ function FundTypeSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState<{ top?: number; bottom?: number; left: number; maxHeight?: number }>({ left: 0 });
 
   // Detect mobile on mount and resize
   useEffect(() => {
@@ -21,15 +21,32 @@ function FundTypeSelector() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    if (isOpen && !isMobile && buttonRef.current) {
+  const calculatePosition = () => {
+    if (!isMobile && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      setPosition({
-        top: rect.bottom + 4,
-        left: rect.left
-      });
-    }
+      const dropdownMaxHeight = 400;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
 
+      const showAbove = spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow;
+
+      if (showAbove) {
+        setPosition({
+          bottom: window.innerHeight - rect.top + 4,
+          left: rect.left,
+          maxHeight: Math.max(spaceAbove - 8, 200)
+        });
+      } else {
+        setPosition({
+          top: rect.bottom + 4,
+          left: rect.left,
+          maxHeight: Math.max(spaceBelow - 8, 200)
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
     // Handle escape key to close dropdown
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -39,7 +56,7 @@ function FundTypeSelector() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, isMobile]);
+  }, [isOpen]);
 
   const handleSelectFundType = (fundType: FundType) => {
     // Find the highest existing fund number to avoid duplicates
@@ -63,7 +80,7 @@ function FundTypeSelector() {
 
   const fundTypes: FundType[] = ['early-stage-vc', 'growth-vc', 'buyout', 'secondaries'];
 
-  const dropdownContent = isOpen && (isMobile || position.top > 0) && createPortal(
+  const dropdownContent = isOpen && (isMobile || position.top !== undefined || position.bottom !== undefined) && createPortal(
     <>
       <div
         style={{
@@ -88,9 +105,11 @@ function FundTypeSelector() {
             borderRadius: '16px 16px 0 0',
             animation: 'slideUp 0.3s ease-out'
           } : {
-            top: position.top,
+            ...(position.top !== undefined ? { top: position.top } : {}),
+            ...(position.bottom !== undefined ? { bottom: position.bottom } : {}),
             left: position.left,
             width: '340px',
+            maxHeight: position.maxHeight ? `${position.maxHeight}px` : '400px',
             border: '1px solid var(--border-color)',
             borderRadius: 'var(--radius-md)',
             boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
@@ -160,7 +179,12 @@ function FundTypeSelector() {
       <button
         ref={buttonRef}
         className="btn btn-secondary"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen) {
+            calculatePosition();
+          }
+          setIsOpen(!isOpen);
+        }}
       >
         + Preset
       </button>
