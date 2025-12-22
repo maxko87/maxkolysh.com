@@ -121,7 +121,7 @@ export default function BreakdownPanel({
                   }}
                 >
                   <div style={{ fontWeight: 600, marginBottom: '10px', color: 'var(--text-secondary)', fontSize: '0.95em' }}>
-                    {deploymentYear} Vintage (deployed starting {deploymentYear})
+                    {deploymentYear} Vintage
                   </div>
 
                   {/* Scenario & Time */}

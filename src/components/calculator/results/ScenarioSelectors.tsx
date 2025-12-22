@@ -21,14 +21,36 @@ function ScenarioSelectors() {
     const maxYears = 20;
     const currentYear = new Date().getFullYear();
 
-    // Create CSV header
-    const headers = ['Years Worked', ...Array.from({ length: maxYears }, (_, i) => (currentYear + i + 1).toString())];
-    const csvRows = [headers.join(',')];
+    // Determine base year (same logic as ResultsTable)
+    const hasHistoricFunds = state.funds.some(fund => fund.vintageYear !== undefined);
+    const baseYear = hasHistoricFunds && state.funds[0]?.vintageYear
+      ? state.funds[0].vintageYear
+      : currentYear;
 
-    // Create CSV rows
-    calculations.slice(0, maxYears).forEach((row, rowIdx) => {
-      const rowData: (string | number)[] = [rowIdx + 1]; // Years Worked
-      row.forEach((cellData) => {
+    // Helper to escape CSV values (wrap in quotes if contains comma, quote, or newline)
+    const escapeCSV = (value: string): string => {
+      if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+        return `"${value.replace(/"/g, '""')}"`;
+      }
+      return value;
+    };
+
+    // Create CSV header - year columns from baseYear + 1 to baseYear + maxYears
+    const yearHeaders = Array.from({ length: maxYears }, (_, i) => (baseYear + i + 1).toString());
+    const headers = ['Years Worked', ...yearHeaders];
+    const csvRows = [headers.map(escapeCSV).join(',')];
+
+    // Create CSV rows - only first maxYears rows and first maxYears columns
+    const rowsToExport = Math.min(calculations.length, maxYears);
+
+    for (let rowIdx = 0; rowIdx < rowsToExport; rowIdx++) {
+      const row = calculations[rowIdx];
+      const rowData: string[] = [(rowIdx + 1).toString()]; // Years Worked
+
+      // Only export first maxYears columns to match headers
+      for (let colIdx = 0; colIdx < maxYears; colIdx++) {
+        const cellData = row[colIdx];
+
         if (!cellData || cellData.total < 0.01) {
           rowData.push('-');
         } else {
@@ -37,9 +59,10 @@ function ScenarioSelectors() {
           const formatted = '$' + dollars.toLocaleString('en-US');
           rowData.push(formatted);
         }
-      });
-      csvRows.push(rowData.join(','));
-    });
+      }
+
+      csvRows.push(rowData.map(escapeCSV).join(','));
+    }
 
     // Create blob and download
     const csvContent = csvRows.join('\n');
