@@ -461,7 +461,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                     required
                     value={formData.fundName}
                     onChange={(e) => setFormData({ ...formData, fundName: e.target.value })}
-                    placeholder="Apollo Investment Fund X, L.P."
+                    placeholder="Sequoia Capital"
                     style={{
                       width: '100%',
                       padding: 'var(--spacing-sm)',
@@ -583,7 +583,7 @@ IRR: ${formData.irr ? formData.irr + '%' : 'N/A'}
                   required
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                  placeholder="CalPERS"
+                  placeholder="https://example.com/fund-data"
                   style={{
                     width: '100%',
                     padding: 'var(--spacing-sm)',
