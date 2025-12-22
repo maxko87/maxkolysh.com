@@ -22,12 +22,12 @@ function ScenarioSelectors() {
     const currentYear = new Date().getFullYear();
 
     // Create CSV header
-    const headers = ['Years at Fund', ...Array.from({ length: maxYears }, (_, i) => (currentYear + i + 1).toString())];
+    const headers = ['Years Worked', ...Array.from({ length: maxYears }, (_, i) => (currentYear + i + 1).toString())];
     const csvRows = [headers.join(',')];
 
     // Create CSV rows
     calculations.slice(0, maxYears).forEach((row, rowIdx) => {
-      const rowData: (string | number)[] = [rowIdx + 1]; // Years at fund
+      const rowData: (string | number)[] = [rowIdx + 1]; // Years Worked
       row.forEach((cellData) => {
         if (!cellData || cellData.total < 0.01) {
           rowData.push('-');

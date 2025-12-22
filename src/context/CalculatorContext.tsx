@@ -4,20 +4,25 @@ import { createDefaultFund, CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../types/c
 import { calculateAllCells } from '../utils/calculations';
 import { loadStateFromHash, compressState } from '../utils/stateCompression';
 
-// Initial state
-const getInitialState = (): CalculatorState => {
-  // Try to load from URL hash first
-  const loadedState = loadStateFromHash();
-  if (loadedState && loadedState.funds.length > 0) {
-    return loadedState;
-  }
-
-  // Default state
+// Create default state - exported so we can compare against it
+export const getDefaultState = (): CalculatorState => {
   const defaultFund = createDefaultFund(0, 'My Fund');
   return {
     funds: [defaultFund],
     selectedScenarios: { 0: defaultFund.scenarios[0].id }
   };
+};
+
+// Initial state
+const getInitialState = (): { state: CalculatorState; loadedFromUrl: boolean } => {
+  // Try to load from URL hash first
+  const loadedState = loadStateFromHash();
+  if (loadedState && loadedState.funds.length > 0) {
+    return { state: loadedState, loadedFromUrl: true };
+  }
+
+  // Default state
+  return { state: getDefaultState(), loadedFromUrl: false };
 };
 
 // Reducer
@@ -234,6 +239,7 @@ interface CalculatorContextType {
   state: CalculatorState;
   dispatch: React.Dispatch<CalculatorAction>;
   calculations: (CellData | null)[][];
+  loadedFromUrl: boolean;
 }
 
 // Create context
@@ -244,8 +250,22 @@ interface CalculatorProviderProps {
   children: React.ReactNode;
 }
 
+// Helper function to check if current state matches default state
+function isDefaultState(state: CalculatorState): boolean {
+  const defaultState = getDefaultState();
+
+  // Simple JSON comparison now works since we use predictable IDs
+  try {
+    return JSON.stringify(state) === JSON.stringify(defaultState);
+  } catch {
+    return false;
+  }
+}
+
 export function CalculatorProvider({ children }: CalculatorProviderProps) {
-  const [state, dispatch] = useReducer(calculatorReducer, null, getInitialState);
+  const initialData = useMemo(() => getInitialState(), []);
+  const [state, dispatch] = useReducer(calculatorReducer, initialData.state);
+  const [loadedFromUrl] = React.useState(initialData.loadedFromUrl);
 
   // Calculate all cells when state changes
   const calculations = useMemo(() => {
@@ -253,7 +273,17 @@ export function CalculatorProvider({ children }: CalculatorProviderProps) {
   }, [state.funds, state.selectedScenarios]);
 
   // Update URL whenever state changes (React way!)
+  // But skip URL update if state is the default state
   React.useEffect(() => {
+    // Don't update URL if we're in the default state
+    if (isDefaultState(state)) {
+      // Clear the URL if there are any parameters
+      if (window.location.search) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+      return;
+    }
+
     const compressed = compressState(state);
     if (compressed) {
       const url = window.location.pathname + '?' + compressed;
@@ -262,7 +292,7 @@ export function CalculatorProvider({ children }: CalculatorProviderProps) {
   }, [state]);
 
   return (
-    <CalculatorContext.Provider value={{ state, dispatch, calculations }}>
+    <CalculatorContext.Provider value={{ state, dispatch, calculations, loadedFromUrl }}>
       {children}
     </CalculatorContext.Provider>
   );

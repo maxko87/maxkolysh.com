@@ -43,32 +43,40 @@ export default function BreakdownPanel({
   // Simple breakdown view
   const simpleBreakdown = (
     <>
-      {tooltipData.fundBreakdowns.map((fb, idx) => (
-        <div
-          key={idx}
-          style={{
-            marginBottom: '16px',
-            ...(idx > 0 ? { marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' } : {})
-          }}
-        >
-          <div style={{ fontWeight: 700, color: 'var(--primary-color)', marginBottom: '8px', fontSize: '0.95em' }}>
-            {fb.name}
-          </div>
-          {fb.vintages.map((v, vIdx) => (
-            <div
-              key={vIdx}
-              style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '0.85em', marginBottom: '6px', paddingLeft: '12px' }}
-            >
-              <span style={{ color: 'var(--text-tertiary)' }}>Vintage {v.vintage} ({v.yearsIn}y in, {v.realization}% distributed)</span>
-              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
+      {tooltipData.fundBreakdowns.map((fb, idx) => {
+        const fund = funds.find(f => f.name === fb.name);
+        const fundCycle = fund && !isNaN(fund.fundCycle) && isFinite(fund.fundCycle) ? fund.fundCycle : 2;
+
+        return (
+          <div
+            key={idx}
+            style={{
+              marginBottom: '16px',
+              ...(idx > 0 ? { marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' } : {})
+            }}
+          >
+            <div style={{ fontWeight: 700, color: 'var(--primary-color)', marginBottom: '8px', fontSize: '0.95em' }}>
+              {fb.name}
             </div>
-          ))}
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border-color)', fontWeight: 600 }}>
-            <span style={{ color: 'var(--text-secondary)' }}>{fb.name} Total:</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
+            {fb.vintages.map((v, vIdx) => {
+              const vintageYear = baseYear + (v.vintage - 1) * fundCycle;
+              return (
+                <div
+                  key={vIdx}
+                  style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '0.85em', marginBottom: '6px', paddingLeft: '12px' }}
+                >
+                  <span style={{ color: 'var(--text-tertiary)' }}>{vintageYear} Vintage ({v.yearsIn}y in, {v.realization}% distributed)</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
+                </div>
+              );
+            })}
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border-color)', fontWeight: 600 }}>
+              <span style={{ color: 'var(--text-secondary)' }}>{fb.name} Total:</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{formatCurrency(fb.amount)}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </>
   );
 
@@ -100,7 +108,6 @@ export default function BreakdownPanel({
               const breakdown = calculateVintageSteps(fund, scenario, v.vintage - 1, tooltipData.yearsWorked, tooltipData.yearsFromToday);
               const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
               const deploymentYear = baseYear + (v.vintage - 1) * fundCycle;
-              const sortedHurdles = [...fund.hurdles].sort((a: any, b: any) => a.multiple - b.multiple);
 
               return (
                 <div
@@ -114,7 +121,7 @@ export default function BreakdownPanel({
                   }}
                 >
                   <div style={{ fontWeight: 600, marginBottom: '10px', color: 'var(--text-secondary)', fontSize: '0.95em' }}>
-                    Vintage {v.vintage} (deployed starting {deploymentYear})
+                    {deploymentYear} Vintage (deployed starting {deploymentYear})
                   </div>
 
                   {/* Scenario & Time */}
@@ -175,15 +182,37 @@ export default function BreakdownPanel({
                       </div>
 
                       <div>
-                        <div style={{ color: 'var(--text-secondary)' }}>
-                          Fund Profit × Effective Carry Rate = Total Fund Carry
-                          {sortedHurdles.length > 0 && breakdown.effectiveCarryRate * 100 !== breakdown.baseCarryPercent && (
-                            <span style={{ fontSize: '0.85em', fontStyle: 'italic' }}> (using hurdle at {breakdown.actualMultiple.toFixed(1)}x)</span>
-                          )}
-                        </div>
-                        <div style={{ fontFamily: 'monospace', color: 'var(--text-tertiary)', fontSize: '0.9em' }}>
-                          [${breakdown.fundProfit.toFixed(1)}M × {(breakdown.effectiveCarryRate * 100).toFixed(0)}%] = <strong style={{ color: 'var(--text-primary)' }}>${breakdown.totalFundCarry.toFixed(2)}M</strong>
-                        </div>
+                        {breakdown.carryBands && breakdown.carryBands.length > 0 ? (
+                          // Show incremental hurdle breakdown
+                          <>
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                              Incremental Carry Calculation:
+                            </div>
+                            <div style={{ fontSize: '0.9em', marginLeft: '8px', marginBottom: '4px' }}>
+                              {breakdown.carryBands.map((band, idx) => (
+                                <div key={idx} style={{ fontFamily: 'monospace', color: 'var(--text-tertiary)', lineHeight: '1.5' }}>
+                                  ${band.profitInBand.toFixed(1)}M ({band.fromMultiple.toFixed(1)}x → {band.toMultiple.toFixed(1)}x) × {band.carryRate.toFixed(0)}% = <span style={{ color: 'var(--text-primary)' }}>${band.carryAmount.toFixed(2)}M</span>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ fontFamily: 'monospace', color: 'var(--text-tertiary)', fontSize: '0.9em', marginTop: '4px', paddingTop: '4px', borderTop: '1px solid var(--border-color)' }}>
+                              Total Fund Carry = <strong style={{ color: 'var(--text-primary)' }}>${breakdown.totalFundCarry.toFixed(2)}M</strong>
+                              <span style={{ fontSize: '0.85em', fontStyle: 'italic', marginLeft: '8px' }}>
+                                (Effective rate: {(breakdown.effectiveCarryRate * 100).toFixed(1)}%)
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          // Show simple calculation (no hurdles or no profit)
+                          <>
+                            <div style={{ color: 'var(--text-secondary)' }}>
+                              Fund Profit × Carry Rate = Total Fund Carry
+                            </div>
+                            <div style={{ fontFamily: 'monospace', color: 'var(--text-tertiary)', fontSize: '0.9em' }}>
+                              [${breakdown.fundProfit.toFixed(1)}M × {(breakdown.effectiveCarryRate * 100).toFixed(0)}%] = <strong style={{ color: 'var(--text-primary)' }}>${breakdown.totalFundCarry.toFixed(2)}M</strong>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       <div>

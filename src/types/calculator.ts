@@ -73,6 +73,15 @@ export interface VintageCalculationSteps {
   yourCarryPoolShare: number;    // = totalFundCarry × carryAllocationPercent
   realizedCarry: number;         // = yourCarryPoolShare × realizationPercent
   yourVestedCarry: number;       // = realizedCarry × vestingProgress (if cliff met)
+
+  // Incremental hurdle breakdown (optional, for detailed display)
+  carryBands?: Array<{
+    fromMultiple: number;
+    toMultiple: number;
+    profitInBand: number;
+    carryRate: number;
+    carryAmount: number;
+  }>;
 }
 
 export interface FundBreakdown {
@@ -278,7 +287,7 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
       name,
       hurdles: JSON.parse(JSON.stringify(templateFund.hurdles)),
       scenarios: [{
-        id: Date.now(),
+        id: id * 100, // Use predictable ID based on fund ID
         name: 'Base Case',
         grossReturnMultiple: templateFund.scenarios[0]?.grossReturnMultiple || 3
       }],
@@ -298,7 +307,7 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     fundCycle: 2,
     years: 15,
     hurdles: [],
-    scenarios: [{ id: Date.now(), name: 'Base Case', grossReturnMultiple: 3 }],
+    scenarios: [{ id: id * 100, name: 'Base Case', grossReturnMultiple: 3 }], // Use predictable ID
     carryAllocationPercent: 100,
     vestingPeriod: 4,
     cliffPeriod: 1,

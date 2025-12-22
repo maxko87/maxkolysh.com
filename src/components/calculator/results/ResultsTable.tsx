@@ -184,6 +184,8 @@ function ResultsTable() {
               onCellMouseEnter={handleCellMouseEnter}
               onCellMouseLeave={handleCellMouseLeave}
               onCellClick={handleCellClick}
+              hasHistoricFunds={hasHistoricFunds}
+              baseYear={baseYear}
             />
           )}
         </div>

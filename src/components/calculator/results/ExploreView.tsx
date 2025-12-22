@@ -44,7 +44,7 @@ function ExploreView({
       <table style={{ width: 'auto', tableLayout: 'auto', fontSize: '0.9em' }}>
         <thead>
           <tr>
-            <th>Years at Fund</th>
+            <th>Years Worked</th>
             {Array.from({ length: endCol - startCol + 1 }, (_, i) => startCol + i).map(i => (
               <th key={i}>{headerColumns[i].label}</th>
             ))}

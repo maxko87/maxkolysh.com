@@ -59,11 +59,11 @@ function HomePage() {
               linkedin.com/in/maxkolysh
             </a>
             <a
-              href="https://www.twitter.com/maxkolysh"
+              href="https://www.x.com/maxkolysh"
               target="_blank"
               rel="noopener noreferrer"
             >
-              twitter.com/maxkolysh
+              x.com/maxkolysh
             </a>
           </div>
         </section>
