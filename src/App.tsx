@@ -16,9 +16,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/gp-comp" element={<CalculatorPage />} />
-        {/* Backwards compatibility redirect */}
-        <Route path="/fund-gp-comp-calculator" element={<RedirectWithHash to="/gp-comp" />} />
+        <Route path="/carry-calc" element={<CalculatorPage />} />
+        {/* Backwards compatibility redirects */}
+        <Route path="/gp-comp" element={<RedirectWithHash to="/carry-calc" />} />
+        <Route path="/fund-gp-comp-calculator" element={<RedirectWithHash to="/carry-calc" />} />
         <Route path="/why-vcs-hate-recruiting-startups" element={<VCsHateRecruitingPage />} />
         <Route path="/how-to-request-intros" element={<RequestIntrosPage />} />
         <Route path="/learn" element={<LearnedLeaguePage />} />
