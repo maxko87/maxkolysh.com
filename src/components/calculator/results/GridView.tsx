@@ -36,7 +36,7 @@ function GridView({
 }: GridViewProps) {
   // Helper function to generate tooltip text similar to BreakdownPanel headerText
   const getTooltipText = (cellData: CellData | null) => {
-    if (!cellData) return 'Click to explore';
+    if (!cellData) return 'Click cell to explore';
 
     const headerText = hasHistoricFunds ? (
       cellData.yearsFromToday ? (
@@ -52,7 +52,7 @@ function GridView({
       )
     );
 
-    return headerText + '\n\nClick to explore';
+    return headerText + '\n\nClick cell to explore';
   };
   return (
     <table>
@@ -86,6 +86,7 @@ function GridView({
                   const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
                   const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
                   const isActive = isHovered || isClicked;
+                  const isNearBottom = rowIdx >= calculations.slice(0, maxYears).length - 3;
 
                   return (
                     <td
@@ -105,10 +106,14 @@ function GridView({
                         <div
                           style={{
                             position: 'absolute',
-                            top: '100%',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            marginTop: '8px',
+                            ...(isNearBottom ? {
+                              bottom: '100%',
+                              marginBottom: '8px'
+                            } : {
+                              top: '100%',
+                              marginTop: '8px'
+                            }),
+                            right: '0',
                             background: 'var(--bg-primary)',
                             border: '1px solid var(--border-color)',
                             borderRadius: 'var(--radius-lg)',
@@ -153,6 +158,7 @@ function GridView({
               const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
               const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
               const isActive = isHovered || isClicked;
+              const isNearBottom = rowIdx >= calculations.slice(0, maxYears).length - 3;
 
               return (
                 <td
@@ -172,10 +178,14 @@ function GridView({
                     <div
                       style={{
                         position: 'absolute',
-                        top: '100%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        marginTop: '8px',
+                        ...(isNearBottom ? {
+                          bottom: '100%',
+                          marginBottom: '8px'
+                        } : {
+                          top: '100%',
+                          marginTop: '8px'
+                        }),
+                        right: '0',
                         background: 'var(--bg-primary)',
                         border: '1px solid var(--border-color)',
                         borderRadius: 'var(--radius-lg)',
