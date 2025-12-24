@@ -87,6 +87,7 @@ function GridView({
                   const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
                   const isActive = isHovered || isClicked;
                   const isNearBottom = rowIdx >= calculations.slice(0, maxYears).length - 3;
+                  const isNearLeft = colIdx <= 1; // First 2 columns
 
                   return (
                     <td
@@ -113,7 +114,11 @@ function GridView({
                               top: '100%',
                               marginTop: '8px'
                             }),
-                            right: '0',
+                            ...(isNearLeft ? {
+                              left: '0'
+                            } : {
+                              right: '0'
+                            }),
                             background: 'var(--bg-primary)',
                             border: '1px solid var(--border-color)',
                             borderRadius: 'var(--radius-lg)',
@@ -159,6 +164,7 @@ function GridView({
               const isClicked = clickedCell?.row === rowIdx && clickedCell?.col === colIdx;
               const isActive = isHovered || isClicked;
               const isNearBottom = rowIdx >= calculations.slice(0, maxYears).length - 3;
+              const isNearLeft = colIdx <= 1; // First 2 columns
 
               return (
                 <td
@@ -185,7 +191,11 @@ function GridView({
                           top: '100%',
                           marginTop: '8px'
                         }),
-                        right: '0',
+                        ...(isNearLeft ? {
+                          left: '0'
+                        } : {
+                          right: '0'
+                        }),
                         background: 'var(--bg-primary)',
                         border: '1px solid var(--border-color)',
                         borderRadius: 'var(--radius-lg)',

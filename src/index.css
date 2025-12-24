@@ -812,7 +812,7 @@ body {
     background: var(--bg-primary);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
-    max-width: 700px;
+    max-width: 900px;
     width: 100%;
     max-height: 90vh;
     display: flex;
@@ -929,6 +929,16 @@ body {
 .simple-list li strong {
     color: var(--text-primary);
     font-weight: 600;
+}
+
+.simple-list ul {
+    margin-top: var(--spacing-xs);
+    padding-left: var(--spacing-xl);
+    list-style: circle;
+}
+
+.simple-list ul li {
+    margin-bottom: var(--spacing-sm);
 }
 
 .modal-footer-section {
