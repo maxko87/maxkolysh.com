@@ -22,6 +22,9 @@ function HomePage() {
             <a href="https://feelme.app" target="_blank" rel="noopener noreferrer">
               Feel Me
             </a>
+            <a href="https://masteroracle.club/" target="_blank" rel="noopener noreferrer">
+              Master Oracle
+            </a>
             <Link to="/learn">Learned League Study Guide</Link>
             <Link to="/carry-calc">GP Carry Calculator</Link>
           </div>

@@ -58,7 +58,7 @@ function Sidebar() {
           color: '#94a3b8',
           marginBottom: 'var(--spacing-md)'
         }}>
-          <div><a href="#" onClick={(e) => { e.preventDefault(); setShowModal(true); }} style={{ color: 'inherit', textDecoration: 'underline' }}>Read the quickstart</a> or <a href="mailto:maxkolysh@gmail.com?subject=Fund GP Comp Calculator Feedback" style={{ color: 'inherit', textDecoration: 'underline' }}>send feedback</a>.</div>
+          <div><a href="#" onClick={(e) => { e.preventDefault(); setShowModal(true); }} style={{ color: 'inherit', textDecoration: 'underline' }}>Read the quickstart</a> or <a href="mailto:maxkolysh@gmail.com?subject=Fund GP Comp Calculator Feedback" style={{ color: 'inherit', textDecoration: 'underline' }}>send me feedback</a>.</div>
         </div>
       </div>
 
