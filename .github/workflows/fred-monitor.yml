@@ -1,0 +1,40 @@
+name: Monitor FRED Website
+
+on:
+  schedule:
+    # Run every 30 minutes
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-for-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Supabase Edge Function
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            -X POST \
+            "https://vjnkdpovepqlsrdzqowd.supabase.co/functions/v1/check-fred-changes" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Response: $body"
+          echo "HTTP Code: $http_code"
+
+          if [ "$http_code" != "200" ]; then
+            echo "Error: Function returned non-200 status"
+            exit 1
+          fi
+
+          # Check if the response indicates success
+          success=$(echo "$body" | jq -r '.success')
+          if [ "$success" != "true" ]; then
+            echo "Error: Function reported failure"
+            exit 1
+          fi
+
+          changed=$(echo "$body" | jq -r '.changed')
+          echo "Changed: $changed"
