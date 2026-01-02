@@ -58,7 +58,7 @@ function GridView({
     <table>
       <thead>
         <tr>
-          <th>Years Worked</th>
+          <th>Years Worked ↓</th>
           {headerColumns.map((col, idx) => (
             <th key={idx}>{col.label}</th>
           ))}
