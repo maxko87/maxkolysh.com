@@ -61,6 +61,11 @@ export function compressState(state: CalculatorState): string {
       // Years to clear 1X
       params.set(`${prefix}_y1x`, fund.yearsToClear1X.toString());
 
+      // Vintage year (only if not current year)
+      if (fund.vintageYear !== undefined) {
+        params.set(`${prefix}_vy`, fund.vintageYear.toString());
+      }
+
       // Selected scenario for this fund
       const selectedScenarioId = state.selectedScenarios[fund.id];
       const selectedScenarioIdx = fund.scenarios.findIndex(s => s.id === selectedScenarioId);
@@ -193,6 +198,10 @@ export function decompressState(queryString: string): CalculatorState | null {
 
       const continuous = params.get(`${prefix}_continuous`) === '1';
 
+      // Parse vintage year (default to current year if not specified)
+      const vintageYearParam = params.get(`${prefix}_vy`);
+      const vintageYear = vintageYearParam ? parseInt(vintageYearParam) : new Date().getFullYear();
+
       const fund: Fund = {
         id: arrayIdx,
         name: params.get(`${prefix}_name`) || `Fund ${fundIdx}`,
@@ -210,7 +219,8 @@ export function decompressState(queryString: string): CalculatorState | null {
         realizationCurve,
         deploymentCurve,
         yearsToClear1X: parseFloat(params.get(`${prefix}_y1x`) || DEFAULT_YEARS_TO_CLEAR_1X.toString()),
-        raiseContinuously: continuous
+        raiseContinuously: continuous,
+        vintageYear
       };
 
       funds.push(fund);

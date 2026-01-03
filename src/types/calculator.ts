@@ -280,6 +280,8 @@ export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
 };
 
 export const createDefaultFund = (id: number, name: string, templateFund?: Fund): Fund => {
+  const currentYear = new Date().getFullYear();
+
   if (templateFund) {
     return {
       ...templateFund,
@@ -295,6 +297,7 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
       deploymentCurve: [...(templateFund.deploymentCurve || DEFAULT_DEPLOYMENT_CURVE)],
       deploymentTimeline: templateFund.deploymentTimeline ?? DEFAULT_DEPLOYMENT_TIMELINE,
       yearsToClear1X: templateFund.yearsToClear1X ?? DEFAULT_YEARS_TO_CLEAR_1X,
+      vintageYear: templateFund.vintageYear ?? currentYear,
     };
   }
 
@@ -316,11 +319,13 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     deploymentTimeline: DEFAULT_DEPLOYMENT_TIMELINE,
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
     raiseContinuously: false,
+    vintageYear: currentYear,
   };
 };
 
 export const createFundFromType = (id: number, name: string, fundType: FundType): Fund => {
   const preset = FUND_TYPE_PRESETS[fundType];
+  const currentYear = new Date().getFullYear();
 
   // Create scenarios with unique IDs
   const scenarios = preset.scenarios.map((scenario, index) => ({
@@ -347,5 +352,6 @@ export const createFundFromType = (id: number, name: string, fundType: FundType)
     deploymentCurve: [...DEPLOYMENT_PRESETS[preset.defaults.deploymentPreset]],
     yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
     raiseContinuously: false,
+    vintageYear: currentYear,
   };
 };
