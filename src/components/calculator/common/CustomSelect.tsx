@@ -31,7 +31,7 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-      {label && <span style={{ margin: 0, fontSize: '0.9em', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{label}</span>}
+      {label && <span style={{ margin: 0, fontSize: '0.9em', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>{label}</span>}
       <div ref={containerRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setIsOpen(!isOpen)}
