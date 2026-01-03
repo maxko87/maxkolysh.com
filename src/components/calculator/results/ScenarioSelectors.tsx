@@ -83,7 +83,7 @@ function ScenarioSelectors() {
     <div className="scenario-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: 'var(--spacing-md)' }}>
       {/* Row 1: Explanation text and links */}
       <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-        The table below shows your projected annual carry earned based on your assumptions.
+        The table below shows your projected annual carry based on your assumptions.
         <br />
         Click any cell to explore the math.
         {' '}<a href="#" onClick={(e) => { e.preventDefault(); handleExportCSV(); }} style={{ color: 'var(--text-secondary)' }}>Export to CSV</a>
