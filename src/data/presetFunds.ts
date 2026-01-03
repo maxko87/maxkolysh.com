@@ -41,6 +41,7 @@ export const createFundDataFromPreset = (preset: PresetFund): Omit<Fund, 'id' | 
   return {
     ...HISTORIC_FUND_DEFAULTS,
     size: preset.size,
+    vintageYear: preset.vintage,
     scenarios: [{
       id: Date.now(),
       name: 'Base Case',

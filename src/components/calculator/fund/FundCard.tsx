@@ -356,6 +356,26 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
             <div className="form-grid" style={{ marginBottom: 'var(--spacing-md)' }}>
               <div className="form-group">
                 <label>
+                  <span>Vintage Year</span>
+                  <Tooltip text="The year this fund was raised. Affects how far along the fund is in its lifecycle."><span className="tooltip-icon">?</span></Tooltip>
+                </label>
+                <input
+                  type="number"
+                  value={fund.vintageYear ?? new Date().getFullYear()}
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? new Date().getFullYear() : parseInt(e.target.value);
+                    handleFieldChange('vintageYear', value);
+                  }}
+                  placeholder={new Date().getFullYear().toString()}
+                  min="1950"
+                  max="2100"
+                  step="1"
+                />
+              </div>
+            </div>
+            <div className="form-grid" style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div className="form-group">
+                <label>
                   <span>Vesting Period</span>
                   <Tooltip text="Years required to fully vest carry allocation"><span className="tooltip-icon">?</span></Tooltip>
                 </label>
