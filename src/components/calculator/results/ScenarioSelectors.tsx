@@ -80,36 +80,41 @@ function ScenarioSelectors() {
   if (state.funds.length === 0) return null;
 
   return (
-    <div className="scenario-tabs" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: 'var(--spacing-md)' }}>
-      {state.funds.map(fund => (
-        <CustomSelect
-          key={fund.id}
-          label={fund.name}
-          value={state.selectedScenarios[fund.id]}
-          onChange={(scenarioId) =>
-            dispatch({
-              type: 'SELECT_SCENARIO',
-              payload: { fundId: fund.id, scenarioId }
-            })
-          }
-          options={fund.scenarios.map(scenario => ({
-            id: scenario.id,
-            label: `${scenario.grossReturnMultiple}x`
-          }))}
-        />
-      ))}
-      <button className="btn btn-secondary" onClick={handleExportCSV} style={{ flexShrink: 0 }}>
-        Export to CSV
-      </button>
-      <button className="btn btn-secondary" onClick={handleShare} style={{ flexShrink: 0 }}>
-        Share
-      </button>
+    <div className="scenario-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: 'var(--spacing-md)' }}>
+      {/* Row 1: Explanation text and links */}
+      <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+        The table below shows your projected annual carry earned based on your assumptions.
+        <br />
+        Click any cell to explore the math.
+        {' '}<a href="#" onClick={(e) => { e.preventDefault(); handleExportCSV(); }} style={{ color: 'var(--text-secondary)' }}>Export to CSV</a>
+        {' '}or{' '}
+        <a href="#" onClick={(e) => { e.preventDefault(); handleShare(); }} style={{ color: 'var(--text-secondary)' }}>copy share link</a>.
+        {showToast && <span style={{ marginLeft: '8px', color: 'var(--accent-primary)' }}>Link copied!</span>}
+      </p>
 
-      {showToast && (
-        <div className="toast">
-          Link copied to clipboard!
-        </div>
-      )}
+      {/* Row 2: Scenarios */}
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Scenarios:</span>
+        {state.funds.map((fund, index) => (
+          <div key={fund.id} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {index > 0 && <span style={{ color: 'var(--border-color)' }}>|</span>}
+            <CustomSelect
+              label={fund.name}
+              value={state.selectedScenarios[fund.id]}
+              onChange={(scenarioId) =>
+                dispatch({
+                  type: 'SELECT_SCENARIO',
+                  payload: { fundId: fund.id, scenarioId }
+                })
+              }
+              options={fund.scenarios.map(scenario => ({
+                id: scenario.id,
+                label: `${scenario.grossReturnMultiple}x`
+              }))}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

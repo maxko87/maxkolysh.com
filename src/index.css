@@ -451,7 +451,7 @@ body {
 }
 
 .btn-secondary {
-    background: #f1f5f9;
+    background: white;
     color: #475569;
     border: 1px solid #cbd5e0;
 }
@@ -459,6 +459,11 @@ body {
 .btn-secondary:hover {
     background: #e2e8f0;
     border-color: #94a3b8;
+}
+
+.btn-sm {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85em;
 }
 
 .btn-danger {

@@ -30,40 +30,53 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
   const selectedOption = options.find(opt => opt.id === value);
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-      {label && <label style={{ margin: 0, fontSize: '0.95em', whiteSpace: 'nowrap' }}>{label}:</label>}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+      {label && <span style={{ margin: 0, fontSize: '0.9em', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{label}</span>}
       <div ref={containerRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           style={{
-            padding: '8px 12px',
-            paddingRight: '32px',
+            padding: '6px 10px',
+            paddingRight: '26px',
             borderRadius: '6px',
-            border: '1.5px solid var(--border-color)',
-            fontSize: '0.95em',
-            backgroundColor: 'var(--bg-primary)',
+            border: '1px solid var(--border-color)',
+            fontSize: '0.9em',
+            fontWeight: 500,
+            backgroundColor: 'white',
             cursor: 'pointer',
-            minWidth: '80px',
+            minWidth: '60px',
             textAlign: 'left',
             position: 'relative',
             fontFamily: 'inherit',
-            color: 'inherit',
+            color: 'var(--text-primary)',
             appearance: 'none',
-            WebkitAppearance: 'none'
+            WebkitAppearance: 'none',
+            transition: 'border-color 0.15s, background-color 0.15s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--accent-primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-color)';
           }}
         >
           {selectedOption?.label}
-          <span style={{
-            position: 'absolute',
-            right: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            pointerEvents: 'none',
-            fontSize: '0.7em',
-            color: '#666'
-          }}>
-            ▼
-          </span>
+          <svg
+            style={{
+              position: 'absolute',
+              right: '8px',
+              top: '50%',
+              transform: `translateY(-50%) rotate(${isOpen ? '180deg' : '0deg'})`,
+              pointerEvents: 'none',
+              transition: 'transform 0.15s ease'
+            }}
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+          >
+            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </button>
 
         {isOpen && (
