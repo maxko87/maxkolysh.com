@@ -6,6 +6,32 @@ const BARK_URL = Deno.env.get("BARK_URL")!;
 
 const TARGET_URL = "https://fred.stlouisfed.org/series/IHLIDXUSTPSOFTDEVE";
 
+// Normalize HTML by removing dynamic elements that change on every request
+function normalizeHtml(html: string): string {
+  let normalized = html;
+
+  // Remove script tags and their content (often contain timestamps/tokens)
+  normalized = normalized.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+
+  // Remove inline event handlers and dynamic attributes
+  normalized = normalized.replace(/\s(data-timestamp|data-token|nonce|data-cfasync)="[^"]*"/gi, '');
+
+  // Remove common cache-busting query parameters in URLs
+  normalized = normalized.replace(/\?v=[\w.-]+/g, '');
+  normalized = normalized.replace(/\?_=\d+/g, '');
+
+  // Remove CSRF tokens and session-related hidden inputs
+  normalized = normalized.replace(/<input[^>]*type=["']hidden["'][^>]*>/gi, '');
+
+  // Remove meta tags that often have dynamic content
+  normalized = normalized.replace(/<meta[^>]*name=["'](csrf|token|nonce)[^"']*["'][^>]*>/gi, '');
+
+  // Normalize whitespace
+  normalized = normalized.replace(/\s+/g, ' ').trim();
+
+  return normalized;
+}
+
 async function hashContent(content: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(content);
@@ -35,7 +61,12 @@ function extractKeyData(html: string): { latestValue?: string; latestDate?: stri
   return result;
 }
 
-function generateDiffSummary(oldHtml: string, newHtml: string): string {
+interface DiffResult {
+  summary: string;
+  hasMeaningfulChanges: boolean;
+}
+
+function generateDiffSummary(oldHtml: string, newHtml: string): DiffResult {
   const oldData = extractKeyData(oldHtml);
   const newData = extractKeyData(newHtml);
 
@@ -57,14 +88,30 @@ function generateDiffSummary(oldHtml: string, newHtml: string): string {
     }
   }
 
-  if (changes.length === 0) {
-    // Fallback: show size difference
-    const sizeDiff = newHtml.length - oldHtml.length;
-    const sign = sizeDiff > 0 ? '+' : '';
-    changes.push(`Page size: ${sign}${sizeDiff} chars`);
+  // Only consider it a meaningful change if we detected actual data changes
+  // (not just page structure/layout changes)
+  if (changes.length > 0) {
+    return { summary: changes.join(', '), hasMeaningfulChanges: true };
   }
 
-  return changes.join(', ');
+  // Check for significant size changes (more than 100 chars suggests real content change)
+  const normalizedOld = normalizeHtml(oldHtml);
+  const normalizedNew = normalizeHtml(newHtml);
+  const sizeDiff = Math.abs(normalizedNew.length - normalizedOld.length);
+
+  if (sizeDiff > 100) {
+    const sign = normalizedNew.length > normalizedOld.length ? '+' : '-';
+    return {
+      summary: `Page content changed (${sign}${sizeDiff} chars)`,
+      hasMeaningfulChanges: true
+    };
+  }
+
+  // No meaningful changes detected
+  return {
+    summary: `Minor page variation (${sizeDiff} chars)`,
+    hasMeaningfulChanges: false
+  };
 }
 
 async function sendNotification(title: string, message: string): Promise<void> {
@@ -92,7 +139,9 @@ Deno.serve(async (req) => {
     }
 
     const htmlContent = await pageResponse.text();
-    const contentHash = await hashContent(htmlContent);
+    // Use normalized HTML for hash comparison to ignore dynamic elements
+    const normalizedContent = normalizeHtml(htmlContent);
+    const contentHash = await hashContent(normalizedContent);
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -112,9 +161,9 @@ Deno.serve(async (req) => {
     const isFirstRun = !lastSnapshot;
 
     // Generate diff summary before storing new snapshot
-    let diffSummary = "";
+    let diffResult: DiffResult = { summary: "", hasMeaningfulChanges: false };
     if (isChanged && !isFirstRun && lastSnapshot.html_content) {
-      diffSummary = generateDiffSummary(lastSnapshot.html_content, htmlContent);
+      diffResult = generateDiffSummary(lastSnapshot.html_content, htmlContent);
     }
 
     const { error: insertError } = await supabase
@@ -129,12 +178,16 @@ Deno.serve(async (req) => {
       throw new Error(`Database insert error: ${insertError.message}`);
     }
 
-    if (isChanged && !isFirstRun) {
-      console.log("Change detected! Sending notification...");
+    // Only send notification if there are meaningful changes
+    const shouldNotify = isChanged && !isFirstRun && diffResult.hasMeaningfulChanges;
+    if (shouldNotify) {
+      console.log("Meaningful change detected! Sending notification...");
       await sendNotification(
         "FRED Data Updated",
-        diffSummary || "Page content changed"
+        diffResult.summary || "Page content changed"
       );
+    } else if (isChanged && !isFirstRun) {
+      console.log(`Change detected but not meaningful: ${diffResult.summary}`);
     }
 
     return new Response(
@@ -142,7 +195,9 @@ Deno.serve(async (req) => {
         success: true,
         changed: isChanged,
         isFirstRun,
-        diffSummary: diffSummary || null,
+        notificationSent: shouldNotify,
+        diffSummary: diffResult.summary || null,
+        hasMeaningfulChanges: diffResult.hasMeaningfulChanges,
         timestamp: new Date().toISOString(),
       }),
       { headers: { "Content-Type": "application/json" } }
