@@ -6,30 +6,32 @@ const BARK_URL = Deno.env.get("BARK_URL")!;
 
 const TARGET_URL = "https://fred.stlouisfed.org/series/IHLIDXUSTPSOFTDEVE";
 
-// Normalize HTML by removing dynamic elements that change on every request
-function normalizeHtml(html: string): string {
-  let normalized = html;
+// Extract visible text content from HTML, stripping all markup
+function extractVisibleText(html: string): string {
+  let text = html;
 
-  // Remove script tags and their content (often contain timestamps/tokens)
-  normalized = normalized.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  // Remove script and style tags with their content
+  text = text.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  text = text.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
 
-  // Remove inline event handlers and dynamic attributes
-  normalized = normalized.replace(/\s(data-timestamp|data-token|nonce|data-cfasync)="[^"]*"/gi, '');
+  // Remove HTML comments
+  text = text.replace(/<!--[\s\S]*?-->/g, '');
 
-  // Remove common cache-busting query parameters in URLs
-  normalized = normalized.replace(/\?v=[\w.-]+/g, '');
-  normalized = normalized.replace(/\?_=\d+/g, '');
+  // Remove all HTML tags
+  text = text.replace(/<[^>]+>/g, ' ');
 
-  // Remove CSRF tokens and session-related hidden inputs
-  normalized = normalized.replace(/<input[^>]*type=["']hidden["'][^>]*>/gi, '');
-
-  // Remove meta tags that often have dynamic content
-  normalized = normalized.replace(/<meta[^>]*name=["'](csrf|token|nonce)[^"']*["'][^>]*>/gi, '');
+  // Decode common HTML entities
+  text = text.replace(/&nbsp;/g, ' ');
+  text = text.replace(/&amp;/g, '&');
+  text = text.replace(/&lt;/g, '<');
+  text = text.replace(/&gt;/g, '>');
+  text = text.replace(/&quot;/g, '"');
+  text = text.replace(/&#39;/g, "'");
 
   // Normalize whitespace
-  normalized = normalized.replace(/\s+/g, ' ').trim();
+  text = text.replace(/\s+/g, ' ').trim();
 
-  return normalized;
+  return text;
 }
 
 async function hashContent(content: string): Promise<string> {
@@ -67,9 +69,17 @@ interface DiffResult {
 }
 
 function generateDiffSummary(oldHtml: string, newHtml: string): DiffResult {
+  const oldText = extractVisibleText(oldHtml);
+  const newText = extractVisibleText(newHtml);
+
+  // If visible text is identical, no meaningful change
+  if (oldText === newText) {
+    return { summary: "No visible text changes", hasMeaningfulChanges: false };
+  }
+
+  // Text changed - try to extract specific details for a nicer message
   const oldData = extractKeyData(oldHtml);
   const newData = extractKeyData(newHtml);
-
   const changes: string[] = [];
 
   if (oldData.latestValue !== newData.latestValue) {
@@ -88,30 +98,12 @@ function generateDiffSummary(oldHtml: string, newHtml: string): DiffResult {
     }
   }
 
-  // Only consider it a meaningful change if we detected actual data changes
-  // (not just page structure/layout changes)
+  // If we found specific changes, report them; otherwise just say text changed
   if (changes.length > 0) {
     return { summary: changes.join(', '), hasMeaningfulChanges: true };
   }
 
-  // Check for significant size changes (more than 100 chars suggests real content change)
-  const normalizedOld = normalizeHtml(oldHtml);
-  const normalizedNew = normalizeHtml(newHtml);
-  const sizeDiff = Math.abs(normalizedNew.length - normalizedOld.length);
-
-  if (sizeDiff > 100) {
-    const sign = normalizedNew.length > normalizedOld.length ? '+' : '-';
-    return {
-      summary: `Page content changed (${sign}${sizeDiff} chars)`,
-      hasMeaningfulChanges: true
-    };
-  }
-
-  // No meaningful changes detected
-  return {
-    summary: `Minor page variation (${sizeDiff} chars)`,
-    hasMeaningfulChanges: false
-  };
+  return { summary: "Page text updated", hasMeaningfulChanges: true };
 }
 
 async function sendNotification(title: string, message: string): Promise<void> {
@@ -139,9 +131,9 @@ Deno.serve(async (req) => {
     }
 
     const htmlContent = await pageResponse.text();
-    // Use normalized HTML for hash comparison to ignore dynamic elements
-    const normalizedContent = normalizeHtml(htmlContent);
-    const contentHash = await hashContent(normalizedContent);
+    // Hash only the visible text content to ignore HTML/script changes
+    const visibleText = extractVisibleText(htmlContent);
+    const contentHash = await hashContent(visibleText);
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
