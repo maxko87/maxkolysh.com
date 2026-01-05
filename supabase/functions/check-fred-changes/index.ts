@@ -6,6 +6,34 @@ const BARK_URL = Deno.env.get("BARK_URL")!;
 
 const TARGET_URL = "https://fred.stlouisfed.org/series/IHLIDXUSTPSOFTDEVE";
 
+// Extract visible text content from HTML, stripping all markup
+function extractVisibleText(html: string): string {
+  let text = html;
+
+  // Remove script and style tags with their content
+  text = text.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  text = text.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+
+  // Remove HTML comments
+  text = text.replace(/<!--[\s\S]*?-->/g, '');
+
+  // Remove all HTML tags
+  text = text.replace(/<[^>]+>/g, ' ');
+
+  // Decode common HTML entities
+  text = text.replace(/&nbsp;/g, ' ');
+  text = text.replace(/&amp;/g, '&');
+  text = text.replace(/&lt;/g, '<');
+  text = text.replace(/&gt;/g, '>');
+  text = text.replace(/&quot;/g, '"');
+  text = text.replace(/&#39;/g, "'");
+
+  // Normalize whitespace
+  text = text.replace(/\s+/g, ' ').trim();
+
+  return text;
+}
+
 async function hashContent(content: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(content);
@@ -35,10 +63,23 @@ function extractKeyData(html: string): { latestValue?: string; latestDate?: stri
   return result;
 }
 
-function generateDiffSummary(oldHtml: string, newHtml: string): string {
+interface DiffResult {
+  summary: string;
+  hasMeaningfulChanges: boolean;
+}
+
+function generateDiffSummary(oldHtml: string, newHtml: string): DiffResult {
+  const oldText = extractVisibleText(oldHtml);
+  const newText = extractVisibleText(newHtml);
+
+  // If visible text is identical, no meaningful change
+  if (oldText === newText) {
+    return { summary: "No visible text changes", hasMeaningfulChanges: false };
+  }
+
+  // Text changed - try to extract specific details for a nicer message
   const oldData = extractKeyData(oldHtml);
   const newData = extractKeyData(newHtml);
-
   const changes: string[] = [];
 
   if (oldData.latestValue !== newData.latestValue) {
@@ -57,14 +98,12 @@ function generateDiffSummary(oldHtml: string, newHtml: string): string {
     }
   }
 
-  if (changes.length === 0) {
-    // Fallback: show size difference
-    const sizeDiff = newHtml.length - oldHtml.length;
-    const sign = sizeDiff > 0 ? '+' : '';
-    changes.push(`Page size: ${sign}${sizeDiff} chars`);
+  // If we found specific changes, report them; otherwise just say text changed
+  if (changes.length > 0) {
+    return { summary: changes.join(', '), hasMeaningfulChanges: true };
   }
 
-  return changes.join(', ');
+  return { summary: "Page text updated", hasMeaningfulChanges: true };
 }
 
 async function sendNotification(title: string, message: string): Promise<void> {
@@ -92,7 +131,9 @@ Deno.serve(async (req) => {
     }
 
     const htmlContent = await pageResponse.text();
-    const contentHash = await hashContent(htmlContent);
+    // Hash only the visible text content to ignore HTML/script changes
+    const visibleText = extractVisibleText(htmlContent);
+    const contentHash = await hashContent(visibleText);
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -112,9 +153,9 @@ Deno.serve(async (req) => {
     const isFirstRun = !lastSnapshot;
 
     // Generate diff summary before storing new snapshot
-    let diffSummary = "";
+    let diffResult: DiffResult = { summary: "", hasMeaningfulChanges: false };
     if (isChanged && !isFirstRun && lastSnapshot.html_content) {
-      diffSummary = generateDiffSummary(lastSnapshot.html_content, htmlContent);
+      diffResult = generateDiffSummary(lastSnapshot.html_content, htmlContent);
     }
 
     const { error: insertError } = await supabase
@@ -129,12 +170,16 @@ Deno.serve(async (req) => {
       throw new Error(`Database insert error: ${insertError.message}`);
     }
 
-    if (isChanged && !isFirstRun) {
-      console.log("Change detected! Sending notification...");
+    // Only send notification if there are meaningful changes
+    const shouldNotify = isChanged && !isFirstRun && diffResult.hasMeaningfulChanges;
+    if (shouldNotify) {
+      console.log("Meaningful change detected! Sending notification...");
       await sendNotification(
         "FRED Data Updated",
-        diffSummary || "Page content changed"
+        diffResult.summary || "Page content changed"
       );
+    } else if (isChanged && !isFirstRun) {
+      console.log(`Change detected but not meaningful: ${diffResult.summary}`);
     }
 
     return new Response(
@@ -142,7 +187,9 @@ Deno.serve(async (req) => {
         success: true,
         changed: isChanged,
         isFirstRun,
-        diffSummary: diffSummary || null,
+        notificationSent: shouldNotify,
+        diffSummary: diffResult.summary || null,
+        hasMeaningfulChanges: diffResult.hasMeaningfulChanges,
         timestamp: new Date().toISOString(),
       }),
       { headers: { "Content-Type": "application/json" } }
