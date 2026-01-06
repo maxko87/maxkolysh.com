@@ -303,12 +303,10 @@ export function calculateVintageSteps(
   const multiple = isNaN(scenario.grossReturnMultiple) || scenario.grossReturnMultiple < 0 ? 3 : scenario.grossReturnMultiple;
 
   // Calculate vintage timing
-  // If fund has a vintageYear, calculate how old the fund already is
-  const currentYear = new Date().getFullYear();
-  const fundCurrentAge = fund.vintageYear ? Math.max(0, currentYear - fund.vintageYear) : 0;
   const fundStartYear = vintageIndex * fundCycle;
-  // vintageAgeInYears includes the fund's current age plus future years
-  const vintageAgeInYears = yearsFromToday - fundStartYear + fundCurrentAge;
+  // vintageAgeInYears is how old this vintage is at the point we're calculating
+  // yearsFromToday already represents years from the base year (vintage year for historic funds, current year for new funds)
+  const vintageAgeInYears = yearsFromToday - fundStartYear;
   const yearsIntoThisVintage = yearsWorked - fundStartYear;
 
   // Get deployment and realization percentages
