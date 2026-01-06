@@ -19,6 +19,7 @@ interface GridViewProps {
   onCellClick: (rowIdx: number, colIdx: number, data: CellData | null, e: React.MouseEvent, year: string) => void;
   hasHistoricFunds: boolean;
   baseYear: number;
+  funds: { name: string }[];
 }
 
 function GridView({
@@ -32,23 +33,27 @@ function GridView({
   onCellMouseLeave,
   onCellClick,
   hasHistoricFunds,
-  baseYear
+  baseYear,
+  funds
 }: GridViewProps) {
   // Helper function to generate tooltip text similar to BreakdownPanel headerText
   const getTooltipText = (cellData: CellData | null) => {
     if (!cellData) return 'Click cell to explore';
 
+    const singleFundName = funds.length === 1 ? funds[0].name : null;
+    const atFundText = singleFundName ? ` at ${singleFundName}` : '';
+
     const headerText = hasHistoricFunds ? (
       cellData.yearsFromToday ? (
-        `If you worked for ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting in ${baseYear}, you'd have made ${formatCurrency(cellData.total)} in carry in ${cellData.yearsFromToday} year${cellData.yearsFromToday !== 1 ? 's' : ''}.`
+        `If you worked${atFundText} for ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting in ${baseYear}, you'd have made ${formatCurrency(cellData.total)} in carry in ${cellData.yearsFromToday} year${cellData.yearsFromToday !== 1 ? 's' : ''}.`
       ) : (
-        `Working ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting in ${baseYear}, you made ${formatCurrency(cellData.total)} in carry during the early years because carry distributions had not yet started.`
+        `Working${atFundText} ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting in ${baseYear}, you made ${formatCurrency(cellData.total)} in carry during the early years because carry distributions had not yet started.`
       )
     ) : (
       cellData.yearsFromToday ? (
-        `If you work for ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make ${formatCurrency(cellData.total)} in carry in ${cellData.yearsFromToday} year${cellData.yearsFromToday !== 1 ? 's' : ''}.`
+        `If you work${atFundText} for ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make ${formatCurrency(cellData.total)} in carry in ${cellData.yearsFromToday} year${cellData.yearsFromToday !== 1 ? 's' : ''}.`
       ) : (
-        `Working ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make ${formatCurrency(cellData.total)} in carry during the early years because carry distributions won't have started yet.`
+        `Working${atFundText} ${cellData.yearsWorked} year${cellData.yearsWorked !== 1 ? 's' : ''} starting today, you'll make ${formatCurrency(cellData.total)} in carry during the early years because carry distributions won't have started yet.`
       )
     );
 
