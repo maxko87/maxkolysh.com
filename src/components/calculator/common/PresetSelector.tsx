@@ -5,7 +5,7 @@ import { PRESET_FUNDS, createFundDataFromPreset, generateDisplayName } from '../
 import { formatCurrency } from '../../../utils/formatCurrency';
 
 const PresetSelector = forwardRef<HTMLButtonElement>((_props, ref) => {
-  const { state, dispatch } = useCalculator();
+  const { dispatch } = useCalculator();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'notable' | 'alphabetical' | 'size' | 'multiple'>('notable');
