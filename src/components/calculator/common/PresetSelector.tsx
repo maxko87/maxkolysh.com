@@ -133,19 +133,11 @@ const PresetSelector = forwardRef<HTMLButtonElement>((_props, ref) => {
 
   const handleSelectPreset = (presetIndex: number) => {
     const preset = PRESET_FUNDS[presetIndex];
-    // Find the highest existing fund number to avoid duplicates
-    const existingNumbers = state.funds.map(f => {
-      const match = f.name.match(/^Fund (\d+)/);
-      return match ? parseInt(match[1], 10) : 0;
-    });
-    const maxNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) : 0;
-    const fundNumber = maxNumber + 1;
-    const fundName = `Fund ${fundNumber}: ${preset.fundName}`;
 
     // Create fund with defaults + unique preset data + vintage year
     const presetFund = {
       id: 0,
-      name: fundName,
+      name: preset.fundName,
       ...createFundDataFromPreset(preset),
       vintageYear: preset.vintage, // Add vintage year for historic funds
     };

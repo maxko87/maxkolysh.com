@@ -186,6 +186,7 @@ function ResultsTable() {
               onCellClick={handleCellClick}
               hasHistoricFunds={hasHistoricFunds}
               baseYear={baseYear}
+              funds={state.funds}
             />
           )}
         </div>
