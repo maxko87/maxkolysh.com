@@ -1592,7 +1592,7 @@
     "date": "Jun 23, 2020",
     "likes": 2587,
     "retweets": 282,
-    "disabled": false,
+    "disabled": true,
     "humor_score": 7
   },
   {
@@ -2420,7 +2420,7 @@
     "likes": 500000,
     "retweets": 50000,
     "id": 202,
-    "disabled": false,
+    "disabled": true,
     "humor_score": 9
   },
   {
@@ -2516,7 +2516,7 @@
     "likes": 124888,
     "retweets": 56059,
     "id": 210,
-    "disabled": false,
+    "disabled": true,
     "humor_score": 8
   },
   {
@@ -2624,7 +2624,7 @@
     "likes": 200000,
     "retweets": 100000,
     "id": 219,
-    "disabled": false,
+    "disabled": true,
     "humor_score": 7
   },
   {
@@ -2708,7 +2708,7 @@
     "likes": 50000,
     "retweets": 20000,
     "humor_score": 9,
-    "disabled": false,
+    "disabled": true,
     "id": 226
   },
   {
@@ -2864,7 +2864,7 @@
     "likes": 100000,
     "retweets": 50000,
     "humor_score": 10,
-    "disabled": false,
+    "disabled": true,
     "id": 239
   },
   {

@@ -232,11 +232,24 @@ export default function TweetLibsPage() {
   // Block next-advance until user releases Enter and presses it again
   const canAdvance = useRef(false);
 
+  const handleSkip = useCallback(() => {
+    if (feedback !== null) return;
+    setFeedback('incorrect');
+    canAdvance.current = false;
+    setStreak(0);
+  }, [feedback]);
+
   const handleSubmit = useCallback(() => {
     if (feedback !== null || !guess.trim()) return;
 
-    const isCorrect =
-      guess.trim().toLowerCase() === currentTweet.blank_word.toLowerCase();
+    // Fuzzy matching: lowercase, strip punctuation, handle plurals
+    const normalize = (s: string) => s.trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/s$/, '');
+    const guessNorm = normalize(guess);
+    const answerNorm = normalize(currentTweet.blank_word);
+    const isCorrect = guessNorm === answerNorm
+      || guessNorm === answerNorm + 's' || answerNorm === guessNorm + 's'
+      || currentTweet.blank_word.toLowerCase().includes(guess.trim().toLowerCase())
+      || guess.trim().toLowerCase().includes(currentTweet.blank_word.toLowerCase());
 
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     canAdvance.current = false; // block until keyup
@@ -402,25 +415,44 @@ export default function TweetLibsPage() {
             {/* Submit / Next + feedback */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {feedback === null ? (
-                <button
-                  onClick={handleSubmit}
-                  disabled={!guess.trim()}
-                  style={{
-                    flex: 1,
-                    padding: '12px 24px',
-                    background: !guess.trim() ? '#1a1d21' : C.blue,
-                    color: !guess.trim() ? '#555b65' : '#ffffff',
-                    border: `1px solid ${!guess.trim() ? '#2f3336' : C.blue}`,
-                    borderRadius: '24px',
-                    fontSize: '15px',
-                    fontWeight: 700,
-                    cursor: !guess.trim() ? 'not-allowed' : 'pointer',
-                    transition: 'background 0.2s, color 0.2s',
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  Submit
-                </button>
+                <>
+                  <button
+                    onClick={handleSkip}
+                    style={{
+                      padding: '12px 16px',
+                      background: 'transparent',
+                      color: C.secondary,
+                      border: `1px solid ${C.border}`,
+                      borderRadius: '24px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    Skip
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={!guess.trim()}
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      background: !guess.trim() ? '#1a1d21' : C.blue,
+                      color: !guess.trim() ? '#555b65' : '#ffffff',
+                      border: `1px solid ${!guess.trim() ? '#2f3336' : C.blue}`,
+                      borderRadius: '24px',
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      cursor: !guess.trim() ? 'not-allowed' : 'pointer',
+                      transition: 'background 0.2s, color 0.2s',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    Submit
+                  </button>
+                </>
               ) : (
                 <>
                   <span style={{ color: feedback === 'correct' ? C.green : C.red, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
