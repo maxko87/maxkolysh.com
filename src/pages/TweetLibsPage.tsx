@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import tweetsData from '../data/tweets.json';
 import TweetCard, { type Tweet } from '../components/tweetlibs/TweetCard';
@@ -241,20 +241,31 @@ export default function TweetLibsPage() {
     } else {
       setStreak(0);
     }
+  }, [feedback, guess, currentTweet]);
 
-    const delay = isCorrect ? 1500 : 2000;
-    setTimeout(() => {
-      setConfettiActive(false);
-      setFeedback(null);
-      setGuess('');
-      const nextIndex = currentIndex + 1;
-      if (nextIndex >= ROUND_SIZE) {
-        setGameState('ended');
-      } else {
-        setCurrentIndex(nextIndex);
+  const handleNext = useCallback(() => {
+    if (feedback === null) return;
+    setConfettiActive(false);
+    setFeedback(null);
+    setGuess('');
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= ROUND_SIZE) {
+      setGameState('ended');
+    } else {
+      setCurrentIndex(nextIndex);
+    }
+  }, [feedback, currentIndex]);
+
+  // Global Enter key to advance when showing feedback
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && feedback !== null) {
+        handleNext();
       }
-    }, delay);
-  }, [feedback, guess, currentTweet, currentIndex]);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [feedback, handleNext]);
 
   const handlePlayAgain = () => {
     setTweets(pickRandom(tweetsData as Tweet[], ROUND_SIZE));
@@ -354,44 +365,59 @@ export default function TweetLibsPage() {
                 tweet={currentTweet}
                 guess={guess}
                 onGuessChange={setGuess}
-                onSubmit={handleSubmit}
+                onSubmit={feedback !== null ? handleNext : handleSubmit}
                 feedback={feedback}
                 disabled={feedback !== null}
               />
             </div>
 
-            {/* Submit + feedback */}
+            {/* Submit / Next + feedback */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <button
-                onClick={handleSubmit}
-                disabled={feedback !== null || !guess.trim()}
-                style={{
-                  flex: 1,
-                  padding: '12px 24px',
-                  background:
-                    feedback !== null || !guess.trim() ? '#1a1d21' : C.blue,
-                  color:
-                    feedback !== null || !guess.trim() ? '#555b65' : '#ffffff',
-                  border: `1px solid ${feedback !== null || !guess.trim() ? '#2f3336' : C.blue}`,
-                  borderRadius: '24px',
-                  fontSize: '15px',
-                  fontWeight: 700,
-                  cursor: feedback !== null || !guess.trim() ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.2s, color 0.2s',
-                  fontFamily: 'inherit',
-                }}
-              >
-                Submit
-              </button>
-              {feedback === 'correct' && (
-                <span style={{ color: C.green, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
-                  ✓ Correct!
-                </span>
-              )}
-              {feedback === 'incorrect' && (
-                <span style={{ color: C.red, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
-                  ✗ Nope
-                </span>
+              {feedback === null ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={!guess.trim()}
+                  style={{
+                    flex: 1,
+                    padding: '12px 24px',
+                    background: !guess.trim() ? '#1a1d21' : C.blue,
+                    color: !guess.trim() ? '#555b65' : '#ffffff',
+                    border: `1px solid ${!guess.trim() ? '#2f3336' : C.blue}`,
+                    borderRadius: '24px',
+                    fontSize: '15px',
+                    fontWeight: 700,
+                    cursor: !guess.trim() ? 'not-allowed' : 'pointer',
+                    transition: 'background 0.2s, color 0.2s',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  Submit
+                </button>
+              ) : (
+                <>
+                  <span style={{ color: feedback === 'correct' ? C.green : C.red, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
+                    {feedback === 'correct' ? '✓ Correct!' : '✗ Nope'}
+                  </span>
+                  <button
+                    onClick={handleNext}
+                    autoFocus
+                    style={{
+                      flex: 1,
+                      padding: '12px 24px',
+                      background: C.blue,
+                      color: '#ffffff',
+                      border: `1px solid ${C.blue}`,
+                      borderRadius: '24px',
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'background 0.2s',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    Next →
+                  </button>
+                </>
               )}
             </div>
 
@@ -404,7 +430,7 @@ export default function TweetLibsPage() {
                 fontFamily: 'inherit',
               }}
             >
-              Press Enter to submit
+              Press Enter to {feedback !== null ? 'continue' : 'submit'}
             </p>
           </>
         )}
