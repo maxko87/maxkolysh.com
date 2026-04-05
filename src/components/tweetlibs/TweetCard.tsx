@@ -20,10 +20,6 @@ interface TweetCardProps {
   disabled: boolean;
 }
 
-function escapeRegex(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 function formatCount(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
   if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
@@ -76,8 +72,18 @@ export default function TweetCard({
     }
   };
 
-  const regex = new RegExp(`(${escapeRegex(tweet.blank_word)})`, 'i');
-  const parts = tweet.text.split(regex);
+  // Only blank the FIRST occurrence of the word
+  const idx = tweet.text.toLowerCase().indexOf(tweet.blank_word.toLowerCase());
+  let parts: string[];
+  if (idx === -1) {
+    parts = [tweet.text];
+  } else {
+    parts = [
+      tweet.text.slice(0, idx),
+      tweet.text.slice(idx, idx + tweet.blank_word.length),
+      tweet.text.slice(idx + tweet.blank_word.length),
+    ];
+  }
   const inputWidth = Math.max(90, tweet.blank_word.length * 12 + 28);
 
   const borderColor =
@@ -149,7 +155,7 @@ export default function TweetCard({
       {/* Tweet text */}
       <div style={{ color: '#e7e9ea', fontSize: '17px', lineHeight: '24px', marginBottom: '16px', wordBreak: 'break-word' }}>
         {parts.map((part, i) => {
-          const isBlank = part.toLowerCase() === tweet.blank_word.toLowerCase();
+          const isBlank = i === 1 && idx !== -1;
           if (!isBlank) return <span key={i}>{part}</span>;
 
           if (feedback === 'incorrect') {

@@ -13,38 +13,30 @@ function pickRandom(arr: Tweet[], n: number): Tweet[] {
 function ScoreBar({
   current,
   total,
-  streak,
 }: {
   current: number;
   total: number;
-  streak: number;
 }) {
   return (
-    <div className="flex items-center justify-between mb-4 text-sm">
-      <div className="flex items-center gap-3">
-        <span className="text-gray-400">
-          Question{' '}
-          <span className="text-white font-semibold">
-            {current}/{total}
-          </span>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', fontSize: '14px' }}>
+      <span style={{ color: '#71767b' }}>
+        Question{' '}
+        <span style={{ color: '#e7e9ea', fontWeight: 600 }}>
+          {current}/{total}
         </span>
-        {streak >= 2 && (
-          <span className="text-orange-400 font-semibold text-xs bg-orange-950/50 border border-orange-800 rounded-full px-2 py-0.5">
-            🔥 {streak} streak
-          </span>
-        )}
-      </div>
-      <div className="flex gap-1">
+      </span>
+      <div style={{ display: 'flex', gap: '4px' }}>
         {Array.from({ length: total }).map((_, i) => (
           <div
             key={i}
-            className={`h-1.5 w-5 rounded-full transition-colors duration-300 ${
-              i < current - 1
-                ? 'bg-blue-500'
-                : i === current - 1
-                  ? 'bg-blue-400 animate-pulse'
-                  : 'bg-gray-700'
-            }`}
+            style={{
+              height: '6px',
+              width: '20px',
+              borderRadius: '3px',
+              transition: 'background-color 0.3s',
+              backgroundColor: i < current - 1 ? '#1d9bf0' : i === current - 1 ? '#1d9bf0' : '#2f3336',
+              opacity: i === current - 1 ? 0.7 : 1,
+            }}
           />
         ))}
       </div>
@@ -139,7 +131,7 @@ export default function TweetLibsPage() {
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
+  const [_streak, setStreak] = useState(0);
   const [guess, setGuess] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [gameState, setGameState] = useState<'playing' | 'ended'>('playing');
@@ -223,7 +215,6 @@ export default function TweetLibsPage() {
             <ScoreBar
               current={currentIndex + 1}
               total={ROUND_SIZE}
-              streak={streak}
             />
 
             {/* Tweet card */}
