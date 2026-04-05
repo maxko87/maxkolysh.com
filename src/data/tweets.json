@@ -1498,5 +1498,365 @@
     "date": "Nov 4, 2022",
     "likes": 5000,
     "retweets": 500
+  },
+  {
+    "author": "Naval",
+    "handle": "@naval",
+    "text": "A startup is a theory about something the market wants, but doesn't yet exist.",
+    "blank_word": "theory",
+    "date": "Jun 15, 2019",
+    "likes": 8000,
+    "retweets": 1500,
+    "id": 151
+  },
+  {
+    "author": "Naval",
+    "handle": "@naval",
+    "text": "Every startup has acquisition as a backup plan, except for the ones that win.",
+    "blank_word": "backup",
+    "date": "Mar 20, 2019",
+    "likes": 6000,
+    "retweets": 1000,
+    "id": 152
+  },
+  {
+    "author": "Naval",
+    "handle": "@naval",
+    "text": "Karma is just you, repeating your patterns, virtues, and flaws until you finally get what you deserve.",
+    "blank_word": "Karma",
+    "date": "Jul 10, 2019",
+    "likes": 10000,
+    "retweets": 2000,
+    "id": 153
+  },
+  {
+    "author": "Naval",
+    "handle": "@naval",
+    "text": "If you diet, invest, and think according to what 'news' advocates, you'll end up nutritionally, financially, and morally bankrupt.",
+    "blank_word": "bankrupt",
+    "date": "May 10, 2020",
+    "likes": 10000,
+    "retweets": 2000,
+    "id": 154
+  },
+  {
+    "author": "James Clear",
+    "handle": "@JamesClear",
+    "text": "There are 4 types of wealth: 1. Financial wealth (money) 2. Social wealth (status) 3. Time wealth (freedom) 4. Physical wealth (health). Be wary of jobs that lure you in with 1 and 2, but rob you of 3 and 4.",
+    "blank_word": "rob",
+    "date": "Jul 12, 2018",
+    "likes": 40008,
+    "retweets": 21241,
+    "id": 155
+  },
+  {
+    "author": "James Clear",
+    "handle": "@JamesClear",
+    "text": "Most people need consistency more than they need intensity.",
+    "blank_word": "intensity",
+    "date": "Jun 15, 2019",
+    "likes": 50000,
+    "retweets": 15000,
+    "id": 156
+  },
+  {
+    "author": "James Clear",
+    "handle": "@JamesClear",
+    "text": "Just start. Start slow if you have to. Start small if you have to. Start privately if you have to. Just start.",
+    "blank_word": "privately",
+    "date": "Dec 26, 2022",
+    "likes": 31969,
+    "retweets": 7973,
+    "id": 157
+  },
+  {
+    "author": "Jack Butcher",
+    "handle": "@jackbutcher",
+    "text": "a quantum computer just solved a 10^25-year problem in 5 minutes and you're laughing?",
+    "blank_word": "quantum",
+    "date": "Dec 9, 2024",
+    "likes": 36960,
+    "retweets": 2568,
+    "id": 158
+  },
+  {
+    "author": "Jack Butcher",
+    "handle": "@jackbutcher",
+    "text": "Startups unbundle old companies. Creators unbundle old concepts.",
+    "blank_word": "unbundle",
+    "date": "Apr 15, 2022",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 159
+  },
+  {
+    "author": "Matt Shumer",
+    "handle": "@mattshumer_",
+    "text": "Forget vibe coding. It's time for Chaos Coding: Prompt Claude 3.7 Sonnet with your vague idea. Say 'keep going' repeatedly. Watch an incredible product appear from utter chaos.",
+    "blank_word": "Chaos",
+    "date": "Mar 1, 2025",
+    "likes": 20000,
+    "retweets": 3000,
+    "id": 160
+  },
+  {
+    "author": "Andrew Wilkinson",
+    "handle": "@awilkinson",
+    "text": "Someone has literally recreated Photoshop feature for feature, for free, in the browser",
+    "blank_word": "Photoshop",
+    "date": "Jun 9, 2021",
+    "likes": 81765,
+    "retweets": 24070,
+    "id": 161
+  },
+  {
+    "author": "Andrew Wilkinson",
+    "handle": "@awilkinson",
+    "text": "Elon Musk fired 6,500 employees at Twitter. How is it possible that we are still using this website? Two words: Parkinson's Law.",
+    "blank_word": "Parkinson's",
+    "date": "Jun 25, 2023",
+    "likes": 15000,
+    "retweets": 2000,
+    "id": 162
+  },
+  {
+    "author": "Matt Turck",
+    "handle": "@mattturck",
+    "text": "Yes I feel fully recharged after a restful holiday",
+    "blank_word": "recharged",
+    "date": "Jan 6, 2025",
+    "likes": 193635,
+    "retweets": 24532,
+    "id": 163
+  },
+  {
+    "author": "Benedict Evans",
+    "handle": "@benedictevans",
+    "text": "If your SaaS service has a web page called 'pricing' that doesn't give me your pricing, that tells me that I don't need to know any more.",
+    "blank_word": "pricing",
+    "date": "May 15, 2023",
+    "likes": 8000,
+    "retweets": 1000,
+    "id": 164
+  },
+  {
+    "author": "Suhail",
+    "handle": "@Suhail",
+    "text": "Momentum is oxygen for a startup. Without momentum, you let fear, uncertainty, and doubt cause your demise.",
+    "blank_word": "oxygen",
+    "date": "Oct 5, 2022",
+    "likes": 5000,
+    "retweets": 800,
+    "id": 165
+  },
+  {
+    "author": "Brian Norgard",
+    "handle": "@BrianNorgard",
+    "text": "Don't confuse building a product with building a company.",
+    "blank_word": "product",
+    "date": "Aug 20, 2022",
+    "likes": 6000,
+    "retweets": 1000,
+    "id": 166
+  },
+  {
+    "author": "Tibo",
+    "handle": "@tibo_maker",
+    "text": "I have raised a million for my startup and failed. There is another way, it's called bootstrapping",
+    "blank_word": "bootstrapping",
+    "date": "Mar 5, 2023",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 167
+  },
+  {
+    "author": "Garry Tan",
+    "handle": "@garrytan",
+    "text": "Tech gave me everything I have. Its capacity to lift people into abundance is incredible and there is nothing like it.",
+    "blank_word": "abundance",
+    "date": "Aug 11, 2023",
+    "likes": 15000,
+    "retweets": 2000,
+    "id": 168
+  },
+  {
+    "author": "Emad",
+    "handle": "@EMostaque",
+    "text": "Software was eating the World. Generative AI will eat Software.",
+    "blank_word": "Generative",
+    "date": "Feb 15, 2023",
+    "likes": 15000,
+    "retweets": 3000,
+    "id": 169
+  },
+  {
+    "author": "Tobi Lutke",
+    "handle": "@tobi",
+    "text": "As Shopify passes the $1 billion-dollar revenue mark it does so with the highest growth rate of any SAAS company ever.",
+    "blank_word": "Shopify",
+    "date": "Feb 20, 2020",
+    "likes": 12000,
+    "retweets": 2000,
+    "id": 170
+  },
+  {
+    "author": "Callicrates",
+    "handle": "@callicrates_",
+    "text": "Whenever anyone who runs a business tells me their schedule and it's something like 'I wake up, meditate, journal, gym, sauna, MMA...' I usually just assume their business is going under",
+    "blank_word": "under",
+    "date": "Nov 15, 2023",
+    "likes": 10000,
+    "retweets": 2000,
+    "id": 171
+  },
+  {
+    "author": "Rodolphe Dutel",
+    "handle": "@rdutel",
+    "text": "SaaS company: 'Pricing starts $49/mo. Need SSO? It's now $4,900/mo'",
+    "blank_word": "SSO",
+    "date": "Jun 10, 2023",
+    "likes": 8000,
+    "retweets": 1500,
+    "id": 172
+  },
+  {
+    "author": "JK Molina",
+    "handle": "@OneJKMolina",
+    "text": "I'm a startup founder. Here's my daily routine: 4:00AM: Wake up. 4:01AM: Yell FUCK. 4:02AM: Meditate for 3 hours.",
+    "blank_word": "FUCK",
+    "date": "May 20, 2023",
+    "likes": 15000,
+    "retweets": 3000,
+    "id": 173
+  },
+  {
+    "author": "Gary Wu",
+    "handle": "@garywupx",
+    "text": "Technical moat for 95% of generative AI 'products' right now is zero. Most of these products are features that can be hacked together in a week.",
+    "blank_word": "moat",
+    "date": "Mar 10, 2023",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 174
+  },
+  {
+    "author": "Paul Graham",
+    "handle": "@paulg",
+    "text": "Laziness + fastidiousness can be a substitute for diligence.",
+    "blank_word": "fastidiousness",
+    "date": "Sep 3, 2018",
+    "likes": 6000,
+    "retweets": 1000,
+    "id": 175
+  },
+  {
+    "author": "Paul Graham",
+    "handle": "@paulg",
+    "text": "Explained to my 9 yo how programming works: 1. You have something you want to do. 2. You write code to do it. 3. It doesn't work.",
+    "blank_word": "work",
+    "date": "Nov 8, 2018",
+    "likes": 15000,
+    "retweets": 3000,
+    "id": 176
+  },
+  {
+    "author": "SaaS Wiz",
+    "handle": "@SaaSWiz",
+    "text": "Landlord spent $2M to rent 2 houses for $7.4K/mo. I spent $20K building a SaaS that makes $24K/mo.",
+    "blank_word": "Landlord",
+    "date": "Aug 15, 2022",
+    "likes": 10000,
+    "retweets": 2000,
+    "id": 177
+  },
+  {
+    "author": "Rob Henderson",
+    "handle": "@robkhenderson",
+    "text": "In high school, you get 155 hours on Hitler, 3 minutes on Stalin, and nothing on Pol Pot.",
+    "blank_word": "Stalin",
+    "date": "Jul 19, 2025",
+    "likes": 30000,
+    "retweets": 5000,
+    "id": 178
+  },
+  {
+    "author": "Jeff Chang",
+    "handle": "@JeffChang30",
+    "text": "In general, users don't care if your product uses AI, ML, blockchain, or other fancy technology. They only care if the end product is something they want.",
+    "blank_word": "blockchain",
+    "date": "Mar 10, 2023",
+    "likes": 8000,
+    "retweets": 1000,
+    "id": 179
+  },
+  {
+    "author": "hardmaru",
+    "handle": "@hardmaru",
+    "text": "This design is better than X.",
+    "blank_word": "design",
+    "date": "Jul 24, 2023",
+    "likes": 94050,
+    "retweets": 9718,
+    "id": 180
+  },
+  {
+    "author": "Alex Heath",
+    "handle": "@alexeheath",
+    "text": "exactly what the ghost of Steve Jobs intended the Dynamic Island be used for",
+    "blank_word": "Dynamic Island",
+    "date": "Nov 5, 2024",
+    "likes": 50168,
+    "retweets": 1372,
+    "id": 181
+  },
+  {
+    "author": "Mubbu",
+    "handle": "@wizofecom",
+    "text": "Rolex doesn't sell watches, they sell status. Apple doesn't sell iPhones, they sell luxury. McDonald's doesn't sell burgers, they sell convenience.",
+    "blank_word": "luxury",
+    "date": "Jun 5, 2022",
+    "likes": 15000,
+    "retweets": 3000,
+    "id": 182
+  },
+  {
+    "author": "GREG ISENBERG",
+    "handle": "@gregisenberg",
+    "text": "What no-one tells you about starting a startup: You most likely won't make life changing money. Your mental health is always at risk. You'll fail forward. It's a beautiful ride.",
+    "blank_word": "beautiful",
+    "date": "Aug 5, 2023",
+    "likes": 10000,
+    "retweets": 1000,
+    "id": 183
+  },
+  {
+    "author": "David Cummings",
+    "handle": "@davidcummings",
+    "text": "Evaluate a SaaS startup in 60 seconds. Recurring revenue > capital raised. Growth rate - burn rate > 40.",
+    "blank_word": "60",
+    "date": "Apr 10, 2022",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 184
+  },
+  {
+    "author": "Jon Yongfook",
+    "handle": "@yongfook",
+    "text": "The longer you're in the startup game the more you realize how big the gulf is between people who talk and people who execute.",
+    "blank_word": "gulf",
+    "date": "Sep 10, 2022",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 185
+  },
+  {
+    "author": "Chris Frantz",
+    "handle": "@frantzfries",
+    "text": "Every PM in the world is pitching a generative AI feature",
+    "blank_word": "PM",
+    "date": "Apr 5, 2023",
+    "likes": 8000,
+    "retweets": 1000,
+    "id": 186
   }
 ]
