@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import tweetsData from '../data/tweets.json';
+import { supabase } from '../utils/supabase';
 
 const ADMIN_PASSWORD = '7070';
 
@@ -14,7 +15,10 @@ interface Tweet {
   likes: number;
   retweets: number;
   disabled?: boolean;
+  humor_score?: number;
 }
+
+type SortKey = 'id' | 'humor' | 'upvotes' | 'downvotes' | 'net';
 
 const C = {
   bg: '#030712',
@@ -35,6 +39,23 @@ export default function TweetLibsAdminPage() {
   const [filter, setFilter] = useState('');
   const [deletedIds] = useState<Set<number>>(new Set());
   const [showDisabled, setShowDisabled] = useState(true);
+  const [sortKey, setSortKey] = useState<SortKey>('id');
+  const [voteCounts, setVoteCounts] = useState<Record<number, { up: number; down: number }>>({});
+
+  // Fetch vote counts from supabase
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('tweetlibs_votes').select('tweet_id, vote');
+      if (!data) return;
+      const counts: Record<number, { up: number; down: number }> = {};
+      for (const v of data) {
+        if (!counts[v.tweet_id]) counts[v.tweet_id] = { up: 0, down: 0 };
+        if (v.vote === 1) counts[v.tweet_id].up++;
+        else counts[v.tweet_id].down++;
+      }
+      setVoteCounts(counts);
+    })();
+  }, []);
 
   const filtered = tweets.filter((t) => {
     if (deletedIds.has(t.id)) return false;
@@ -50,6 +71,18 @@ export default function TweetLibsAdminPage() {
   });
 
   const enabledCount = tweets.filter(t => !t.disabled && !deletedIds.has(t.id)).length;
+
+  const sorted = [...filtered].sort((a, b) => {
+    const aVotes = voteCounts[a.id] || { up: 0, down: 0 };
+    const bVotes = voteCounts[b.id] || { up: 0, down: 0 };
+    switch (sortKey) {
+      case 'humor': return (b.humor_score || 0) - (a.humor_score || 0);
+      case 'upvotes': return bVotes.up - aVotes.up;
+      case 'downvotes': return bVotes.down - aVotes.down;
+      case 'net': return (bVotes.up - bVotes.down) - (aVotes.up - aVotes.down);
+      default: return a.id - b.id;
+    }
+  });
 
   const handleDelete = (id: number) => {
     setTweets((prev) =>
@@ -124,7 +157,7 @@ export default function TweetLibsAdminPage() {
           </Link>
           <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0 }}>TweetLibs Admin</h1>
           <div style={{ fontSize: '14px', color: C.secondary }}>
-            {filtered.length} shown · <span style={{ color: C.green }}>{enabledCount} enabled</span>
+            {sorted.length} shown · <span style={{ color: C.green }}>{enabledCount} enabled</span>
           </div>
         </div>
 
@@ -150,20 +183,30 @@ export default function TweetLibsAdminPage() {
           />
           <button
             onClick={() => setShowDisabled(!showDisabled)}
-            style={{
-              padding: '10px 20px',
-              background: showDisabled ? C.dim : C.blue,
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
+            style={{ padding: '8px 14px', background: showDisabled ? C.dim : C.blue, color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
           >
             {showDisabled ? 'Hide disabled' : 'Show all'}
           </button>
+          {/* Sort buttons */}
+          {(['id', 'humor', 'upvotes', 'downvotes', 'net'] as SortKey[]).map((key) => (
+            <button
+              key={key}
+              onClick={() => setSortKey(key)}
+              style={{
+                padding: '8px 14px',
+                background: sortKey === key ? C.blue : 'transparent',
+                color: sortKey === key ? '#fff' : C.secondary,
+                border: `1px solid ${sortKey === key ? C.blue : C.border}`,
+                borderRadius: '8px',
+                fontSize: '13px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              {key === 'id' ? 'ID' : key === 'humor' ? 'Humor ⭐' : key === 'upvotes' ? '👍' : key === 'downvotes' ? '👎' : 'Net'}
+            </button>
+          ))}
           <button
             onClick={handleExport}
             style={{
@@ -184,7 +227,7 @@ export default function TweetLibsAdminPage() {
 
         {/* Tweet list */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {filtered.map((tweet) => (
+          {sorted.map((tweet) => (
             <div
               key={tweet.id}
               style={{
@@ -208,8 +251,18 @@ export default function TweetLibsAdminPage() {
                 <div style={{ fontSize: '14px', color: C.text, lineHeight: '20px' }}>
                   {renderTweetWithBlank(tweet)}
                 </div>
-                <div style={{ fontSize: '12px', color: C.dim, marginTop: '4px' }}>
-                  ♡ {tweet.likes.toLocaleString()} · ↺ {tweet.retweets.toLocaleString()} · blank: <span style={{ color: C.blue, fontWeight: 600 }}>{tweet.blank_word}</span>
+                <div style={{ fontSize: '12px', color: C.dim, marginTop: '4px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span>♡ {tweet.likes.toLocaleString()}</span>
+                  <span>↺ {tweet.retweets.toLocaleString()}</span>
+                  <span>blank: <span style={{ color: C.blue, fontWeight: 600 }}>{tweet.blank_word}</span></span>
+                  <span style={{ color: '#facc15' }}>⭐ {tweet.humor_score ?? '?'}</span>
+                  {(voteCounts[tweet.id]?.up || voteCounts[tweet.id]?.down) ? (
+                    <span>
+                      <span style={{ color: C.green }}>👍{voteCounts[tweet.id]?.up || 0}</span>
+                      {' '}
+                      <span style={{ color: C.red }}>👎{voteCounts[tweet.id]?.down || 0}</span>
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <button
