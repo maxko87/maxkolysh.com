@@ -1,9 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import allTweetsData from '../data/tweets.json';
 import { supabase, getSessionId } from '../utils/supabase';
-
-const tweetsData = (allTweetsData as any[]).filter((t: any) => !t.disabled);
 import TweetCard, { type Tweet } from '../components/tweetlibs/TweetCard';
 import Confetti from '../components/tweetlibs/Confetti';
 
@@ -213,9 +210,9 @@ function EndScreen({
 }
 
 export default function TweetLibsPage() {
-  const [tweets, setTweets] = useState<Tweet[]>(() =>
-    pickRandom(tweetsData as Tweet[], ROUND_SIZE)
-  );
+  const [allTweets, setAllTweets] = useState<Tweet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [tweets, setTweets] = useState<Tweet[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [_streak, setStreak] = useState(0);
@@ -226,6 +223,20 @@ export default function TweetLibsPage() {
   const [confettiActive, setConfettiActive] = useState(false);
   const [backHover, setBackHover] = useState(false);
   const [voted, setVoted] = useState<Record<number, 1 | -1>>({});
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('tweetlibs_tweets')
+        .select('*')
+        .eq('disabled', false);
+      if (data) {
+        setAllTweets(data as Tweet[]);
+        setTweets(pickRandom(data as Tweet[], ROUND_SIZE));
+      }
+      setLoading(false);
+    })();
+  }, []);
 
   const currentTweet = tweets[currentIndex];
 
@@ -309,7 +320,7 @@ export default function TweetLibsPage() {
   };
 
   const handlePlayAgain = () => {
-    setTweets(pickRandom(tweetsData as Tweet[], ROUND_SIZE));
+    setTweets(pickRandom(allTweets, ROUND_SIZE));
     setCurrentIndex(0);
     setScore(0);
     setStreak(0);
@@ -318,6 +329,14 @@ export default function TweetLibsPage() {
     setGameState('playing');
     setConfettiActive(false);
   };
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: C.bg, color: C.secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+        Loading tweets…
+      </div>
+    );
+  }
 
   return (
     <div

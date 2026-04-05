@@ -1,22 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import tweetsData from '../data/tweets.json';
 import { supabase } from '../utils/supabase';
+import type { Tweet } from '../components/tweetlibs/TweetCard';
 
 const ADMIN_PASSWORD = '7070';
-
-interface Tweet {
-  id: number;
-  author: string;
-  handle: string;
-  text: string;
-  blank_word: string;
-  date: string;
-  likes: number;
-  retweets: number;
-  disabled?: boolean;
-  humor_score?: number;
-}
 
 type SortKey = 'id' | 'humor' | 'upvotes' | 'downvotes' | 'net';
 
@@ -35,25 +22,30 @@ const C = {
 export default function TweetLibsAdminPage() {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem('tweetlibs_admin') === '1');
   const [pw, setPw] = useState('');
-  const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[]);
+  const [tweets, setTweets] = useState<Tweet[]>([]);
   const [filter, setFilter] = useState('');
   const [deletedIds] = useState<Set<number>>(new Set());
   const [showDisabled, setShowDisabled] = useState(true);
   const [sortKey, setSortKey] = useState<SortKey>('id');
   const [voteCounts, setVoteCounts] = useState<Record<number, { up: number; down: number }>>({});
 
-  // Fetch vote counts from supabase
+  // Fetch all tweets and vote counts from supabase
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('tweetlibs_votes').select('tweet_id, vote');
-      if (!data) return;
-      const counts: Record<number, { up: number; down: number }> = {};
-      for (const v of data) {
-        if (!counts[v.tweet_id]) counts[v.tweet_id] = { up: 0, down: 0 };
-        if (v.vote === 1) counts[v.tweet_id].up++;
-        else counts[v.tweet_id].down++;
+      const [tweetsResult, votesResult] = await Promise.all([
+        supabase.from('tweetlibs_tweets').select('*').order('id'),
+        supabase.from('tweetlibs_votes').select('tweet_id, vote'),
+      ]);
+      if (tweetsResult.data) setTweets(tweetsResult.data as Tweet[]);
+      if (votesResult.data) {
+        const counts: Record<number, { up: number; down: number }> = {};
+        for (const v of votesResult.data) {
+          if (!counts[v.tweet_id]) counts[v.tweet_id] = { up: 0, down: 0 };
+          if (v.vote === 1) counts[v.tweet_id].up++;
+          else counts[v.tweet_id].down++;
+        }
+        setVoteCounts(counts);
       }
-      setVoteCounts(counts);
     })();
   }, []);
 
@@ -84,9 +76,13 @@ export default function TweetLibsAdminPage() {
     }
   });
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
+    const tweet = tweets.find((t) => t.id === id);
+    if (!tweet) return;
+    const newDisabled = !tweet.disabled;
+    await supabase.from('tweetlibs_tweets').update({ disabled: newDisabled }).eq('id', id);
     setTweets((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, disabled: !t.disabled } : t))
+      prev.map((t) => (t.id === id ? { ...t, disabled: newDisabled } : t))
     );
   };
 

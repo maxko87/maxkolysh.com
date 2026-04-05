@@ -10,6 +10,7 @@ export interface Tweet {
   likes: number;
   retweets: number;
   disabled?: boolean;
+  humor_score?: number;
 }
 
 interface TweetCardProps {
