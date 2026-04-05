@@ -229,6 +229,9 @@ export default function TweetCard({
                   width: `${inputWidth}px`,
                   background: 'rgba(34, 197, 94, 0.12)',
                   border: 'none',
+                  borderTop: 'none',
+                  borderLeft: 'none',
+                  borderRight: 'none',
                   borderBottom: '2px solid #22c55e',
                   color: '#4ade80',
                   fontSize: '17px',
@@ -240,6 +243,9 @@ export default function TweetCard({
                   fontWeight: 700,
                   verticalAlign: 'baseline',
                   caretColor: 'transparent',
+                  textDecoration: 'none',
+                  boxShadow: 'none',
+                  WebkitAppearance: 'none' as const,
                 }}
               />
             );
@@ -262,6 +268,9 @@ export default function TweetCard({
                 width: `${inputWidth}px`,
                 background: guess ? 'rgba(29, 155, 240, 0.08)' : 'transparent',
                 border: 'none',
+                borderTop: 'none',
+                borderLeft: 'none',
+                borderRight: 'none',
                 borderBottom: '2px solid #1d9bf0',
                 color: '#e7e9ea',
                 fontSize: '17px',
@@ -272,6 +281,9 @@ export default function TweetCard({
                 fontFamily: 'inherit',
                 fontWeight: 400,
                 verticalAlign: 'baseline',
+                textDecoration: 'none',
+                boxShadow: 'none',
+                WebkitAppearance: 'none' as const,
                 transition: 'background 0.2s, border-color 0.2s',
               }}
               placeholder=""
