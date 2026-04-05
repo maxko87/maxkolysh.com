@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import tweetsData from '../data/tweets.json';
 
+const ADMIN_PASSWORD = '7070';
+
 interface Tweet {
   id: number;
   author: string;
@@ -27,6 +29,8 @@ const C = {
 };
 
 export default function TweetLibsAdminPage() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('tweetlibs_admin') === '1');
+  const [pw, setPw] = useState('');
   const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[]);
   const [filter, setFilter] = useState('');
   const [deletedIds] = useState<Set<number>>(new Set());
@@ -63,6 +67,20 @@ export default function TweetLibsAdminPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  if (!authed) {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#030712', color: '#e7e9ea', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>TweetLibs Admin</h1>
+          <form onSubmit={(e) => { e.preventDefault(); if (pw === ADMIN_PASSWORD) { sessionStorage.setItem('tweetlibs_admin', '1'); setAuthed(true); } else { setPw(''); } }}>
+            <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="Password" autoFocus style={{ padding: '10px 14px', background: '#16181c', border: '1px solid #2f3336', borderRadius: '8px', color: '#e7e9ea', fontSize: '14px', outline: 'none', fontFamily: 'inherit', width: '200px' }} />
+            <button type="submit" style={{ marginLeft: '8px', padding: '10px 20px', background: '#1d9bf0', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>Enter</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   // Highlight the blank word in the tweet text
   const renderTweetWithBlank = (tweet: Tweet) => {
