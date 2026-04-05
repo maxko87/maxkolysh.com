@@ -69,6 +69,8 @@ export default function TweetCard({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !disabled) {
+      e.stopPropagation(); // prevent global listener from catching this
+      e.preventDefault();
       onSubmit();
     }
   };

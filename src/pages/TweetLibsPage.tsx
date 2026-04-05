@@ -227,6 +227,9 @@ export default function TweetLibsPage() {
 
   const currentTweet = tweets[currentIndex];
 
+  // Block next-advance until user releases Enter and presses it again
+  const canAdvance = useRef(false);
+
   const handleSubmit = useCallback(() => {
     if (feedback !== null || !guess.trim()) return;
 
@@ -234,6 +237,7 @@ export default function TweetLibsPage() {
       guess.trim().toLowerCase() === currentTweet.blank_word.toLowerCase();
 
     setFeedback(isCorrect ? 'correct' : 'incorrect');
+    canAdvance.current = false; // block until keyup
 
     if (isCorrect) {
       setScore((s) => s + 1);
@@ -250,6 +254,7 @@ export default function TweetLibsPage() {
     setConfettiActive(false);
     setFeedback(null);
     setGuess('');
+    canAdvance.current = false;
     const nextIndex = currentIndex + 1;
     if (nextIndex >= ROUND_SIZE) {
       setGameState('ended');
@@ -258,26 +263,24 @@ export default function TweetLibsPage() {
     }
   }, [feedback, currentIndex]);
 
-  // Global Enter key to advance when showing feedback
-  // Use a ref to skip the Enter that triggered submit (same keypress)
-  const feedbackJustSet = useRef(false);
+  // Enter keyup unlocks advance; next Enter keydown advances
   useEffect(() => {
-    if (feedback !== null) {
-      feedbackJustSet.current = true;
-      // Reset after a tick so the next Enter works
-      const t = setTimeout(() => { feedbackJustSet.current = false; }, 100);
-      return () => clearTimeout(t);
-    }
-  }, [feedback]);
-
-  useEffect(() => {
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && feedback !== null) {
+        canAdvance.current = true;
+      }
+    };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && feedback !== null && !feedbackJustSet.current) {
+      if (e.key === 'Enter' && feedback !== null && canAdvance.current) {
         handleNext();
       }
     };
+    window.addEventListener('keyup', onKeyUp);
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [feedback, handleNext]);
 
   const handlePlayAgain = () => {
