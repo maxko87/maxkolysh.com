@@ -9,6 +9,7 @@ export interface Tweet {
   date: string;
   likes: number;
   retweets: number;
+  disabled?: boolean;
 }
 
 interface TweetCardProps {

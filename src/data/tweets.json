@@ -7,7 +7,8 @@
     "blank_word": "intelligence",
     "date": "May 10, 2020",
     "likes": 42631,
-    "retweets": 11510
+    "retweets": 11510,
+    "disabled": true
   },
   {
     "id": 2,
@@ -17,7 +18,8 @@
     "blank_word": "institutions",
     "date": "Jan 2, 2021",
     "likes": 56709,
-    "retweets": 14792
+    "retweets": 14792,
+    "disabled": true
   },
   {
     "id": 3,
@@ -27,7 +29,8 @@
     "blank_word": "course",
     "date": "Feb 1, 2025",
     "likes": 109677,
-    "retweets": 15320
+    "retweets": 15320,
+    "disabled": false
   },
   {
     "id": 4,
@@ -37,7 +40,8 @@
     "blank_word": "self-taught",
     "date": "Jan 18, 2025",
     "likes": 78231,
-    "retweets": 12431
+    "retweets": 12431,
+    "disabled": true
   },
   {
     "id": 5,
@@ -47,7 +51,8 @@
     "blank_word": "recession",
     "date": "Sep 26, 2022",
     "likes": 59228,
-    "retweets": 11960
+    "retweets": 11960,
+    "disabled": true
   },
   {
     "id": 6,
@@ -57,7 +62,8 @@
     "blank_word": "English",
     "date": "Jan 24, 2023",
     "likes": 62237,
-    "retweets": 9584
+    "retweets": 9584,
+    "disabled": false
   },
   {
     "id": 7,
@@ -67,7 +73,8 @@
     "blank_word": "exponentials",
     "date": "Feb 2, 2025",
     "likes": 50000,
-    "retweets": 8000
+    "retweets": 8000,
+    "disabled": false
   },
   {
     "id": 8,
@@ -77,7 +84,8 @@
     "blank_word": "Agency",
     "date": "Feb 24, 2025",
     "likes": 40000,
-    "retweets": 6000
+    "retweets": 6000,
+    "disabled": true
   },
   {
     "id": 9,
@@ -87,7 +95,8 @@
     "blank_word": "twitter",
     "date": "Feb 10, 2025",
     "likes": 221666,
-    "retweets": 23388
+    "retweets": 23388,
+    "disabled": false
   },
   {
     "id": 10,
@@ -97,7 +106,8 @@
     "blank_word": "images",
     "date": "Mar 29, 2025",
     "likes": 120764,
-    "retweets": 8625
+    "retweets": 8625,
+    "disabled": false
   },
   {
     "id": 11,
@@ -107,7 +117,8 @@
     "blank_word": "unlock",
     "date": "Apr 28, 2024",
     "likes": 24791,
-    "retweets": 2788
+    "retweets": 2788,
+    "disabled": true
   },
   {
     "id": 12,
@@ -117,7 +128,8 @@
     "blank_word": "competitor",
     "date": "Jan 27, 2025",
     "likes": 82725,
-    "retweets": 9913
+    "retweets": 9913,
+    "disabled": true
   },
   {
     "id": 13,
@@ -127,7 +139,8 @@
     "blank_word": "insecure",
     "date": "Aug 23, 2023",
     "likes": 17060,
-    "retweets": 3376
+    "retweets": 3376,
+    "disabled": false
   },
   {
     "id": 14,
@@ -137,7 +150,8 @@
     "blank_word": "Reddit",
     "date": "Oct 8, 2025",
     "likes": 45000,
-    "retweets": 4100
+    "retweets": 4100,
+    "disabled": false
   },
   {
     "id": 15,
@@ -147,7 +161,8 @@
     "blank_word": "insistence",
     "date": "Dec 2, 2022",
     "likes": 20972,
-    "retweets": 2773
+    "retweets": 2773,
+    "disabled": false
   },
   {
     "id": 16,
@@ -157,7 +172,8 @@
     "blank_word": "monocausal",
     "date": "Feb 23, 2018",
     "likes": 9002,
-    "retweets": 2029
+    "retweets": 2029,
+    "disabled": false
   },
   {
     "id": 17,
@@ -167,7 +183,8 @@
     "blank_word": "frogs",
     "date": "Jan 22, 2025",
     "likes": 152153,
-    "retweets": 7653
+    "retweets": 7653,
+    "disabled": false
   },
   {
     "id": 18,
@@ -177,7 +194,8 @@
     "blank_word": "cope",
     "date": "Jan 24, 2025",
     "likes": 22105,
-    "retweets": 1529
+    "retweets": 1529,
+    "disabled": true
   },
   {
     "id": 19,
@@ -187,7 +205,8 @@
     "blank_word": "Agency",
     "date": "Jun 27, 2020",
     "likes": 15000,
-    "retweets": 3000
+    "retweets": 3000,
+    "disabled": true
   },
   {
     "id": 20,
@@ -197,7 +216,8 @@
     "blank_word": "criteria",
     "date": "Jun 30, 2020",
     "likes": 2866,
-    "retweets": 495
+    "retweets": 495,
+    "disabled": true
   },
   {
     "id": 21,
@@ -207,7 +227,8 @@
     "blank_word": "CFO",
     "date": "Jul 12, 2022",
     "likes": 2699,
-    "retweets": 188
+    "retweets": 188,
+    "disabled": false
   },
   {
     "id": 22,
@@ -217,7 +238,8 @@
     "blank_word": "assholes",
     "date": "Nov 8, 2025",
     "likes": 16429,
-    "retweets": 4882
+    "retweets": 4882,
+    "disabled": false
   },
   {
     "id": 23,
@@ -227,7 +249,8 @@
     "blank_word": "company",
     "date": "Sep 4, 2020",
     "likes": 4324,
-    "retweets": 596
+    "retweets": 596,
+    "disabled": true
   },
   {
     "id": 24,
@@ -237,7 +260,8 @@
     "blank_word": "marketing",
     "date": "Dec 21, 2020",
     "likes": 3334,
-    "retweets": 401
+    "retweets": 401,
+    "disabled": true
   },
   {
     "id": 25,
@@ -247,7 +271,8 @@
     "blank_word": "explained",
     "date": "Jan 5, 2021",
     "likes": 2963,
-    "retweets": 480
+    "retweets": 480,
+    "disabled": true
   },
   {
     "id": 26,
@@ -257,7 +282,8 @@
     "blank_word": "speed",
     "date": "Jul 12, 2023",
     "likes": 14580,
-    "retweets": 1138
+    "retweets": 1138,
+    "disabled": true
   },
   {
     "id": 27,
@@ -267,7 +293,8 @@
     "blank_word": "Apple",
     "date": "Mar 13, 2025",
     "likes": 5970,
-    "retweets": 130
+    "retweets": 130,
+    "disabled": false
   },
   {
     "id": 28,
@@ -277,7 +304,8 @@
     "blank_word": "thumb",
     "date": "Sep 9, 2025",
     "likes": 68392,
-    "retweets": 4678
+    "retweets": 4678,
+    "disabled": true
   },
   {
     "id": 29,
@@ -287,7 +315,8 @@
     "blank_word": "historians",
     "date": "Jul 13, 2023",
     "likes": 96224,
-    "retweets": 22322
+    "retweets": 22322,
+    "disabled": true
   },
   {
     "id": 30,
@@ -297,7 +326,8 @@
     "blank_word": "logo",
     "date": "Sep 18, 2024",
     "likes": 285335,
-    "retweets": 26238
+    "retweets": 26238,
+    "disabled": false
   },
   {
     "id": 31,
@@ -307,7 +337,8 @@
     "blank_word": "stress",
     "date": "Sep 6, 2023",
     "likes": 20000,
-    "retweets": 3000
+    "retweets": 3000,
+    "disabled": true
   },
   {
     "id": 32,
@@ -317,7 +348,8 @@
     "blank_word": "TV",
     "date": "Nov 25, 2022",
     "likes": 87650,
-    "retweets": 8344
+    "retweets": 8344,
+    "disabled": true
   },
   {
     "id": 33,
@@ -327,7 +359,8 @@
     "blank_word": "vesting",
     "date": "Oct 27, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 34,
@@ -337,7 +370,8 @@
     "blank_word": "Cursor",
     "date": "Apr 18, 2025",
     "likes": 3366,
-    "retweets": 165
+    "retweets": 165,
+    "disabled": true
   },
   {
     "id": 35,
@@ -347,7 +381,8 @@
     "blank_word": "retouched",
     "date": "Jan 16, 2025",
     "likes": 83696,
-    "retweets": 5750
+    "retweets": 5750,
+    "disabled": false
   },
   {
     "id": 36,
@@ -357,7 +392,8 @@
     "blank_word": "concrete",
     "date": "Jan 6, 2023",
     "likes": 25000,
-    "retweets": 5000
+    "retweets": 5000,
+    "disabled": true
   },
   {
     "id": 37,
@@ -367,7 +403,8 @@
     "blank_word": "free",
     "date": "Apr 8, 2023",
     "likes": 15000,
-    "retweets": 1410
+    "retweets": 1410,
+    "disabled": false
   },
   {
     "id": 38,
@@ -377,7 +414,8 @@
     "blank_word": "embarrassed",
     "date": "Mar 1, 2025",
     "likes": 684,
-    "retweets": 20
+    "retweets": 20,
+    "disabled": true
   },
   {
     "id": 39,
@@ -387,7 +425,8 @@
     "blank_word": "Jetpacks",
     "date": "Sep 17, 2022",
     "likes": 117849,
-    "retweets": 27655
+    "retweets": 27655,
+    "disabled": true
   },
   {
     "id": 40,
@@ -397,7 +436,8 @@
     "blank_word": "warning",
     "date": "Dec 4, 2022",
     "likes": 84384,
-    "retweets": 9846
+    "retweets": 9846,
+    "disabled": false
   },
   {
     "id": 41,
@@ -407,7 +447,8 @@
     "blank_word": "Services",
     "date": "Mar 31, 2026",
     "likes": 1476,
-    "retweets": 161
+    "retweets": 161,
+    "disabled": true
   },
   {
     "id": 42,
@@ -417,7 +458,8 @@
     "blank_word": "rejections",
     "date": "Mar 7, 2026",
     "likes": 33806,
-    "retweets": 5241
+    "retweets": 5241,
+    "disabled": true
   },
   {
     "id": 43,
@@ -427,7 +469,8 @@
     "blank_word": "heavier",
     "date": "Mar 3, 2026",
     "likes": 471,
-    "retweets": 23
+    "retweets": 23,
+    "disabled": true
   },
   {
     "id": 44,
@@ -437,7 +480,8 @@
     "blank_word": "migration",
     "date": "Mar 20, 2025",
     "likes": 2765,
-    "retweets": 262
+    "retweets": 262,
+    "disabled": true
   },
   {
     "id": 45,
@@ -447,7 +491,8 @@
     "blank_word": "Palantir",
     "date": "Apr 28, 2025",
     "likes": 1622,
-    "retweets": 31
+    "retweets": 31,
+    "disabled": false
   },
   {
     "id": 46,
@@ -457,7 +502,8 @@
     "blank_word": "defensible",
     "date": "Jul 8, 2025",
     "likes": 1426,
-    "retweets": 129
+    "retweets": 129,
+    "disabled": true
   },
   {
     "id": 47,
@@ -467,7 +513,8 @@
     "blank_word": "industry",
     "date": "Mar 28, 2024",
     "likes": 4304,
-    "retweets": 576
+    "retweets": 576,
+    "disabled": true
   },
   {
     "id": 48,
@@ -477,7 +524,8 @@
     "blank_word": "speed",
     "date": "Oct 15, 2022",
     "likes": 1242,
-    "retweets": 167
+    "retweets": 167,
+    "disabled": true
   },
   {
     "id": 49,
@@ -487,7 +535,8 @@
     "blank_word": "Sauna",
     "date": "Dec 6, 2025",
     "likes": 10000,
-    "retweets": 2000
+    "retweets": 2000,
+    "disabled": true
   },
   {
     "id": 50,
@@ -497,7 +546,8 @@
     "blank_word": "1-person",
     "date": "Feb 7, 2024",
     "likes": 5000,
-    "retweets": 1000
+    "retweets": 1000,
+    "disabled": true
   },
   {
     "id": 51,
@@ -507,7 +557,8 @@
     "blank_word": "rebuttals",
     "date": "Sep 8, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 52,
@@ -517,7 +568,8 @@
     "blank_word": "LinkedIn",
     "date": "Apr 12, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 53,
@@ -527,7 +579,8 @@
     "blank_word": "both",
     "date": "Jan 3, 2023",
     "likes": 711,
-    "retweets": 90
+    "retweets": 90,
+    "disabled": false
   },
   {
     "id": 54,
@@ -537,7 +590,8 @@
     "blank_word": "story",
     "date": "Jan 11, 2026",
     "likes": 7506,
-    "retweets": 1017
+    "retweets": 1017,
+    "disabled": true
   },
   {
     "id": 55,
@@ -547,7 +601,8 @@
     "blank_word": "entrepreneur",
     "date": "Jun 28, 2023",
     "likes": 499,
-    "retweets": 61
+    "retweets": 61,
+    "disabled": true
   },
   {
     "id": 56,
@@ -557,7 +612,8 @@
     "blank_word": "expensive",
     "date": "Oct 24, 2023",
     "likes": 122,
-    "retweets": 6
+    "retweets": 6,
+    "disabled": true
   },
   {
     "id": 57,
@@ -567,7 +623,8 @@
     "blank_word": "recruiters",
     "date": "Oct 5, 2023",
     "likes": 500,
-    "retweets": 50
+    "retweets": 50,
+    "disabled": true
   },
   {
     "id": 58,
@@ -577,7 +634,8 @@
     "blank_word": "Apple",
     "date": "Aug 19, 2024",
     "likes": 208419,
-    "retweets": 8011
+    "retweets": 8011,
+    "disabled": true
   },
   {
     "id": 59,
@@ -587,7 +645,8 @@
     "blank_word": "salaries",
     "date": "Jun 17, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 60,
@@ -597,7 +656,8 @@
     "blank_word": "529",
     "date": "Jan 2, 2026",
     "likes": 3000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 61,
@@ -607,7 +667,8 @@
     "blank_word": "recruiter",
     "date": "Jan 23, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 62,
@@ -617,7 +678,8 @@
     "blank_word": "buyout",
     "date": "Jan 29, 2025",
     "likes": 8507,
-    "retweets": 657
+    "retweets": 657,
+    "disabled": true
   },
   {
     "id": 63,
@@ -627,7 +689,8 @@
     "blank_word": "acquisitions",
     "date": "Dec 5, 2025",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 64,
@@ -637,7 +700,8 @@
     "blank_word": "productivity",
     "date": "Dec 30, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 65,
@@ -647,7 +711,8 @@
     "blank_word": "Burning Man",
     "date": "Aug 29, 2023",
     "likes": 10000,
-    "retweets": 2000
+    "retweets": 2000,
+    "disabled": false
   },
   {
     "id": 66,
@@ -657,7 +722,8 @@
     "blank_word": "slack",
     "date": "Dec 2, 2022",
     "likes": 3000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 67,
@@ -667,7 +733,8 @@
     "blank_word": "policy",
     "date": "Feb 21, 2023",
     "likes": 2798,
-    "retweets": 517
+    "retweets": 517,
+    "disabled": true
   },
   {
     "id": 68,
@@ -677,7 +744,8 @@
     "blank_word": "standards",
     "date": "Aug 6, 2025",
     "likes": 638,
-    "retweets": 48
+    "retweets": 48,
+    "disabled": true
   },
   {
     "id": 69,
@@ -687,7 +755,8 @@
     "blank_word": "proactive",
     "date": "Jan 25, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 70,
@@ -697,7 +766,8 @@
     "blank_word": "shocking",
     "date": "Jan 29, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 71,
@@ -707,7 +777,8 @@
     "blank_word": "negotiating",
     "date": "Aug 16, 2023",
     "likes": 959,
-    "retweets": 55
+    "retweets": 55,
+    "disabled": false
   },
   {
     "id": 72,
@@ -717,7 +788,8 @@
     "blank_word": "Fiverr",
     "date": "May 5, 2025",
     "likes": 11838,
-    "retweets": 1763
+    "retweets": 1763,
+    "disabled": true
   },
   {
     "id": 73,
@@ -727,7 +799,8 @@
     "blank_word": "extravagantly",
     "date": "Sep 26, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 74,
@@ -737,7 +810,8 @@
     "blank_word": "podcast",
     "date": "Jun 18, 2025",
     "likes": 5000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 75,
@@ -747,7 +821,8 @@
     "blank_word": "Agents",
     "date": "Dec 13, 2024",
     "likes": 1879,
-    "retweets": 218
+    "retweets": 218,
+    "disabled": true
   },
   {
     "id": 76,
@@ -757,7 +832,8 @@
     "blank_word": "research",
     "date": "Dec 11, 2024",
     "likes": 5000,
-    "retweets": 800
+    "retweets": 800,
+    "disabled": true
   },
   {
     "id": 77,
@@ -767,7 +843,8 @@
     "blank_word": "cooked",
     "date": "Sep 12, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 78,
@@ -777,7 +854,8 @@
     "blank_word": "marketplaces",
     "date": "Aug 25, 2024",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 79,
@@ -787,7 +865,8 @@
     "blank_word": "robust",
     "date": "Aug 11, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 80,
@@ -797,7 +876,8 @@
     "blank_word": "copied",
     "date": "Nov 10, 2024",
     "likes": 10000,
-    "retweets": 1000
+    "retweets": 1000,
+    "disabled": true
   },
   {
     "id": 81,
@@ -807,7 +887,8 @@
     "blank_word": "COMBINATOR",
     "date": "Oct 11, 2023",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 82,
@@ -817,7 +898,8 @@
     "blank_word": "transformative",
     "date": "Nov 17, 2023",
     "likes": 89831,
-    "retweets": 13216
+    "retweets": 13216,
+    "disabled": true
   },
   {
     "id": 83,
@@ -827,7 +909,8 @@
     "blank_word": "golden",
     "date": "Jan 13, 2026",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 84,
@@ -837,7 +920,8 @@
     "blank_word": "relocating",
     "date": "Mar 20, 2026",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 85,
@@ -847,7 +931,8 @@
     "blank_word": "transcripts",
     "date": "Jan 13, 2026",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 86,
@@ -857,7 +942,8 @@
     "blank_word": "partner",
     "date": "Jan 7, 2026",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 87,
@@ -867,7 +953,8 @@
     "blank_word": "date",
     "date": "Nov 12, 2023",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 88,
@@ -877,7 +964,8 @@
     "blank_word": "ASU",
     "date": "Aug 28, 2024",
     "likes": 20198,
-    "retweets": 957
+    "retweets": 957,
+    "disabled": false
   },
   {
     "id": 89,
@@ -887,7 +975,8 @@
     "blank_word": "1993",
     "date": "Jan 2, 2022",
     "likes": 8644,
-    "retweets": 623
+    "retweets": 623,
+    "disabled": false
   },
   {
     "id": 90,
@@ -897,7 +986,8 @@
     "blank_word": "scam",
     "date": "Jan 20, 2023",
     "likes": 2673,
-    "retweets": 192
+    "retweets": 192,
+    "disabled": false
   },
   {
     "id": 91,
@@ -907,7 +997,8 @@
     "blank_word": "unannounced",
     "date": "Feb 6, 2022",
     "likes": 4992,
-    "retweets": 513
+    "retweets": 513,
+    "disabled": true
   },
   {
     "id": 92,
@@ -917,7 +1008,8 @@
     "blank_word": "second",
     "date": "Oct 2, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": false
   },
   {
     "id": 93,
@@ -927,7 +1019,8 @@
     "blank_word": "CEO",
     "date": "Sep 10, 2025",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 94,
@@ -937,7 +1030,8 @@
     "blank_word": "sued",
     "date": "Sep 3, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": false
   },
   {
     "id": 95,
@@ -947,7 +1041,8 @@
     "blank_word": "RENEGOTIATE",
     "date": "May 6, 2025",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 96,
@@ -957,7 +1052,8 @@
     "blank_word": "lost",
     "date": "May 2, 2025",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 97,
@@ -967,7 +1063,8 @@
     "blank_word": "Flights",
     "date": "Apr 19, 2025",
     "likes": 3000,
-    "retweets": 300
+    "retweets": 300,
+    "disabled": true
   },
   {
     "id": 98,
@@ -977,7 +1074,8 @@
     "blank_word": "communication",
     "date": "May 14, 2023",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 99,
@@ -987,7 +1085,8 @@
     "blank_word": "clipboard",
     "date": "Dec 27, 2023",
     "likes": 10000,
-    "retweets": 1500
+    "retweets": 1500,
+    "disabled": true
   },
   {
     "id": 100,
@@ -997,7 +1096,8 @@
     "blank_word": "failing",
     "date": "Mar 5, 2023",
     "likes": 5648,
-    "retweets": 1102
+    "retweets": 1102,
+    "disabled": true
   },
   {
     "id": 101,
@@ -1007,7 +1107,8 @@
     "blank_word": "toy",
     "date": "Dec 20, 2018",
     "likes": 15000,
-    "retweets": 3000
+    "retweets": 3000,
+    "disabled": true
   },
   {
     "id": 102,
@@ -1017,7 +1118,8 @@
     "blank_word": "lies",
     "date": "Nov 28, 2018",
     "likes": 12000,
-    "retweets": 2500
+    "retweets": 2500,
+    "disabled": false
   },
   {
     "id": 103,
@@ -1027,7 +1129,8 @@
     "blank_word": "Deals",
     "date": "Aug 4, 2018",
     "likes": 8000,
-    "retweets": 1500
+    "retweets": 1500,
+    "disabled": false
   },
   {
     "id": 104,
@@ -1037,7 +1140,8 @@
     "blank_word": "incumbents",
     "date": "Dec 12, 2018",
     "likes": 7000,
-    "retweets": 1200
+    "retweets": 1200,
+    "disabled": true
   },
   {
     "id": 105,
@@ -1047,7 +1151,8 @@
     "blank_word": "platform",
     "date": "Aug 14, 2018",
     "likes": 6000,
-    "retweets": 1000
+    "retweets": 1000,
+    "disabled": true
   },
   {
     "id": 106,
@@ -1057,7 +1162,8 @@
     "blank_word": "hub",
     "date": "Nov 7, 2018",
     "likes": 10000,
-    "retweets": 2000
+    "retweets": 2000,
+    "disabled": true
   },
   {
     "id": 107,
@@ -1067,7 +1173,8 @@
     "blank_word": "fear",
     "date": "Oct 6, 2018",
     "likes": 8000,
-    "retweets": 1500
+    "retweets": 1500,
+    "disabled": true
   },
   {
     "id": 108,
@@ -1077,7 +1184,8 @@
     "blank_word": "essence",
     "date": "Nov 25, 2018",
     "likes": 5000,
-    "retweets": 800
+    "retweets": 800,
+    "disabled": true
   },
   {
     "id": 109,
@@ -1087,7 +1195,8 @@
     "blank_word": "boring",
     "date": "Aug 2, 2018",
     "likes": 6000,
-    "retweets": 1000
+    "retweets": 1000,
+    "disabled": false
   },
   {
     "id": 110,
@@ -1097,7 +1206,8 @@
     "blank_word": "overrated",
     "date": "Mar 15, 2020",
     "likes": 15000,
-    "retweets": 3000
+    "retweets": 3000,
+    "disabled": true
   },
   {
     "id": 111,
@@ -1107,7 +1217,8 @@
     "blank_word": "renting",
     "date": "May 31, 2018",
     "likes": 20000,
-    "retweets": 5000
+    "retweets": 5000,
+    "disabled": true
   },
   {
     "id": 112,
@@ -1117,7 +1228,8 @@
     "blank_word": "leverage",
     "date": "May 31, 2018",
     "likes": 15000,
-    "retweets": 4000
+    "retweets": 4000,
+    "disabled": true
   },
   {
     "id": 113,
@@ -1127,7 +1239,8 @@
     "blank_word": "dissatisfaction",
     "date": "Jun 10, 2019",
     "likes": 18000,
-    "retweets": 4000
+    "retweets": 4000,
+    "disabled": true
   },
   {
     "id": 114,
@@ -1137,7 +1250,8 @@
     "blank_word": "monkeys",
     "date": "Aug 2, 2019",
     "likes": 12000,
-    "retweets": 3000
+    "retweets": 3000,
+    "disabled": true
   },
   {
     "id": 115,
@@ -1147,7 +1261,8 @@
     "blank_word": "scale",
     "date": "May 31, 2018",
     "likes": 15000,
-    "retweets": 4000
+    "retweets": 4000,
+    "disabled": true
   },
   {
     "id": 116,
@@ -1157,7 +1272,8 @@
     "blank_word": "equal",
     "date": "Jan 5, 2020",
     "likes": 10000,
-    "retweets": 2500
+    "retweets": 2500,
+    "disabled": true
   },
   {
     "id": 117,
@@ -1167,7 +1283,8 @@
     "blank_word": "breakdown",
     "date": "Sep 15, 2023",
     "likes": 15000,
-    "retweets": 2000
+    "retweets": 2000,
+    "disabled": false
   },
   {
     "id": 118,
@@ -1177,7 +1294,8 @@
     "blank_word": "pay",
     "date": "Jul 20, 2023",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 119,
@@ -1187,7 +1305,8 @@
     "blank_word": "rule",
     "date": "Nov 2, 2018",
     "likes": 12000,
-    "retweets": 2500
+    "retweets": 2500,
+    "disabled": true
   },
   {
     "id": 120,
@@ -1197,7 +1316,8 @@
     "blank_word": "share",
     "date": "Aug 10, 2024",
     "likes": 8000,
-    "retweets": 1000
+    "retweets": 1000,
+    "disabled": true
   },
   {
     "id": 121,
@@ -1207,7 +1327,8 @@
     "blank_word": "cocaine",
     "date": "Apr 27, 2022",
     "likes": 4240823,
-    "retweets": 753179
+    "retweets": 753179,
+    "disabled": false
   },
   {
     "id": 122,
@@ -1217,7 +1338,8 @@
     "blank_word": "critics",
     "date": "Apr 25, 2022",
     "likes": 2882610,
-    "retweets": 388262
+    "retweets": 388262,
+    "disabled": true
   },
   {
     "id": 123,
@@ -1227,7 +1349,8 @@
     "blank_word": "420",
     "date": "Aug 7, 2018",
     "likes": 300000,
-    "retweets": 50000
+    "retweets": 50000,
+    "disabled": false
   },
   {
     "id": 124,
@@ -1237,7 +1360,8 @@
     "blank_word": "scumbags",
     "date": "Jan 28, 2021",
     "likes": 121770,
-    "retweets": 19850
+    "retweets": 19850,
+    "disabled": true
   },
   {
     "id": 125,
@@ -1247,7 +1371,8 @@
     "blank_word": "decentralized",
     "date": "Jan 30, 2021",
     "likes": 88031,
-    "retweets": 12785
+    "retweets": 12785,
+    "disabled": false
   },
   {
     "id": 126,
@@ -1257,7 +1382,8 @@
     "blank_word": "arena",
     "date": "Aug 22, 2023",
     "likes": 733,
-    "retweets": 618
+    "retweets": 618,
+    "disabled": true
   },
   {
     "id": 127,
@@ -1267,7 +1393,8 @@
     "blank_word": "fragmented",
     "date": "Jun 2, 2017",
     "likes": 11525,
-    "retweets": 2345
+    "retweets": 2345,
+    "disabled": true
   },
   {
     "id": 128,
@@ -1277,7 +1404,8 @@
     "blank_word": "ignoring",
     "date": "Nov 11, 2021",
     "likes": 6252,
-    "retweets": 640
+    "retweets": 640,
+    "disabled": false
   },
   {
     "id": 129,
@@ -1287,7 +1415,8 @@
     "blank_word": "quit",
     "date": "Apr 1, 2021",
     "likes": 46053,
-    "retweets": 15836
+    "retweets": 15836,
+    "disabled": false
   },
   {
     "id": 130,
@@ -1297,7 +1426,8 @@
     "blank_word": "headphone",
     "date": "Jun 30, 2024",
     "likes": 50000,
-    "retweets": 5000
+    "retweets": 5000,
+    "disabled": false
   },
   {
     "id": 131,
@@ -1307,7 +1437,8 @@
     "blank_word": "Peloton",
     "date": "Dec 13, 2019",
     "likes": 4796,
-    "retweets": 1019
+    "retweets": 1019,
+    "disabled": false
   },
   {
     "id": 132,
@@ -1317,7 +1448,8 @@
     "blank_word": "prediction",
     "date": "Nov 4, 2020",
     "likes": 2541,
-    "retweets": 293
+    "retweets": 293,
+    "disabled": false
   },
   {
     "id": 133,
@@ -1327,7 +1459,8 @@
     "blank_word": "Scott",
     "date": "Jun 23, 2020",
     "likes": 2587,
-    "retweets": 282
+    "retweets": 282,
+    "disabled": false
   },
   {
     "id": 134,
@@ -1337,7 +1470,8 @@
     "blank_word": "Zuckerberg",
     "date": "Nov 21, 2022",
     "likes": 46331,
-    "retweets": 3718
+    "retweets": 3718,
+    "disabled": true
   },
   {
     "id": 135,
@@ -1347,7 +1481,8 @@
     "blank_word": "regulations",
     "date": "Dec 24, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 136,
@@ -1357,7 +1492,8 @@
     "blank_word": "timing",
     "date": "Jan 30, 2021",
     "likes": 30000,
-    "retweets": 2623
+    "retweets": 2623,
+    "disabled": true
   },
   {
     "id": 137,
@@ -1367,7 +1503,8 @@
     "blank_word": "fun",
     "date": "Apr 27, 2022",
     "likes": 2356793,
-    "retweets": 200825
+    "retweets": 200825,
+    "disabled": true
   },
   {
     "id": 138,
@@ -1377,7 +1514,8 @@
     "blank_word": "forecast",
     "date": "Oct 26, 2024",
     "likes": 1100,
-    "retweets": 143
+    "retweets": 143,
+    "disabled": true
   },
   {
     "id": 139,
@@ -1387,7 +1525,8 @@
     "blank_word": "execute",
     "date": "Mar 15, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 140,
@@ -1397,7 +1536,8 @@
     "blank_word": "stupid",
     "date": "Jun 20, 2023",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 141,
@@ -1407,7 +1547,8 @@
     "blank_word": "owned",
     "date": "Sep 15, 2022",
     "likes": 8000,
-    "retweets": 1500
+    "retweets": 1500,
+    "disabled": true
   },
   {
     "id": 142,
@@ -1417,7 +1558,8 @@
     "blank_word": "distribution",
     "date": "Nov 4, 2024",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 143,
@@ -1427,7 +1569,8 @@
     "blank_word": "podcasting",
     "date": "Nov 8, 2024",
     "likes": 4,
-    "retweets": 0
+    "retweets": 0,
+    "disabled": true
   },
   {
     "id": 144,
@@ -1437,7 +1580,8 @@
     "blank_word": "Claude",
     "date": "Jan 4, 2025",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 145,
@@ -1447,7 +1591,8 @@
     "blank_word": "contemplate",
     "date": "Jan 6, 2025",
     "likes": 14724,
-    "retweets": 1029
+    "retweets": 1029,
+    "disabled": true
   },
   {
     "id": 146,
@@ -1457,7 +1602,8 @@
     "blank_word": "contaminants",
     "date": "Jan 11, 2025",
     "likes": 10000,
-    "retweets": 1500
+    "retweets": 1500,
+    "disabled": true
   },
   {
     "id": 147,
@@ -1467,7 +1613,8 @@
     "blank_word": "distribution",
     "date": "Jan 13, 2021",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "id": 148,
@@ -1477,7 +1624,8 @@
     "blank_word": "Satoshi",
     "date": "Sep 3, 2024",
     "likes": 22807,
-    "retweets": 4869
+    "retweets": 4869,
+    "disabled": false
   },
   {
     "id": 149,
@@ -1487,7 +1635,8 @@
     "blank_word": "Goldman",
     "date": "Jul 30, 2024",
     "likes": 23293,
-    "retweets": 2090
+    "retweets": 2090,
+    "disabled": true
   },
   {
     "id": 150,
@@ -1497,7 +1646,8 @@
     "blank_word": "therapy",
     "date": "Nov 4, 2022",
     "likes": 5000,
-    "retweets": 500
+    "retweets": 500,
+    "disabled": true
   },
   {
     "author": "Naval",
@@ -1507,7 +1657,8 @@
     "date": "Jun 15, 2019",
     "likes": 8000,
     "retweets": 1500,
-    "id": 151
+    "id": 151,
+    "disabled": true
   },
   {
     "author": "Naval",
@@ -1517,7 +1668,8 @@
     "date": "Mar 20, 2019",
     "likes": 6000,
     "retweets": 1000,
-    "id": 152
+    "id": 152,
+    "disabled": true
   },
   {
     "author": "Naval",
@@ -1527,7 +1679,8 @@
     "date": "Jul 10, 2019",
     "likes": 10000,
     "retweets": 2000,
-    "id": 153
+    "id": 153,
+    "disabled": true
   },
   {
     "author": "Naval",
@@ -1537,7 +1690,8 @@
     "date": "May 10, 2020",
     "likes": 10000,
     "retweets": 2000,
-    "id": 154
+    "id": 154,
+    "disabled": true
   },
   {
     "author": "James Clear",
@@ -1547,7 +1701,8 @@
     "date": "Jul 12, 2018",
     "likes": 40008,
     "retweets": 21241,
-    "id": 155
+    "id": 155,
+    "disabled": true
   },
   {
     "author": "James Clear",
@@ -1557,7 +1712,8 @@
     "date": "Jun 15, 2019",
     "likes": 50000,
     "retweets": 15000,
-    "id": 156
+    "id": 156,
+    "disabled": true
   },
   {
     "author": "James Clear",
@@ -1567,7 +1723,8 @@
     "date": "Dec 26, 2022",
     "likes": 31969,
     "retweets": 7973,
-    "id": 157
+    "id": 157,
+    "disabled": true
   },
   {
     "author": "Jack Butcher",
@@ -1577,7 +1734,8 @@
     "date": "Dec 9, 2024",
     "likes": 36960,
     "retweets": 2568,
-    "id": 158
+    "id": 158,
+    "disabled": false
   },
   {
     "author": "Jack Butcher",
@@ -1587,7 +1745,8 @@
     "date": "Apr 15, 2022",
     "likes": 5000,
     "retweets": 500,
-    "id": 159
+    "id": 159,
+    "disabled": true
   },
   {
     "author": "Matt Shumer",
@@ -1597,7 +1756,8 @@
     "date": "Mar 1, 2025",
     "likes": 20000,
     "retweets": 3000,
-    "id": 160
+    "id": 160,
+    "disabled": false
   },
   {
     "author": "Andrew Wilkinson",
@@ -1607,7 +1767,8 @@
     "date": "Jun 9, 2021",
     "likes": 81765,
     "retweets": 24070,
-    "id": 161
+    "id": 161,
+    "disabled": false
   },
   {
     "author": "Andrew Wilkinson",
@@ -1617,7 +1778,8 @@
     "date": "Jun 25, 2023",
     "likes": 15000,
     "retweets": 2000,
-    "id": 162
+    "id": 162,
+    "disabled": false
   },
   {
     "author": "Matt Turck",
@@ -1627,7 +1789,8 @@
     "date": "Jan 6, 2025",
     "likes": 193635,
     "retweets": 24532,
-    "id": 163
+    "id": 163,
+    "disabled": false
   },
   {
     "author": "Benedict Evans",
@@ -1637,7 +1800,8 @@
     "date": "May 15, 2023",
     "likes": 8000,
     "retweets": 1000,
-    "id": 164
+    "id": 164,
+    "disabled": false
   },
   {
     "author": "Suhail",
@@ -1647,7 +1811,8 @@
     "date": "Oct 5, 2022",
     "likes": 5000,
     "retweets": 800,
-    "id": 165
+    "id": 165,
+    "disabled": true
   },
   {
     "author": "Brian Norgard",
@@ -1657,7 +1822,8 @@
     "date": "Aug 20, 2022",
     "likes": 6000,
     "retweets": 1000,
-    "id": 166
+    "id": 166,
+    "disabled": true
   },
   {
     "author": "Tibo",
@@ -1667,7 +1833,8 @@
     "date": "Mar 5, 2023",
     "likes": 5000,
     "retweets": 500,
-    "id": 167
+    "id": 167,
+    "disabled": true
   },
   {
     "author": "Garry Tan",
@@ -1677,7 +1844,8 @@
     "date": "Aug 11, 2023",
     "likes": 15000,
     "retweets": 2000,
-    "id": 168
+    "id": 168,
+    "disabled": true
   },
   {
     "author": "Emad",
@@ -1687,7 +1855,8 @@
     "date": "Feb 15, 2023",
     "likes": 15000,
     "retweets": 3000,
-    "id": 169
+    "id": 169,
+    "disabled": true
   },
   {
     "author": "Tobi Lutke",
@@ -1697,7 +1866,8 @@
     "date": "Feb 20, 2020",
     "likes": 12000,
     "retweets": 2000,
-    "id": 170
+    "id": 170,
+    "disabled": true
   },
   {
     "author": "Callicrates",
@@ -1707,7 +1877,8 @@
     "date": "Nov 15, 2023",
     "likes": 10000,
     "retweets": 2000,
-    "id": 171
+    "id": 171,
+    "disabled": false
   },
   {
     "author": "Rodolphe Dutel",
@@ -1717,7 +1888,8 @@
     "date": "Jun 10, 2023",
     "likes": 8000,
     "retweets": 1500,
-    "id": 172
+    "id": 172,
+    "disabled": false
   },
   {
     "author": "JK Molina",
@@ -1727,7 +1899,8 @@
     "date": "May 20, 2023",
     "likes": 15000,
     "retweets": 3000,
-    "id": 173
+    "id": 173,
+    "disabled": false
   },
   {
     "author": "Gary Wu",
@@ -1737,7 +1910,8 @@
     "date": "Mar 10, 2023",
     "likes": 5000,
     "retweets": 500,
-    "id": 174
+    "id": 174,
+    "disabled": true
   },
   {
     "author": "Paul Graham",
@@ -1747,7 +1921,8 @@
     "date": "Sep 3, 2018",
     "likes": 6000,
     "retweets": 1000,
-    "id": 175
+    "id": 175,
+    "disabled": true
   },
   {
     "author": "Paul Graham",
@@ -1757,7 +1932,8 @@
     "date": "Nov 8, 2018",
     "likes": 15000,
     "retweets": 3000,
-    "id": 176
+    "id": 176,
+    "disabled": false
   },
   {
     "author": "SaaS Wiz",
@@ -1767,7 +1943,8 @@
     "date": "Aug 15, 2022",
     "likes": 10000,
     "retweets": 2000,
-    "id": 177
+    "id": 177,
+    "disabled": false
   },
   {
     "author": "Rob Henderson",
@@ -1777,7 +1954,8 @@
     "date": "Jul 19, 2025",
     "likes": 30000,
     "retweets": 5000,
-    "id": 178
+    "id": 178,
+    "disabled": false
   },
   {
     "author": "Jeff Chang",
@@ -1787,7 +1965,8 @@
     "date": "Mar 10, 2023",
     "likes": 8000,
     "retweets": 1000,
-    "id": 179
+    "id": 179,
+    "disabled": true
   },
   {
     "author": "hardmaru",
@@ -1797,7 +1976,8 @@
     "date": "Jul 24, 2023",
     "likes": 94050,
     "retweets": 9718,
-    "id": 180
+    "id": 180,
+    "disabled": true
   },
   {
     "author": "Alex Heath",
@@ -1807,7 +1987,8 @@
     "date": "Nov 5, 2024",
     "likes": 50168,
     "retweets": 1372,
-    "id": 181
+    "id": 181,
+    "disabled": true
   },
   {
     "author": "Mubbu",
@@ -1817,7 +1998,8 @@
     "date": "Jun 5, 2022",
     "likes": 15000,
     "retweets": 3000,
-    "id": 182
+    "id": 182,
+    "disabled": true
   },
   {
     "author": "GREG ISENBERG",
@@ -1827,7 +2009,8 @@
     "date": "Aug 5, 2023",
     "likes": 10000,
     "retweets": 1000,
-    "id": 183
+    "id": 183,
+    "disabled": true
   },
   {
     "author": "David Cummings",
@@ -1837,7 +2020,8 @@
     "date": "Apr 10, 2022",
     "likes": 5000,
     "retweets": 500,
-    "id": 184
+    "id": 184,
+    "disabled": true
   },
   {
     "author": "Jon Yongfook",
@@ -1847,7 +2031,8 @@
     "date": "Sep 10, 2022",
     "likes": 5000,
     "retweets": 500,
-    "id": 185
+    "id": 185,
+    "disabled": true
   },
   {
     "author": "Chris Frantz",
@@ -1857,7 +2042,8 @@
     "date": "Apr 5, 2023",
     "likes": 8000,
     "retweets": 1000,
-    "id": 186
+    "id": 186,
+    "disabled": false
   },
   {
     "author": "Paul Graham",
@@ -1867,7 +2053,8 @@
     "date": "Jul 16, 2024",
     "likes": 15000,
     "retweets": 2000,
-    "id": 187
+    "id": 187,
+    "disabled": false
   },
   {
     "author": "Andrew Wilkinson",
@@ -1877,7 +2064,8 @@
     "date": "Oct 13, 2024",
     "likes": 10000,
     "retweets": 1500,
-    "id": 188
+    "id": 188,
+    "disabled": true
   },
   {
     "author": "Peter Thiel",
@@ -1887,7 +2075,8 @@
     "date": "Sep 15, 2014",
     "likes": 12000,
     "retweets": 3000,
-    "id": 189
+    "id": 189,
+    "disabled": true
   },
   {
     "author": "Elon Musk",
@@ -1897,7 +2086,8 @@
     "date": "Aug 7, 2018",
     "likes": 300000,
     "retweets": 50000,
-    "id": 190
+    "id": 190,
+    "disabled": true
   },
   {
     "author": "David Sacks",
@@ -1907,7 +2097,8 @@
     "date": "Sep 10, 2020",
     "likes": 52609,
     "retweets": 15314,
-    "id": 191
+    "id": 191,
+    "disabled": false
   },
   {
     "author": "Jason Lemkin",
@@ -1917,7 +2108,8 @@
     "date": "Mar 15, 2024",
     "likes": 5000,
     "retweets": 500,
-    "id": 192
+    "id": 192,
+    "disabled": true
   },
   {
     "author": "Patrick Campbell",
@@ -1927,7 +2119,8 @@
     "date": "Jun 5, 2023",
     "likes": 5000,
     "retweets": 500,
-    "id": 193
+    "id": 193,
+    "disabled": true
   },
   {
     "author": "Austen Allred",
@@ -1937,7 +2130,8 @@
     "date": "May 10, 2023",
     "likes": 8000,
     "retweets": 1000,
-    "id": 194
+    "id": 194,
+    "disabled": true
   },
   {
     "author": "Hiten Shah",
@@ -1947,7 +2141,8 @@
     "date": "Aug 20, 2023",
     "likes": 5000,
     "retweets": 500,
-    "id": 195
+    "id": 195,
+    "disabled": true
   },
   {
     "author": "Alex Cohen",
@@ -1957,7 +2152,8 @@
     "date": "Sep 21, 2025",
     "likes": 5000,
     "retweets": 500,
-    "id": 196
+    "id": 196,
+    "disabled": true
   },
   {
     "author": "Lulu Cheng Meservey",
@@ -1967,7 +2163,8 @@
     "date": "Aug 26, 2025",
     "likes": 5000,
     "retweets": 500,
-    "id": 197
+    "id": 197,
+    "disabled": true
   },
   {
     "author": "Steven Fiorillo",
@@ -1977,7 +2174,8 @@
     "date": "Nov 15, 2025",
     "likes": 5000,
     "retweets": 500,
-    "id": 198
+    "id": 198,
+    "disabled": true
   },
   {
     "author": "Jarrod Watts",
@@ -1987,7 +2185,8 @@
     "date": "Nov 28, 2024",
     "likes": 10000,
     "retweets": 2000,
-    "id": 199
+    "id": 199,
+    "disabled": false
   },
   {
     "author": "Sam Altman",
@@ -1997,7 +2196,8 @@
     "date": "Nov 17, 2023",
     "likes": 85000,
     "retweets": 7001,
-    "id": 200
+    "id": 200,
+    "disabled": false
   },
   {
     "author": "Balaji",
@@ -2007,7 +2207,8 @@
     "date": "Jan 20, 2025",
     "likes": 125713,
     "retweets": 17520,
-    "id": 201
+    "id": 201,
+    "disabled": false
   },
   {
     "author": "Mark Zuckerberg",
@@ -2017,7 +2218,8 @@
     "date": "Jun 21, 2023",
     "likes": 500000,
     "retweets": 50000,
-    "id": 202
+    "id": 202,
+    "disabled": false
   },
   {
     "author": "Chamath Palihapitiya",
@@ -2027,7 +2229,8 @@
     "date": "Jan 29, 2021",
     "likes": 70000,
     "retweets": 18000,
-    "id": 203
+    "id": 203,
+    "disabled": true
   },
   {
     "author": "Tyler Cowen",
@@ -2037,7 +2240,8 @@
     "date": "Dec 13, 2019",
     "likes": 4796,
     "retweets": 1019,
-    "id": 204
+    "id": 204,
+    "disabled": true
   },
   {
     "author": "Garry Tan",
@@ -2047,7 +2251,8 @@
     "date": "May 28, 2025",
     "likes": 20000,
     "retweets": 3000,
-    "id": 205
+    "id": 205,
+    "disabled": true
   },
   {
     "author": "Andrew Wilkinson",
@@ -2057,7 +2262,8 @@
     "date": "Oct 5, 2023",
     "likes": 15000,
     "retweets": 2000,
-    "id": 206
+    "id": 206,
+    "disabled": true
   },
   {
     "author": "wint",
@@ -2067,7 +2273,8 @@
     "date": "Sep 29, 2013",
     "likes": 119599,
     "retweets": 58572,
-    "id": 207
+    "id": 207,
+    "disabled": false
   },
   {
     "author": "wint",
@@ -2077,7 +2284,8 @@
     "date": "Nov 29, 2015",
     "likes": 124380,
     "retweets": 61020,
-    "id": 208
+    "id": 208,
+    "disabled": false
   },
   {
     "author": "wint",
@@ -2087,7 +2295,8 @@
     "date": "Jun 20, 2019",
     "likes": 122239,
     "retweets": 21090,
-    "id": 209
+    "id": 209,
+    "disabled": false
   },
   {
     "author": "wint",
@@ -2097,7 +2306,8 @@
     "date": "Sep 15, 2008",
     "likes": 124888,
     "retweets": 56059,
-    "id": 210
+    "id": 210,
+    "disabled": false
   },
   {
     "author": "DHH",
@@ -2107,7 +2317,8 @@
     "date": "Oct 15, 2023",
     "likes": 20000,
     "retweets": 3000,
-    "id": 211
+    "id": 211,
+    "disabled": true
   },
   {
     "author": "DHH",
@@ -2117,7 +2328,8 @@
     "date": "Sep 5, 2023",
     "likes": 15000,
     "retweets": 2000,
-    "id": 212
+    "id": 212,
+    "disabled": false
   },
   {
     "author": "VCs Congratulating Themselves",
@@ -2127,7 +2339,8 @@
     "date": "Jan 15, 2023",
     "likes": 15000,
     "retweets": 3000,
-    "id": 213
+    "id": 213,
+    "disabled": false
   },
   {
     "author": "Josh Wolfe",
@@ -2137,7 +2350,8 @@
     "date": "Mar 10, 2022",
     "likes": 5000,
     "retweets": 800,
-    "id": 214
+    "id": 214,
+    "disabled": true
   },
   {
     "author": "DHH",
@@ -2147,7 +2361,8 @@
     "date": "May 1, 2021",
     "likes": 20000,
     "retweets": 3000,
-    "id": 215
+    "id": 215,
+    "disabled": false
   },
   {
     "author": "Paul Graham",
@@ -2157,7 +2372,8 @@
     "date": "Nov 17, 2018",
     "likes": 8000,
     "retweets": 1500,
-    "id": 216
+    "id": 216,
+    "disabled": false
   },
   {
     "author": "Paul Graham",
@@ -2167,7 +2383,8 @@
     "date": "Dec 14, 2018",
     "likes": 10000,
     "retweets": 2000,
-    "id": 217
+    "id": 217,
+    "disabled": true
   },
   {
     "author": "Marc Andreessen",
@@ -2177,7 +2394,8 @@
     "date": "Apr 18, 2020",
     "likes": 50000,
     "retweets": 10000,
-    "id": 218
+    "id": 218,
+    "disabled": true
   },
   {
     "author": "Jack Dorsey",
@@ -2187,7 +2405,8 @@
     "date": "Mar 21, 2006",
     "likes": 200000,
     "retweets": 100000,
-    "id": 219
+    "id": 219,
+    "disabled": false
   },
   {
     "author": "Sam Altman",
@@ -2197,7 +2416,8 @@
     "date": "Nov 19, 2023",
     "likes": 92665,
     "retweets": 8330,
-    "id": 220
+    "id": 220,
+    "disabled": false
   },
   {
     "author": "Sahil Bloom",
@@ -2207,6 +2427,7 @@
     "date": "Dec 15, 2025",
     "likes": 5000,
     "retweets": 500,
-    "id": 221
+    "id": 221,
+    "disabled": false
   }
 ]

@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import tweetsData from '../data/tweets.json';
+import allTweetsData from '../data/tweets.json';
+
+const tweetsData = (allTweetsData as any[]).filter((t: any) => !t.disabled);
 import TweetCard, { type Tweet } from '../components/tweetlibs/TweetCard';
 import Confetti from '../components/tweetlibs/Confetti';
 

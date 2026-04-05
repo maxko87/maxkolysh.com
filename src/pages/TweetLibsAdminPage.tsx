@@ -11,6 +11,7 @@ interface Tweet {
   date: string;
   likes: number;
   retweets: number;
+  disabled?: boolean;
 }
 
 const C = {
@@ -29,9 +30,11 @@ export default function TweetLibsAdminPage() {
   const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[]);
   const [filter, setFilter] = useState('');
   const [deletedIds, setDeletedIds] = useState<Set<number>>(new Set());
+  const [showDisabled, setShowDisabled] = useState(true);
 
   const filtered = tweets.filter((t) => {
     if (deletedIds.has(t.id)) return false;
+    if (!showDisabled && t.disabled) return false;
     if (!filter) return true;
     const q = filter.toLowerCase();
     return (
@@ -42,8 +45,12 @@ export default function TweetLibsAdminPage() {
     );
   });
 
+  const enabledCount = tweets.filter(t => !t.disabled && !deletedIds.has(t.id)).length;
+
   const handleDelete = (id: number) => {
-    setDeletedIds((prev) => new Set(prev).add(id));
+    setTweets((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, disabled: !t.disabled } : t))
+    );
   };
 
   const handleExport = () => {
@@ -99,12 +106,7 @@ export default function TweetLibsAdminPage() {
           </Link>
           <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0 }}>TweetLibs Admin</h1>
           <div style={{ fontSize: '14px', color: C.secondary }}>
-            {filtered.length}/{tweets.length - deletedIds.size} shown
-            {deletedIds.size > 0 && (
-              <span style={{ color: C.red, marginLeft: '8px' }}>
-                ({deletedIds.size} deleted)
-              </span>
-            )}
+            {filtered.length} shown · <span style={{ color: C.green }}>{enabledCount} enabled</span>
           </div>
         </div>
 
@@ -128,24 +130,38 @@ export default function TweetLibsAdminPage() {
               fontFamily: 'inherit',
             }}
           />
-          {deletedIds.size > 0 && (
-            <button
-              onClick={handleExport}
-              style={{
-                padding: '10px 20px',
-                background: C.green,
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-              }}
-            >
-              Export remaining JSON
-            </button>
-          )}
+          <button
+            onClick={() => setShowDisabled(!showDisabled)}
+            style={{
+              padding: '10px 20px',
+              background: showDisabled ? C.dim : C.blue,
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            {showDisabled ? 'Hide disabled' : 'Show all'}
+          </button>
+          <button
+            onClick={handleExport}
+            style={{
+              padding: '10px 20px',
+              background: C.green,
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            Export JSON
+          </button>
         </div>
 
         {/* Tweet list */}
@@ -155,12 +171,13 @@ export default function TweetLibsAdminPage() {
               key={tweet.id}
               style={{
                 background: C.card,
-                border: `1px solid ${C.border}`,
+                border: `1px solid ${tweet.disabled ? C.dim : C.border}`,
                 borderRadius: '12px',
                 padding: '12px 16px',
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '12px',
+                opacity: tweet.disabled ? 0.5 : 1,
               }}
             >
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -183,7 +200,7 @@ export default function TweetLibsAdminPage() {
                   background: 'transparent',
                   border: `1px solid ${C.border}`,
                   borderRadius: '8px',
-                  color: C.red,
+                  color: tweet.disabled ? C.green : C.red,
                   fontSize: '13px',
                   fontWeight: 600,
                   padding: '6px 12px',
@@ -192,10 +209,10 @@ export default function TweetLibsAdminPage() {
                   fontFamily: 'inherit',
                   transition: 'background 0.15s',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(244, 33, 46, 0.1)')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = tweet.disabled ? 'rgba(0, 186, 124, 0.1)' : 'rgba(244, 33, 46, 0.1)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                Delete
+                {tweet.disabled ? 'Enable' : 'Disable'}
               </button>
             </div>
           ))}
