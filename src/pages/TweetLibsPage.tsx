@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import allTweetsData from '../data/tweets.json';
+import { supabase, getSessionId } from '../utils/supabase';
 
 const tweetsData = (allTweetsData as any[]).filter((t: any) => !t.disabled);
 import TweetCard, { type Tweet } from '../components/tweetlibs/TweetCard';
@@ -224,6 +225,7 @@ export default function TweetLibsPage() {
   const [confettiKey, setConfettiKey] = useState(0);
   const [confettiActive, setConfettiActive] = useState(false);
   const [backHover, setBackHover] = useState(false);
+  const [voted, setVoted] = useState<Record<number, 1 | -1>>({});
 
   const currentTweet = tweets[currentIndex];
 
@@ -282,6 +284,16 @@ export default function TweetLibsPage() {
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [feedback, handleNext]);
+
+  const handleVote = async (tweetId: number, vote: 1 | -1) => {
+    if (voted[tweetId]) return;
+    setVoted((prev) => ({ ...prev, [tweetId]: vote }));
+    const sessionId = getSessionId();
+    await supabase.from('tweetlibs_votes').upsert(
+      { tweet_id: tweetId, session_id: sessionId, vote },
+      { onConflict: 'tweet_id,session_id' }
+    );
+  };
 
   const handlePlayAgain = () => {
     setTweets(pickRandom(tweetsData as Tweet[], ROUND_SIZE));
@@ -414,6 +426,45 @@ export default function TweetLibsPage() {
                   <span style={{ color: feedback === 'correct' ? C.green : C.red, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
                     {feedback === 'correct' ? '✓ Correct!' : '✗ Nope'}
                   </span>
+                  {/* Vote buttons */}
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button
+                      onClick={() => handleVote(currentTweet.id, 1)}
+                      style={{
+                        padding: '6px 10px',
+                        background: voted[currentTweet.id] === 1 ? 'rgba(0,186,124,0.15)' : 'transparent',
+                        border: `1px solid ${voted[currentTweet.id] === 1 ? C.green : C.border}`,
+                        borderRadius: '8px',
+                        color: voted[currentTweet.id] === 1 ? C.green : C.secondary,
+                        fontSize: '16px',
+                        cursor: voted[currentTweet.id] ? 'default' : 'pointer',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.15s',
+                        opacity: voted[currentTweet.id] === -1 ? 0.3 : 1,
+                      }}
+                      title="Good tweet"
+                    >
+                      👍
+                    </button>
+                    <button
+                      onClick={() => handleVote(currentTweet.id, -1)}
+                      style={{
+                        padding: '6px 10px',
+                        background: voted[currentTweet.id] === -1 ? 'rgba(244,33,46,0.15)' : 'transparent',
+                        border: `1px solid ${voted[currentTweet.id] === -1 ? C.red : C.border}`,
+                        borderRadius: '8px',
+                        color: voted[currentTweet.id] === -1 ? C.red : C.secondary,
+                        fontSize: '16px',
+                        cursor: voted[currentTweet.id] ? 'default' : 'pointer',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.15s',
+                        opacity: voted[currentTweet.id] === 1 ? 0.3 : 1,
+                      }}
+                      title="Bad tweet"
+                    >
+                      👎
+                    </button>
+                  </div>
                   <button
                     onClick={handleNext}
                     autoFocus

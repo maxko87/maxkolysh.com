@@ -8,7 +8,8 @@
     "date": "May 10, 2020",
     "likes": 42631,
     "retweets": 11510,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 2,
@@ -19,7 +20,8 @@
     "date": "Jan 2, 2021",
     "likes": 56709,
     "retweets": 14792,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 3,
@@ -30,7 +32,8 @@
     "date": "Feb 1, 2025",
     "likes": 109677,
     "retweets": 15320,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 4,
@@ -41,7 +44,8 @@
     "date": "Jan 18, 2025",
     "likes": 78231,
     "retweets": 12431,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 5,
@@ -52,7 +56,8 @@
     "date": "Sep 26, 2022",
     "likes": 59228,
     "retweets": 11960,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 6,
@@ -63,7 +68,8 @@
     "date": "Jan 24, 2023",
     "likes": 62237,
     "retweets": 9584,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 7,
@@ -74,7 +80,8 @@
     "date": "Feb 2, 2025",
     "likes": 50000,
     "retweets": 8000,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 8,
@@ -85,7 +92,8 @@
     "date": "Feb 24, 2025",
     "likes": 40000,
     "retweets": 6000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 9,
@@ -96,7 +104,8 @@
     "date": "Feb 10, 2025",
     "likes": 221666,
     "retweets": 23388,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 10,
@@ -107,7 +116,8 @@
     "date": "Mar 29, 2025",
     "likes": 120764,
     "retweets": 8625,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 11,
@@ -118,7 +128,8 @@
     "date": "Apr 28, 2024",
     "likes": 24791,
     "retweets": 2788,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 12,
@@ -129,7 +140,8 @@
     "date": "Jan 27, 2025",
     "likes": 82725,
     "retweets": 9913,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 13,
@@ -140,7 +152,8 @@
     "date": "Aug 23, 2023",
     "likes": 17060,
     "retweets": 3376,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 14,
@@ -151,7 +164,8 @@
     "date": "Oct 8, 2025",
     "likes": 45000,
     "retweets": 4100,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 15,
@@ -162,7 +176,8 @@
     "date": "Dec 2, 2022",
     "likes": 20972,
     "retweets": 2773,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 16,
@@ -173,7 +188,8 @@
     "date": "Feb 23, 2018",
     "likes": 9002,
     "retweets": 2029,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 17,
@@ -184,7 +200,8 @@
     "date": "Jan 22, 2025",
     "likes": 152153,
     "retweets": 7653,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "id": 18,
@@ -195,7 +212,8 @@
     "date": "Jan 24, 2025",
     "likes": 22105,
     "retweets": 1529,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 19,
@@ -206,7 +224,8 @@
     "date": "Jun 27, 2020",
     "likes": 15000,
     "retweets": 3000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 20,
@@ -217,7 +236,8 @@
     "date": "Jun 30, 2020",
     "likes": 2866,
     "retweets": 495,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 21,
@@ -228,7 +248,8 @@
     "date": "Jul 12, 2022",
     "likes": 2699,
     "retweets": 188,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 22,
@@ -239,7 +260,8 @@
     "date": "Nov 8, 2025",
     "likes": 16429,
     "retweets": 4882,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 23,
@@ -250,7 +272,8 @@
     "date": "Sep 4, 2020",
     "likes": 4324,
     "retweets": 596,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 24,
@@ -261,7 +284,8 @@
     "date": "Dec 21, 2020",
     "likes": 3334,
     "retweets": 401,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 25,
@@ -272,7 +296,8 @@
     "date": "Jan 5, 2021",
     "likes": 2963,
     "retweets": 480,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 26,
@@ -283,7 +308,8 @@
     "date": "Jul 12, 2023",
     "likes": 14580,
     "retweets": 1138,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 27,
@@ -294,7 +320,8 @@
     "date": "Mar 13, 2025",
     "likes": 5970,
     "retweets": 130,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 28,
@@ -305,7 +332,8 @@
     "date": "Sep 9, 2025",
     "likes": 68392,
     "retweets": 4678,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 29,
@@ -316,7 +344,8 @@
     "date": "Jul 13, 2023",
     "likes": 96224,
     "retweets": 22322,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 30,
@@ -327,7 +356,8 @@
     "date": "Sep 18, 2024",
     "likes": 285335,
     "retweets": 26238,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 31,
@@ -338,7 +368,8 @@
     "date": "Sep 6, 2023",
     "likes": 20000,
     "retweets": 3000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 32,
@@ -349,7 +380,8 @@
     "date": "Nov 25, 2022",
     "likes": 87650,
     "retweets": 8344,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 33,
@@ -360,7 +392,8 @@
     "date": "Oct 27, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 34,
@@ -371,7 +404,8 @@
     "date": "Apr 18, 2025",
     "likes": 3366,
     "retweets": 165,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 35,
@@ -382,7 +416,8 @@
     "date": "Jan 16, 2025",
     "likes": 83696,
     "retweets": 5750,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 36,
@@ -393,7 +428,8 @@
     "date": "Jan 6, 2023",
     "likes": 25000,
     "retweets": 5000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 37,
@@ -404,7 +440,8 @@
     "date": "Apr 8, 2023",
     "likes": 15000,
     "retweets": 1410,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 38,
@@ -415,7 +452,8 @@
     "date": "Mar 1, 2025",
     "likes": 684,
     "retweets": 20,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 39,
@@ -426,7 +464,8 @@
     "date": "Sep 17, 2022",
     "likes": 117849,
     "retweets": 27655,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 40,
@@ -437,7 +476,8 @@
     "date": "Dec 4, 2022",
     "likes": 84384,
     "retweets": 9846,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 41,
@@ -448,7 +488,8 @@
     "date": "Mar 31, 2026",
     "likes": 1476,
     "retweets": 161,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 42,
@@ -459,7 +500,8 @@
     "date": "Mar 7, 2026",
     "likes": 33806,
     "retweets": 5241,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 43,
@@ -470,7 +512,8 @@
     "date": "Mar 3, 2026",
     "likes": 471,
     "retweets": 23,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 44,
@@ -481,7 +524,8 @@
     "date": "Mar 20, 2025",
     "likes": 2765,
     "retweets": 262,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 45,
@@ -492,7 +536,8 @@
     "date": "Apr 28, 2025",
     "likes": 1622,
     "retweets": 31,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 46,
@@ -503,7 +548,8 @@
     "date": "Jul 8, 2025",
     "likes": 1426,
     "retweets": 129,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 47,
@@ -514,7 +560,8 @@
     "date": "Mar 28, 2024",
     "likes": 4304,
     "retweets": 576,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 48,
@@ -525,7 +572,8 @@
     "date": "Oct 15, 2022",
     "likes": 1242,
     "retweets": 167,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 49,
@@ -536,7 +584,8 @@
     "date": "Dec 6, 2025",
     "likes": 10000,
     "retweets": 2000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 50,
@@ -547,7 +596,8 @@
     "date": "Feb 7, 2024",
     "likes": 5000,
     "retweets": 1000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 51,
@@ -558,7 +608,8 @@
     "date": "Sep 8, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 52,
@@ -569,7 +620,8 @@
     "date": "Apr 12, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 53,
@@ -580,7 +632,8 @@
     "date": "Jan 3, 2023",
     "likes": 711,
     "retweets": 90,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 54,
@@ -591,7 +644,8 @@
     "date": "Jan 11, 2026",
     "likes": 7506,
     "retweets": 1017,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 55,
@@ -602,7 +656,8 @@
     "date": "Jun 28, 2023",
     "likes": 499,
     "retweets": 61,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 56,
@@ -613,7 +668,8 @@
     "date": "Oct 24, 2023",
     "likes": 122,
     "retweets": 6,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 57,
@@ -624,7 +680,8 @@
     "date": "Oct 5, 2023",
     "likes": 500,
     "retweets": 50,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 58,
@@ -635,7 +692,8 @@
     "date": "Aug 19, 2024",
     "likes": 208419,
     "retweets": 8011,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 59,
@@ -646,7 +704,8 @@
     "date": "Jun 17, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 60,
@@ -657,7 +716,8 @@
     "date": "Jan 2, 2026",
     "likes": 3000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 61,
@@ -668,7 +728,8 @@
     "date": "Jan 23, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 62,
@@ -679,7 +740,8 @@
     "date": "Jan 29, 2025",
     "likes": 8507,
     "retweets": 657,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 63,
@@ -690,7 +752,8 @@
     "date": "Dec 5, 2025",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 64,
@@ -701,7 +764,8 @@
     "date": "Dec 30, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 65,
@@ -712,7 +776,8 @@
     "date": "Aug 29, 2023",
     "likes": 10000,
     "retweets": 2000,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "id": 66,
@@ -723,7 +788,8 @@
     "date": "Dec 2, 2022",
     "likes": 3000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 67,
@@ -734,7 +800,8 @@
     "date": "Feb 21, 2023",
     "likes": 2798,
     "retweets": 517,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 68,
@@ -745,7 +812,8 @@
     "date": "Aug 6, 2025",
     "likes": 638,
     "retweets": 48,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 69,
@@ -756,7 +824,8 @@
     "date": "Jan 25, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 70,
@@ -767,7 +836,8 @@
     "date": "Jan 29, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 71,
@@ -778,7 +848,8 @@
     "date": "Aug 16, 2023",
     "likes": 959,
     "retweets": 55,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 72,
@@ -789,7 +860,8 @@
     "date": "May 5, 2025",
     "likes": 11838,
     "retweets": 1763,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 73,
@@ -800,7 +872,8 @@
     "date": "Sep 26, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "id": 74,
@@ -811,7 +884,8 @@
     "date": "Jun 18, 2025",
     "likes": 5000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 75,
@@ -822,7 +896,8 @@
     "date": "Dec 13, 2024",
     "likes": 1879,
     "retweets": 218,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 76,
@@ -833,7 +908,8 @@
     "date": "Dec 11, 2024",
     "likes": 5000,
     "retweets": 800,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 77,
@@ -844,7 +920,8 @@
     "date": "Sep 12, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 78,
@@ -855,7 +932,8 @@
     "date": "Aug 25, 2024",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 79,
@@ -866,7 +944,8 @@
     "date": "Aug 11, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 80,
@@ -877,7 +956,8 @@
     "date": "Nov 10, 2024",
     "likes": 10000,
     "retweets": 1000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 81,
@@ -888,7 +968,8 @@
     "date": "Oct 11, 2023",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 82,
@@ -899,7 +980,8 @@
     "date": "Nov 17, 2023",
     "likes": 89831,
     "retweets": 13216,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "id": 83,
@@ -910,7 +992,8 @@
     "date": "Jan 13, 2026",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 84,
@@ -921,7 +1004,8 @@
     "date": "Mar 20, 2026",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 85,
@@ -932,7 +1016,8 @@
     "date": "Jan 13, 2026",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 86,
@@ -943,7 +1028,8 @@
     "date": "Jan 7, 2026",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 87,
@@ -954,7 +1040,8 @@
     "date": "Nov 12, 2023",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 88,
@@ -965,7 +1052,8 @@
     "date": "Aug 28, 2024",
     "likes": 20198,
     "retweets": 957,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 89,
@@ -976,7 +1064,8 @@
     "date": "Jan 2, 2022",
     "likes": 8644,
     "retweets": 623,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 90,
@@ -987,7 +1076,8 @@
     "date": "Jan 20, 2023",
     "likes": 2673,
     "retweets": 192,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 91,
@@ -998,7 +1088,8 @@
     "date": "Feb 6, 2022",
     "likes": 4992,
     "retweets": 513,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 92,
@@ -1009,7 +1100,8 @@
     "date": "Oct 2, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 93,
@@ -1020,7 +1112,8 @@
     "date": "Sep 10, 2025",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 94,
@@ -1031,7 +1124,8 @@
     "date": "Sep 3, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 95,
@@ -1042,7 +1136,8 @@
     "date": "May 6, 2025",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 96,
@@ -1053,7 +1148,8 @@
     "date": "May 2, 2025",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 97,
@@ -1064,7 +1160,8 @@
     "date": "Apr 19, 2025",
     "likes": 3000,
     "retweets": 300,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 98,
@@ -1075,7 +1172,8 @@
     "date": "May 14, 2023",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 99,
@@ -1086,7 +1184,8 @@
     "date": "Dec 27, 2023",
     "likes": 10000,
     "retweets": 1500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 100,
@@ -1097,7 +1196,8 @@
     "date": "Mar 5, 2023",
     "likes": 5648,
     "retweets": 1102,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 101,
@@ -1108,7 +1208,8 @@
     "date": "Dec 20, 2018",
     "likes": 15000,
     "retweets": 3000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 8
   },
   {
     "id": 102,
@@ -1119,7 +1220,8 @@
     "date": "Nov 28, 2018",
     "likes": 12000,
     "retweets": 2500,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 103,
@@ -1130,7 +1232,8 @@
     "date": "Aug 4, 2018",
     "likes": 8000,
     "retweets": 1500,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 104,
@@ -1141,7 +1244,8 @@
     "date": "Dec 12, 2018",
     "likes": 7000,
     "retweets": 1200,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "id": 105,
@@ -1152,7 +1256,8 @@
     "date": "Aug 14, 2018",
     "likes": 6000,
     "retweets": 1000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "id": 106,
@@ -1163,7 +1268,8 @@
     "date": "Nov 7, 2018",
     "likes": 10000,
     "retweets": 2000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "id": 107,
@@ -1174,7 +1280,8 @@
     "date": "Oct 6, 2018",
     "likes": 8000,
     "retweets": 1500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 108,
@@ -1185,7 +1292,8 @@
     "date": "Nov 25, 2018",
     "likes": 5000,
     "retweets": 800,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 109,
@@ -1196,7 +1304,8 @@
     "date": "Aug 2, 2018",
     "likes": 6000,
     "retweets": 1000,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 110,
@@ -1207,7 +1316,8 @@
     "date": "Mar 15, 2020",
     "likes": 15000,
     "retweets": 3000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 111,
@@ -1218,7 +1328,8 @@
     "date": "May 31, 2018",
     "likes": 20000,
     "retweets": 5000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 112,
@@ -1229,7 +1340,8 @@
     "date": "May 31, 2018",
     "likes": 15000,
     "retweets": 4000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 113,
@@ -1240,7 +1352,8 @@
     "date": "Jun 10, 2019",
     "likes": 18000,
     "retweets": 4000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 114,
@@ -1251,7 +1364,8 @@
     "date": "Aug 2, 2019",
     "likes": 12000,
     "retweets": 3000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 115,
@@ -1262,7 +1376,8 @@
     "date": "May 31, 2018",
     "likes": 15000,
     "retweets": 4000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 116,
@@ -1273,7 +1388,8 @@
     "date": "Jan 5, 2020",
     "likes": 10000,
     "retweets": 2500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 117,
@@ -1284,7 +1400,8 @@
     "date": "Sep 15, 2023",
     "likes": 15000,
     "retweets": 2000,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "id": 118,
@@ -1295,7 +1412,8 @@
     "date": "Jul 20, 2023",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 119,
@@ -1306,7 +1424,8 @@
     "date": "Nov 2, 2018",
     "likes": 12000,
     "retweets": 2500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "id": 120,
@@ -1317,7 +1436,8 @@
     "date": "Aug 10, 2024",
     "likes": 8000,
     "retweets": 1000,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 121,
@@ -1328,7 +1448,8 @@
     "date": "Apr 27, 2022",
     "likes": 4240823,
     "retweets": 753179,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "id": 122,
@@ -1339,7 +1460,8 @@
     "date": "Apr 25, 2022",
     "likes": 2882610,
     "retweets": 388262,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 123,
@@ -1350,7 +1472,8 @@
     "date": "Aug 7, 2018",
     "likes": 300000,
     "retweets": 50000,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "id": 124,
@@ -1361,7 +1484,8 @@
     "date": "Jan 28, 2021",
     "likes": 121770,
     "retweets": 19850,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 125,
@@ -1372,7 +1496,8 @@
     "date": "Jan 30, 2021",
     "likes": 88031,
     "retweets": 12785,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 126,
@@ -1383,7 +1508,8 @@
     "date": "Aug 22, 2023",
     "likes": 733,
     "retweets": 618,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 127,
@@ -1394,7 +1520,8 @@
     "date": "Jun 2, 2017",
     "likes": 11525,
     "retweets": 2345,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 128,
@@ -1405,7 +1532,8 @@
     "date": "Nov 11, 2021",
     "likes": 6252,
     "retweets": 640,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 129,
@@ -1416,7 +1544,8 @@
     "date": "Apr 1, 2021",
     "likes": 46053,
     "retweets": 15836,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 130,
@@ -1427,7 +1556,8 @@
     "date": "Jun 30, 2024",
     "likes": 50000,
     "retweets": 5000,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 131,
@@ -1438,7 +1568,8 @@
     "date": "Dec 13, 2019",
     "likes": 4796,
     "retweets": 1019,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 132,
@@ -1449,7 +1580,8 @@
     "date": "Nov 4, 2020",
     "likes": 2541,
     "retweets": 293,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 133,
@@ -1460,7 +1592,8 @@
     "date": "Jun 23, 2020",
     "likes": 2587,
     "retweets": 282,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "id": 134,
@@ -1471,7 +1604,8 @@
     "date": "Nov 21, 2022",
     "likes": 46331,
     "retweets": 3718,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 135,
@@ -1482,7 +1616,8 @@
     "date": "Dec 24, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 136,
@@ -1493,7 +1628,8 @@
     "date": "Jan 30, 2021",
     "likes": 30000,
     "retweets": 2623,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 137,
@@ -1504,7 +1640,8 @@
     "date": "Apr 27, 2022",
     "likes": 2356793,
     "retweets": 200825,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 138,
@@ -1515,7 +1652,8 @@
     "date": "Oct 26, 2024",
     "likes": 1100,
     "retweets": 143,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 139,
@@ -1526,7 +1664,8 @@
     "date": "Mar 15, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 140,
@@ -1537,7 +1676,8 @@
     "date": "Jun 20, 2023",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 141,
@@ -1548,7 +1688,8 @@
     "date": "Sep 15, 2022",
     "likes": 8000,
     "retweets": 1500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "id": 142,
@@ -1559,7 +1700,8 @@
     "date": "Nov 4, 2024",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 143,
@@ -1570,7 +1712,8 @@
     "date": "Nov 8, 2024",
     "likes": 4,
     "retweets": 0,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "id": 144,
@@ -1581,7 +1724,8 @@
     "date": "Jan 4, 2025",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 145,
@@ -1592,7 +1736,8 @@
     "date": "Jan 6, 2025",
     "likes": 14724,
     "retweets": 1029,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 146,
@@ -1603,7 +1748,8 @@
     "date": "Jan 11, 2025",
     "likes": 10000,
     "retweets": 1500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "id": 147,
@@ -1614,7 +1760,8 @@
     "date": "Jan 13, 2021",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 2
   },
   {
     "id": 148,
@@ -1625,7 +1772,8 @@
     "date": "Sep 3, 2024",
     "likes": 22807,
     "retweets": 4869,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "id": 149,
@@ -1636,7 +1784,8 @@
     "date": "Jul 30, 2024",
     "likes": 23293,
     "retweets": 2090,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "id": 150,
@@ -1647,7 +1796,8 @@
     "date": "Nov 4, 2022",
     "likes": 5000,
     "retweets": 500,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "author": "Naval",
@@ -1658,7 +1808,8 @@
     "likes": 8000,
     "retweets": 1500,
     "id": 151,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "author": "Naval",
@@ -1669,7 +1820,8 @@
     "likes": 6000,
     "retweets": 1000,
     "id": 152,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Naval",
@@ -1680,7 +1832,8 @@
     "likes": 10000,
     "retweets": 2000,
     "id": 153,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "Naval",
@@ -1691,7 +1844,8 @@
     "likes": 10000,
     "retweets": 2000,
     "id": 154,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "James Clear",
@@ -1702,7 +1856,8 @@
     "likes": 40008,
     "retweets": 21241,
     "id": 155,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "James Clear",
@@ -1713,7 +1868,8 @@
     "likes": 50000,
     "retweets": 15000,
     "id": 156,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "James Clear",
@@ -1724,7 +1880,8 @@
     "likes": 31969,
     "retweets": 7973,
     "id": 157,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Jack Butcher",
@@ -1735,7 +1892,8 @@
     "likes": 36960,
     "retweets": 2568,
     "id": 158,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Jack Butcher",
@@ -1746,7 +1904,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 159,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Matt Shumer",
@@ -1757,7 +1916,8 @@
     "likes": 20000,
     "retweets": 3000,
     "id": 160,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Andrew Wilkinson",
@@ -1768,7 +1928,8 @@
     "likes": 81765,
     "retweets": 24070,
     "id": 161,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Andrew Wilkinson",
@@ -1779,7 +1940,8 @@
     "likes": 15000,
     "retweets": 2000,
     "id": 162,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Matt Turck",
@@ -1790,7 +1952,8 @@
     "likes": 193635,
     "retweets": 24532,
     "id": 163,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "Benedict Evans",
@@ -1801,7 +1964,8 @@
     "likes": 8000,
     "retweets": 1000,
     "id": 164,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Suhail",
@@ -1812,7 +1976,8 @@
     "likes": 5000,
     "retweets": 800,
     "id": 165,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Brian Norgard",
@@ -1823,7 +1988,8 @@
     "likes": 6000,
     "retweets": 1000,
     "id": 166,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "author": "Tibo",
@@ -1834,7 +2000,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 167,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Garry Tan",
@@ -1845,7 +2012,8 @@
     "likes": 15000,
     "retweets": 2000,
     "id": 168,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 3
   },
   {
     "author": "Emad",
@@ -1856,7 +2024,8 @@
     "likes": 15000,
     "retweets": 3000,
     "id": 169,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Tobi Lutke",
@@ -1867,7 +2036,8 @@
     "likes": 12000,
     "retweets": 2000,
     "id": 170,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Callicrates",
@@ -1878,7 +2048,8 @@
     "likes": 10000,
     "retweets": 2000,
     "id": 171,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "Rodolphe Dutel",
@@ -1889,7 +2060,8 @@
     "likes": 8000,
     "retweets": 1500,
     "id": 172,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "JK Molina",
@@ -1900,7 +2072,8 @@
     "likes": 15000,
     "retweets": 3000,
     "id": 173,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "author": "Gary Wu",
@@ -1911,7 +2084,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 174,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Paul Graham",
@@ -1922,7 +2096,8 @@
     "likes": 6000,
     "retweets": 1000,
     "id": 175,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "Paul Graham",
@@ -1933,7 +2108,8 @@
     "likes": 15000,
     "retweets": 3000,
     "id": 176,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "SaaS Wiz",
@@ -1944,7 +2120,8 @@
     "likes": 10000,
     "retweets": 2000,
     "id": 177,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Rob Henderson",
@@ -1955,7 +2132,8 @@
     "likes": 30000,
     "retweets": 5000,
     "id": 178,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Jeff Chang",
@@ -1966,7 +2144,8 @@
     "likes": 8000,
     "retweets": 1000,
     "id": 179,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "hardmaru",
@@ -1977,7 +2156,8 @@
     "likes": 94050,
     "retweets": 9718,
     "id": 180,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Alex Heath",
@@ -1988,7 +2168,8 @@
     "likes": 50168,
     "retweets": 1372,
     "id": 181,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "Mubbu",
@@ -1999,7 +2180,8 @@
     "likes": 15000,
     "retweets": 3000,
     "id": 182,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "GREG ISENBERG",
@@ -2010,7 +2192,8 @@
     "likes": 10000,
     "retweets": 1000,
     "id": 183,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "David Cummings",
@@ -2021,7 +2204,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 184,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Jon Yongfook",
@@ -2032,7 +2216,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 185,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Chris Frantz",
@@ -2043,7 +2228,8 @@
     "likes": 8000,
     "retweets": 1000,
     "id": 186,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Paul Graham",
@@ -2054,7 +2240,8 @@
     "likes": 15000,
     "retweets": 2000,
     "id": 187,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "Andrew Wilkinson",
@@ -2065,7 +2252,8 @@
     "likes": 10000,
     "retweets": 1500,
     "id": 188,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Peter Thiel",
@@ -2076,7 +2264,8 @@
     "likes": 12000,
     "retweets": 3000,
     "id": 189,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Elon Musk",
@@ -2087,7 +2276,8 @@
     "likes": 300000,
     "retweets": 50000,
     "id": 190,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 10
   },
   {
     "author": "David Sacks",
@@ -2098,7 +2288,8 @@
     "likes": 52609,
     "retweets": 15314,
     "id": 191,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Jason Lemkin",
@@ -2109,7 +2300,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 192,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Patrick Campbell",
@@ -2120,7 +2312,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 193,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "author": "Austen Allred",
@@ -2131,7 +2324,8 @@
     "likes": 8000,
     "retweets": 1000,
     "id": 194,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "Hiten Shah",
@@ -2142,7 +2336,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 195,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Alex Cohen",
@@ -2153,7 +2348,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 196,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Lulu Cheng Meservey",
@@ -2164,7 +2360,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 197,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "Steven Fiorillo",
@@ -2175,7 +2372,8 @@
     "likes": 5000,
     "retweets": 500,
     "id": 198,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 4
   },
   {
     "author": "Jarrod Watts",
@@ -2186,7 +2384,8 @@
     "likes": 10000,
     "retweets": 2000,
     "id": 199,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Sam Altman",
@@ -2197,7 +2396,8 @@
     "likes": 85000,
     "retweets": 7001,
     "id": 200,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Balaji",
@@ -2208,7 +2408,8 @@
     "likes": 125713,
     "retweets": 17520,
     "id": 201,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Mark Zuckerberg",
@@ -2219,7 +2420,8 @@
     "likes": 500000,
     "retweets": 50000,
     "id": 202,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "Chamath Palihapitiya",
@@ -2230,7 +2432,8 @@
     "likes": 70000,
     "retweets": 18000,
     "id": 203,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "Tyler Cowen",
@@ -2241,7 +2444,8 @@
     "likes": 4796,
     "retweets": 1019,
     "id": 204,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 8
   },
   {
     "author": "Garry Tan",
@@ -2252,7 +2456,8 @@
     "likes": 20000,
     "retweets": 3000,
     "id": 205,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Andrew Wilkinson",
@@ -2263,7 +2468,8 @@
     "likes": 15000,
     "retweets": 2000,
     "id": 206,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 5
   },
   {
     "author": "wint",
@@ -2274,7 +2480,8 @@
     "likes": 119599,
     "retweets": 58572,
     "id": 207,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "author": "wint",
@@ -2285,7 +2492,8 @@
     "likes": 124380,
     "retweets": 61020,
     "id": 208,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "author": "wint",
@@ -2296,7 +2504,8 @@
     "likes": 122239,
     "retweets": 21090,
     "id": 209,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "wint",
@@ -2307,7 +2516,8 @@
     "likes": 124888,
     "retweets": 56059,
     "id": 210,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "DHH",
@@ -2318,7 +2528,8 @@
     "likes": 20000,
     "retweets": 3000,
     "id": 211,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 7
   },
   {
     "author": "DHH",
@@ -2329,7 +2540,8 @@
     "likes": 15000,
     "retweets": 2000,
     "id": 212,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 9
   },
   {
     "author": "VCs Congratulating Themselves",
@@ -2340,7 +2552,8 @@
     "likes": 15000,
     "retweets": 3000,
     "id": 213,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "author": "Josh Wolfe",
@@ -2351,7 +2564,8 @@
     "likes": 5000,
     "retweets": 800,
     "id": 214,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "DHH",
@@ -2362,7 +2576,8 @@
     "likes": 20000,
     "retweets": 3000,
     "id": 215,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 8
   },
   {
     "author": "Paul Graham",
@@ -2373,7 +2588,8 @@
     "likes": 8000,
     "retweets": 1500,
     "id": 216,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 10
   },
   {
     "author": "Paul Graham",
@@ -2384,7 +2600,8 @@
     "likes": 10000,
     "retweets": 2000,
     "id": 217,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Marc Andreessen",
@@ -2395,7 +2612,8 @@
     "likes": 50000,
     "retweets": 10000,
     "id": 218,
-    "disabled": true
+    "disabled": true,
+    "humor_score": 6
   },
   {
     "author": "Jack Dorsey",
@@ -2406,7 +2624,8 @@
     "likes": 200000,
     "retweets": 100000,
     "id": 219,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Sam Altman",
@@ -2417,7 +2636,8 @@
     "likes": 92665,
     "retweets": 8330,
     "id": 220,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 7
   },
   {
     "author": "Sahil Bloom",
@@ -2428,6 +2648,7 @@
     "likes": 5000,
     "retweets": 500,
     "id": 221,
-    "disabled": false
+    "disabled": false,
+    "humor_score": 6
   }
 ]
