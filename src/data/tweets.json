@@ -2058,5 +2058,155 @@
     "likes": 15000,
     "retweets": 2000,
     "id": 206
+  },
+  {
+    "author": "wint",
+    "handle": "@dril",
+    "text": "Food $200 Data $150 Rent $800 Candles $3,600 Utility $150 someone who is good at the economy please help me budget this. my family is dying",
+    "blank_word": "Candles",
+    "date": "Sep 29, 2013",
+    "likes": 119599,
+    "retweets": 58572,
+    "id": 207
+  },
+  {
+    "author": "wint",
+    "handle": "@dril",
+    "text": "its fucked up how there are like 1000 christmas songs but only 1 song about the boys being back in town",
+    "blank_word": "boys",
+    "date": "Nov 29, 2015",
+    "likes": 124380,
+    "retweets": 61020,
+    "id": 208
+  },
+  {
+    "author": "wint",
+    "handle": "@dril",
+    "text": "age 0 (baby): I want my Dada . age 25 (Millennial): I want my Data Do you see how fucked this is?",
+    "blank_word": "Dada",
+    "date": "Jun 20, 2019",
+    "likes": 122239,
+    "retweets": 21090,
+    "id": 209
+  },
+  {
+    "author": "wint",
+    "handle": "@dril",
+    "text": "no",
+    "blank_word": "no",
+    "date": "Sep 15, 2008",
+    "likes": 124888,
+    "retweets": 56059,
+    "id": 210
+  },
+  {
+    "author": "DHH",
+    "handle": "@dhh",
+    "text": "Cloud is a terrible deal for most companies. We saved $7M over 5 years by leaving.",
+    "blank_word": "Cloud",
+    "date": "Oct 15, 2023",
+    "likes": 20000,
+    "retweets": 3000,
+    "id": 211
+  },
+  {
+    "author": "DHH",
+    "handle": "@dhh",
+    "text": "TypeScript is mass psychosis. The mass delusion that JavaScript needs static typing.",
+    "blank_word": "TypeScript",
+    "date": "Sep 5, 2023",
+    "likes": 15000,
+    "retweets": 2000,
+    "id": 212
+  },
+  {
+    "author": "VCs Congratulating Themselves",
+    "handle": "@VCBrags",
+    "text": "So proud of our portfolio company for doing a round of layoffs that I advised them to do. Really hard decision but I'm just glad they had someone like me in their corner.",
+    "blank_word": "layoffs",
+    "date": "Jan 15, 2023",
+    "likes": 15000,
+    "retweets": 3000,
+    "id": 213
+  },
+  {
+    "author": "Josh Wolfe",
+    "handle": "@wolfejosh",
+    "text": "Failure comes from a failure to imagine failure.",
+    "blank_word": "imagine",
+    "date": "Mar 10, 2022",
+    "likes": 5000,
+    "retweets": 800,
+    "id": 214
+  },
+  {
+    "author": "DHH",
+    "handle": "@dhh",
+    "text": "We banned societal politics at work. A third of the company quit. Best thing we ever did.",
+    "blank_word": "quit",
+    "date": "May 1, 2021",
+    "likes": 20000,
+    "retweets": 3000,
+    "id": 215
+  },
+  {
+    "author": "Paul Graham",
+    "handle": "@paulg",
+    "text": "6 yo gets his first steak. Server: How do you want it done? Jessica: Medium well, please. 6 yo: No, I want it done great!",
+    "blank_word": "great",
+    "date": "Nov 17, 2018",
+    "likes": 8000,
+    "retweets": 1500,
+    "id": 216
+  },
+  {
+    "author": "Paul Graham",
+    "handle": "@paulg",
+    "text": "9 yo: What's the point of life? Me: I think there are two: to do great things and to be good to people.",
+    "blank_word": "two",
+    "date": "Dec 14, 2018",
+    "likes": 10000,
+    "retweets": 2000,
+    "id": 217
+  },
+  {
+    "author": "Marc Andreessen",
+    "handle": "@pmarca",
+    "text": "IT'S TIME TO BUILD.",
+    "blank_word": "BUILD",
+    "date": "Apr 18, 2020",
+    "likes": 50000,
+    "retweets": 10000,
+    "id": 218
+  },
+  {
+    "author": "Jack Dorsey",
+    "handle": "@jack",
+    "text": "just setting up my twttr",
+    "blank_word": "twttr",
+    "date": "Mar 21, 2006",
+    "likes": 200000,
+    "retweets": 100000,
+    "id": 219
+  },
+  {
+    "author": "Sam Altman",
+    "handle": "@sama",
+    "text": "first and last time i ever wear one of these",
+    "blank_word": "last",
+    "date": "Nov 19, 2023",
+    "likes": 92665,
+    "retweets": 8330,
+    "id": 220
+  },
+  {
+    "author": "Sahil Bloom",
+    "handle": "@SahilBloom",
+    "text": "I got sick of putting things on my skin that I'd never put in my body. So I spent 18 months creating the perfect solution.",
+    "blank_word": "skin",
+    "date": "Dec 15, 2025",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 221
   }
 ]
