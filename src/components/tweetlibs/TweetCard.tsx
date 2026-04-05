@@ -84,7 +84,7 @@ export default function TweetCard({
       tweet.text.slice(idx + tweet.blank_word.length),
     ];
   }
-  const inputWidth = Math.max(90, tweet.blank_word.length * 12 + 28);
+  const inputWidth = Math.max(80, tweet.blank_word.length * 11 + 24);
 
   const borderColor =
     feedback === 'correct'
@@ -93,19 +93,33 @@ export default function TweetCard({
         ? '#ef4444'
         : '#2f3336';
 
-  const cardStyle: React.CSSProperties = {
-    background: '#16181c',
-    border: `1px solid ${borderColor}`,
-    borderRadius: '16px',
-    padding: '16px',
-    transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-    boxShadow: feedback === 'correct' ? '0 0 20px rgba(34, 197, 94, 0.15)' : feedback === 'incorrect' ? '0 0 20px rgba(239, 68, 68, 0.15)' : 'none',
-  };
-
   return (
-    <div style={cardStyle}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
+    <div
+      style={{
+        background: '#16181c',
+        border: `1px solid ${borderColor}`,
+        borderRadius: '16px',
+        padding: '16px',
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+        boxShadow:
+          feedback === 'correct'
+            ? '0 0 24px rgba(34, 197, 94, 0.12)'
+            : feedback === 'incorrect'
+              ? '0 0 24px rgba(239, 68, 68, 0.12)'
+              : 'none',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      }}
+    >
+      {/* Header row */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '12px',
+          marginBottom: '12px',
+        }}
+      >
+        {/* Avatar */}
         <div
           style={{
             width: '44px',
@@ -117,16 +131,26 @@ export default function TweetCard({
             justifyContent: 'center',
             color: 'white',
             fontWeight: 700,
-            fontSize: '14px',
+            fontSize: '15px',
             flexShrink: 0,
             userSelect: 'none',
+            letterSpacing: '0',
           }}
         >
           {getInitials(tweet.author)}
         </div>
+
+        {/* Name / handle */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 700, color: '#e7e9ea', fontSize: '15px', lineHeight: '20px' }}>
+            <span
+              style={{
+                fontWeight: 700,
+                color: '#e7e9ea',
+                fontSize: '15px',
+                lineHeight: '20px',
+              }}
+            >
               {tweet.author}
             </span>
             {/* Verified badge */}
@@ -138,11 +162,12 @@ export default function TweetCard({
               <path d="M8.52 3.59a4.49 4.49 0 016.96 0l.42.49.63-.07a4.49 4.49 0 014.91 4.91l-.07.63.49.42a4.49 4.49 0 010 6.96l-.49.42.07.63a4.49 4.49 0 01-4.91 4.91l-.63-.07-.42.49a4.49 4.49 0 01-6.96 0l-.42-.49-.63.07a4.49 4.49 0 01-4.91-4.91l.07-.63-.49-.42a4.49 4.49 0 010-6.96l.49-.42-.07-.63a4.49 4.49 0 014.91-4.91l.63.07.42-.49zm4.46 10.43l4.25-4.25-1.06-1.06-3.72 3.72-1.72-1.72-1.06 1.06 2.25 2.25.53.53.53-.53z" />
             </svg>
           </div>
-          <div style={{ color: '#71767b', fontSize: '15px', lineHeight: '20px' }}>
+          <div style={{ color: '#71767b', fontSize: '14px', lineHeight: '20px' }}>
             {tweet.handle} · {tweet.date}
           </div>
         </div>
-        {/* X logo - small */}
+
+        {/* X logo */}
         <svg
           style={{ width: '20px', height: '20px', color: '#e7e9ea', flexShrink: 0, marginTop: '2px' }}
           viewBox="0 0 24 24"
@@ -152,24 +177,33 @@ export default function TweetCard({
         </svg>
       </div>
 
-      {/* Tweet text */}
-      <div style={{ color: '#e7e9ea', fontSize: '17px', lineHeight: '24px', marginBottom: '16px', wordBreak: 'break-word' }}>
+      {/* Tweet body */}
+      <div
+        style={{
+          color: '#e7e9ea',
+          fontSize: '17px',
+          lineHeight: '26px',
+          marginBottom: '16px',
+          wordBreak: 'break-word',
+        }}
+      >
         {parts.map((part, i) => {
           const isBlank = i === 1 && idx !== -1;
           if (!isBlank) return <span key={i}>{part}</span>;
 
+          // After incorrect: reveal the correct answer
           if (feedback === 'incorrect') {
             return (
               <span
                 key={i}
                 style={{
                   display: 'inline',
-                  background: 'rgba(34, 197, 94, 0.15)',
+                  background: 'rgba(34, 197, 94, 0.12)',
                   color: '#4ade80',
                   borderBottom: '2px solid #22c55e',
-                  padding: '0 4px',
-                  fontWeight: 600,
-                  borderRadius: '2px',
+                  padding: '0 3px',
+                  fontWeight: 700,
+                  borderRadius: '3px',
                 }}
               >
                 {tweet.blank_word}
@@ -177,35 +211,66 @@ export default function TweetCard({
             );
           }
 
-          const inputBg = feedback === 'correct' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(29, 155, 240, 0.08)';
-          const inputBorder = feedback === 'correct' ? '#22c55e' : '#1d9bf0';
+          // Correct: show the guessed word highlighted
+          if (feedback === 'correct') {
+            return (
+              <input
+                key={i}
+                ref={inputRef}
+                type="text"
+                value={tweet.blank_word}
+                readOnly
+                style={{
+                  display: 'inline',
+                  width: `${inputWidth}px`,
+                  background: 'rgba(34, 197, 94, 0.12)',
+                  border: 'none',
+                  borderBottom: '2px solid #22c55e',
+                  color: '#4ade80',
+                  fontSize: '17px',
+                  lineHeight: '26px',
+                  padding: '0 3px',
+                  outline: 'none',
+                  borderRadius: 0,
+                  fontFamily: 'inherit',
+                  fontWeight: 700,
+                  verticalAlign: 'baseline',
+                  caretColor: 'transparent',
+                }}
+              />
+            );
+          }
 
+          // Waiting for guess: blinking underline cursor effect
           return (
             <input
               key={i}
               ref={inputRef}
               type="text"
-              value={feedback === 'correct' ? tweet.blank_word : guess}
+              value={guess}
               onChange={(e) => onGuessChange(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={disabled}
               style={{
                 display: 'inline',
                 width: `${inputWidth}px`,
-                background: inputBg,
+                background: guess ? 'rgba(29, 155, 240, 0.08)' : 'transparent',
                 border: 'none',
-                borderBottom: `2px solid ${inputBorder}`,
-                color: feedback === 'correct' ? '#4ade80' : '#e7e9ea',
+                borderBottom: '2px solid',
+                color: '#e7e9ea',
                 fontSize: '17px',
-                lineHeight: '24px',
-                padding: '0 4px',
+                lineHeight: '26px',
+                padding: '0 3px',
                 outline: 'none',
                 borderRadius: 0,
                 fontFamily: 'inherit',
-                fontWeight: feedback === 'correct' ? 600 : 400,
+                fontWeight: 400,
                 verticalAlign: 'baseline',
+                // Blink animation on the border-bottom when empty/idle
+                animation: guess ? 'none' : 'inputCursorBlink 1.2s ease-in-out infinite',
+                transition: 'background 0.2s',
               }}
-              placeholder={'·'.repeat(Math.min(tweet.blank_word.length, 10))}
+              placeholder={'·'.repeat(Math.min(tweet.blank_word.length, 12))}
               spellCheck={false}
               autoComplete="off"
               autoCorrect="off"
@@ -215,8 +280,18 @@ export default function TweetCard({
         })}
       </div>
 
-      {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: '#71767b', fontSize: '13px', paddingTop: '12px', borderTop: '1px solid #2f3336' }}>
+      {/* Footer: likes / retweets */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '20px',
+          color: '#71767b',
+          fontSize: '13px',
+          paddingTop: '12px',
+          borderTop: '1px solid #2f3336',
+        }}
+      >
         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

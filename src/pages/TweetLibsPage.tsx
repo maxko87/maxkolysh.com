@@ -6,22 +6,37 @@ import Confetti from '../components/tweetlibs/Confetti';
 
 const ROUND_SIZE = 10;
 
+const C = {
+  bg: '#000000',
+  card: '#16181c',
+  text: '#e7e9ea',
+  secondary: '#71767b',
+  blue: '#1d9bf0',
+  border: '#2f3336',
+  green: '#4ade80',
+  red: '#f87171',
+  dim: '#3f4450',
+};
+
 function pickRandom(arr: Tweet[], n: number): Tweet[] {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, n);
 }
 
-function ScoreBar({
-  current,
-  total,
-}: {
-  current: number;
-  total: number;
-}) {
+function ScoreBar({ current, total }: { current: number; total: number }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', fontSize: '14px' }}>
-      <span style={{ color: '#71767b' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '16px',
+        fontSize: '14px',
+        fontFamily: 'inherit',
+      }}
+    >
+      <span style={{ color: C.secondary }}>
         Question{' '}
-        <span style={{ color: '#e7e9ea', fontWeight: 600 }}>
+        <span style={{ color: C.text, fontWeight: 600 }}>
           {current}/{total}
         </span>
       </span>
@@ -34,7 +49,12 @@ function ScoreBar({
               width: '20px',
               borderRadius: '3px',
               transition: 'background-color 0.3s',
-              backgroundColor: i < current - 1 ? '#1d9bf0' : i === current - 1 ? '#1d9bf0' : '#2f3336',
+              backgroundColor:
+                i < current - 1
+                  ? C.blue
+                  : i === current - 1
+                    ? C.blue
+                    : '#2f3336',
               opacity: i === current - 1 ? 0.7 : 1,
             }}
           />
@@ -54,6 +74,8 @@ function EndScreen({
   onPlayAgain: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const [shareHover, setShareHover] = useState(false);
+  const [playHover, setPlayHover] = useState(false);
 
   const shareText = `I got ${score}/${total} on TweetLibs 🧠🐦 maxkolysh.com/tweetlibs`;
 
@@ -63,7 +85,7 @@ function EndScreen({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // fallback: select text
+      // clipboard unavailable
     }
   };
 
@@ -79,32 +101,76 @@ function EndScreen({
           : 'Touch grass, then come back.';
 
   return (
-    <div className="text-center py-6">
-      <div className="text-6xl mb-4">{emoji}</div>
-      <div className="text-4xl font-bold text-white mb-2">
+    <div style={{ textAlign: 'center', padding: '24px 0', fontFamily: 'inherit' }}>
+      <div style={{ fontSize: '64px', marginBottom: '16px', lineHeight: 1 }}>{emoji}</div>
+      <div
+        style={{
+          fontSize: '40px',
+          fontWeight: 700,
+          color: C.text,
+          marginBottom: '8px',
+          letterSpacing: '-0.02em',
+        }}
+      >
         {score}/{total}
       </div>
-      <p className="text-gray-400 text-lg mb-8">{message}</p>
+      <p style={{ color: C.secondary, fontSize: '17px', marginBottom: '32px' }}>{message}</p>
 
-      <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 mb-6 text-left">
-        <p className="text-gray-300 text-sm font-mono">{shareText}</p>
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: `1px solid ${C.border}`,
+          borderRadius: '12px',
+          padding: '16px',
+          marginBottom: '24px',
+          textAlign: 'left',
+        }}
+      >
+        <p style={{ color: '#9ca3af', fontSize: '14px', fontFamily: 'monospace', margin: 0, wordBreak: 'break-word' }}>
+          {shareText}
+        </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px',
+          justifyContent: 'center',
+        }}
+      >
         <button
           onClick={handleShare}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition-colors duration-200"
+          onMouseEnter={() => setShareHover(true)}
+          onMouseLeave={() => setShareHover(false)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '12px 24px',
+            background: shareHover ? '#1a8cd8' : C.blue,
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background 0.15s',
+            fontFamily: 'inherit',
+            minWidth: '160px',
+          }}
         >
           {copied ? (
             <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Copied!
             </>
           ) : (
             <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
               Share result
@@ -113,9 +179,27 @@ function EndScreen({
         </button>
         <button
           onClick={onPlayAgain}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-xl transition-colors duration-200"
+          onMouseEnter={() => setPlayHover(true)}
+          onMouseLeave={() => setPlayHover(false)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '12px 24px',
+            background: playHover ? '#374151' : '#1f2937',
+            color: C.text,
+            border: `1px solid ${C.border}`,
+            borderRadius: '12px',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background 0.15s',
+            fontFamily: 'inherit',
+            minWidth: '160px',
+          }}
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           Play again
@@ -137,6 +221,7 @@ export default function TweetLibsPage() {
   const [gameState, setGameState] = useState<'playing' | 'ended'>('playing');
   const [confettiKey, setConfettiKey] = useState(0);
   const [confettiActive, setConfettiActive] = useState(false);
+  const [backHover, setBackHover] = useState(false);
 
   const currentTweet = tweets[currentIndex];
 
@@ -183,28 +268,77 @@ export default function TweetLibsPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#030712', color: '#ffffff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', lineHeight: '1.5' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: C.bg,
+        color: C.text,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        lineHeight: 1.5,
+      }}
+    >
       <Confetti key={confettiKey} active={confettiActive} />
 
-      <div className="max-w-[600px] mx-auto px-4 py-6 sm:py-10">
+      <div
+        style={{
+          maxWidth: '600px',
+          margin: '0 auto',
+          padding: '24px 16px 48px',
+        }}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '24px',
+          }}
+        >
           <Link
             to="/"
-            className="text-gray-400 hover:text-white transition-colors text-sm flex items-center gap-1"
+            onMouseEnter={() => setBackHover(true)}
+            onMouseLeave={() => setBackHover(false)}
+            style={{
+              color: backHover ? C.text : C.secondary,
+              textDecoration: 'none',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              transition: 'color 0.15s',
+              fontFamily: 'inherit',
+            }}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back
           </Link>
-          <div className="text-center">
-            <h1 className="text-xl font-bold text-white tracking-tight">TweetLibs</h1>
-            <p className="text-gray-500 text-xs">guess the missing word</p>
+
+          <div style={{ textAlign: 'center' }}>
+            <h1
+              style={{
+                fontSize: '20px',
+                fontWeight: 700,
+                color: C.text,
+                margin: 0,
+                letterSpacing: '-0.02em',
+                fontFamily: 'inherit',
+              }}
+            >
+              TweetLibs
+            </h1>
+            <p style={{ color: C.dim, fontSize: '12px', margin: '2px 0 0', fontFamily: 'inherit' }}>
+              guess the missing word
+            </p>
           </div>
-          <div className="text-right text-sm">
-            <span className="text-gray-400">Score </span>
-            <span className="text-white font-bold">{score}/{gameState === 'ended' ? ROUND_SIZE : currentIndex + (feedback ? 1 : 0)}</span>
+
+          <div style={{ textAlign: 'right', fontSize: '14px', fontFamily: 'inherit' }}>
+            <span style={{ color: C.secondary }}>Score </span>
+            <span style={{ color: C.text, fontWeight: 700 }}>
+              {score}/{gameState === 'ended' ? ROUND_SIZE : currentIndex + (feedback ? 1 : 0)}
+            </span>
           </div>
         </div>
 
@@ -212,13 +346,10 @@ export default function TweetLibsPage() {
           <EndScreen score={score} total={ROUND_SIZE} onPlayAgain={handlePlayAgain} />
         ) : (
           <>
-            <ScoreBar
-              current={currentIndex + 1}
-              total={ROUND_SIZE}
-            />
+            <ScoreBar current={currentIndex + 1} total={ROUND_SIZE} />
 
-            {/* Tweet card */}
-            <div className="mb-4">
+            {/* Tweet card with fade-in on tweet change */}
+            <div key={currentIndex} style={{ marginBottom: '16px', animation: 'tweetFadeIn 0.3s ease' }}>
               <TweetCard
                 tweet={currentTweet}
                 guess={guess}
@@ -229,7 +360,7 @@ export default function TweetLibsPage() {
               />
             </div>
 
-            {/* Submit / feedback */}
+            {/* Submit + feedback */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <button
                 onClick={handleSubmit}
@@ -237,32 +368,42 @@ export default function TweetLibsPage() {
                 style={{
                   flex: 1,
                   padding: '12px 24px',
-                  background: (feedback !== null || !guess.trim()) ? '#1e2028' : '#1d9bf0',
-                  color: (feedback !== null || !guess.trim()) ? '#555' : '#ffffff',
-                  border: 'none',
-                  borderRadius: '12px',
+                  background:
+                    feedback !== null || !guess.trim() ? '#1a1d21' : C.blue,
+                  color:
+                    feedback !== null || !guess.trim() ? '#555b65' : '#ffffff',
+                  border: `1px solid ${feedback !== null || !guess.trim() ? '#2f3336' : C.blue}`,
+                  borderRadius: '24px',
                   fontSize: '15px',
-                  fontWeight: 600,
-                  cursor: (feedback !== null || !guess.trim()) ? 'not-allowed' : 'pointer',
-                  transition: 'background 0.2s',
+                  fontWeight: 700,
+                  cursor: feedback !== null || !guess.trim() ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s, color 0.2s',
                   fontFamily: 'inherit',
                 }}
               >
                 Submit
               </button>
               {feedback === 'correct' && (
-                <span style={{ color: '#4ade80', fontWeight: 600, fontSize: '14px' }}>
+                <span style={{ color: C.green, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
                   ✓ Correct!
                 </span>
               )}
               {feedback === 'incorrect' && (
-                <span style={{ color: '#f87171', fontWeight: 600, fontSize: '14px' }}>
+                <span style={{ color: C.red, fontWeight: 700, fontSize: '15px', whiteSpace: 'nowrap' }}>
                   ✗ Nope
                 </span>
               )}
             </div>
 
-            <p style={{ color: '#3f4450', fontSize: '12px', textAlign: 'center', marginTop: '12px' }}>
+            <p
+              style={{
+                color: C.dim,
+                fontSize: '12px',
+                textAlign: 'center',
+                marginTop: '10px',
+                fontFamily: 'inherit',
+              }}
+            >
               Press Enter to submit
             </p>
           </>
