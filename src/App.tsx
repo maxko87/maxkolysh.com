@@ -4,6 +4,7 @@ import CalculatorPage from './pages/CalculatorPage';
 import VCsHateRecruitingPage from './pages/blog/VCsHateRecruitingPage';
 import RequestIntrosPage from './pages/blog/RequestIntrosPage';
 import LearnedLeaguePage from './pages/blog/LearnedLeaguePage';
+import TweetLibsPage from './pages/TweetLibsPage';
 
 // Redirect component that preserves search params and hash state
 function RedirectWithHash({ to }: { to: string }) {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/why-vcs-hate-recruiting-startups" element={<VCsHateRecruitingPage />} />
         <Route path="/how-to-request-intros" element={<RequestIntrosPage />} />
         <Route path="/learn" element={<LearnedLeaguePage />} />
+        <Route path="/tweetlibs" element={<TweetLibsPage />} />
       </Routes>
     </BrowserRouter>
   );
