@@ -39,19 +39,19 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-// Deterministic avatar color based on author name
 const AVATAR_COLORS = [
-  'from-purple-500 to-blue-500',
-  'from-pink-500 to-orange-400',
-  'from-green-500 to-teal-400',
-  'from-blue-500 to-cyan-400',
-  'from-orange-500 to-yellow-400',
-  'from-red-500 to-pink-500',
+  ['#a855f7', '#3b82f6'],
+  ['#ec4899', '#fb923c'],
+  ['#22c55e', '#2dd4bf'],
+  ['#3b82f6', '#06b6d4'],
+  ['#f97316', '#facc15'],
+  ['#ef4444', '#ec4899'],
 ];
 
-function avatarColor(name: string) {
+function avatarGradient(name: string) {
   const idx = name.charCodeAt(0) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[idx];
+  const [from, to] = AVATAR_COLORS[idx];
+  return `linear-gradient(135deg, ${from}, ${to})`;
 }
 
 export default function TweetCard({
@@ -76,56 +76,69 @@ export default function TweetCard({
     }
   };
 
-  // Split tweet text around the blank word (first occurrence, word-boundary aware)
   const regex = new RegExp(`(${escapeRegex(tweet.blank_word)})`, 'i');
   const parts = tweet.text.split(regex);
-  const inputWidth = Math.max(80, tweet.blank_word.length * 11 + 24);
+  const inputWidth = Math.max(90, tweet.blank_word.length * 12 + 28);
 
-  const cardBorder =
+  const borderColor =
     feedback === 'correct'
-      ? 'border-green-500 shadow-lg shadow-green-900/20'
+      ? '#22c55e'
       : feedback === 'incorrect'
-        ? 'border-red-500 shadow-lg shadow-red-900/20'
-        : 'border-gray-700 hover:border-gray-600';
+        ? '#ef4444'
+        : '#2f3336';
 
-  const inputClasses =
-    feedback === 'correct'
-      ? 'bg-green-900/60 border-green-400 text-green-300'
-      : 'bg-gray-800 border-gray-500 text-white focus:border-blue-400';
+  const cardStyle: React.CSSProperties = {
+    background: '#16181c',
+    border: `1px solid ${borderColor}`,
+    borderRadius: '16px',
+    padding: '16px',
+    transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+    boxShadow: feedback === 'correct' ? '0 0 20px rgba(34, 197, 94, 0.15)' : feedback === 'incorrect' ? '0 0 20px rgba(239, 68, 68, 0.15)' : 'none',
+  };
 
   return (
-    <div
-      className={`rounded-2xl border bg-gray-900 p-5 transition-all duration-300 ${cardBorder}`}
-    >
+    <div style={cardStyle}>
       {/* Header */}
-      <div className="flex items-start gap-3 mb-3">
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
         <div
-          className={`w-11 h-11 rounded-full bg-gradient-to-br ${avatarColor(tweet.author)} flex items-center justify-center text-white font-bold text-sm flex-shrink-0 select-none`}
+          style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: avatarGradient(tweet.author),
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 700,
+            fontSize: '14px',
+            flexShrink: 0,
+            userSelect: 'none',
+          }}
         >
           {getInitials(tweet.author)}
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="font-bold text-white text-[15px] leading-tight">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+            <span style={{ fontWeight: 700, color: '#e7e9ea', fontSize: '15px', lineHeight: '20px' }}>
               {tweet.author}
             </span>
             {/* Verified badge */}
             <svg
-              className="w-[18px] h-[18px] text-blue-400 flex-shrink-0"
+              style={{ width: '18px', height: '18px', color: '#1d9bf0', flexShrink: 0 }}
               viewBox="0 0 24 24"
               fill="currentColor"
-              aria-label="Verified"
             >
               <path d="M8.52 3.59a4.49 4.49 0 016.96 0l.42.49.63-.07a4.49 4.49 0 014.91 4.91l-.07.63.49.42a4.49 4.49 0 010 6.96l-.49.42.07.63a4.49 4.49 0 01-4.91 4.91l-.63-.07-.42.49a4.49 4.49 0 01-6.96 0l-.42-.49-.63.07a4.49 4.49 0 01-4.91-4.91l.07-.63-.49-.42a4.49 4.49 0 010-6.96l.49-.42-.07-.63a4.49 4.49 0 014.91-4.91l.63.07.42-.49zm4.46 10.43l4.25-4.25-1.06-1.06-3.72 3.72-1.72-1.72-1.06 1.06 2.25 2.25.53.53.53-.53z" />
             </svg>
           </div>
-          <div className="text-gray-400 text-sm leading-tight">
+          <div style={{ color: '#71767b', fontSize: '15px', lineHeight: '20px' }}>
             {tweet.handle} · {tweet.date}
           </div>
         </div>
-        {/* X logo */}
+        {/* X logo - small */}
         <svg
-          className="w-5 h-5 text-white flex-shrink-0 mt-0.5"
+          style={{ width: '20px', height: '20px', color: '#e7e9ea', flexShrink: 0, marginTop: '2px' }}
           viewBox="0 0 24 24"
           fill="currentColor"
         >
@@ -133,8 +146,8 @@ export default function TweetCard({
         </svg>
       </div>
 
-      {/* Tweet text with inline input */}
-      <p className="text-white text-[17px] leading-relaxed mb-4 font-normal break-words">
+      {/* Tweet text */}
+      <div style={{ color: '#e7e9ea', fontSize: '17px', lineHeight: '24px', marginBottom: '16px', wordBreak: 'break-word' }}>
         {parts.map((part, i) => {
           const isBlank = part.toLowerCase() === tweet.blank_word.toLowerCase();
           if (!isBlank) return <span key={i}>{part}</span>;
@@ -143,12 +156,23 @@ export default function TweetCard({
             return (
               <span
                 key={i}
-                className="inline-block bg-green-900/50 text-green-300 border-b-2 border-green-400 px-1 rounded-sm font-semibold"
+                style={{
+                  display: 'inline',
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  color: '#4ade80',
+                  borderBottom: '2px solid #22c55e',
+                  padding: '0 4px',
+                  fontWeight: 600,
+                  borderRadius: '2px',
+                }}
               >
                 {tweet.blank_word}
               </span>
             );
           }
+
+          const inputBg = feedback === 'correct' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(29, 155, 240, 0.08)';
+          const inputBorder = feedback === 'correct' ? '#22c55e' : '#1d9bf0';
 
           return (
             <input
@@ -159,9 +183,23 @@ export default function TweetCard({
               onChange={(e) => onGuessChange(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={disabled}
-              style={{ width: `${inputWidth}px` }}
-              className={`inline border-0 border-b-2 ${inputClasses} px-1 py-0 text-[17px] leading-relaxed focus:outline-none rounded-none transition-colors duration-200 bg-transparent`}
-              placeholder={'_'.repeat(Math.min(tweet.blank_word.length, 8))}
+              style={{
+                display: 'inline',
+                width: `${inputWidth}px`,
+                background: inputBg,
+                border: 'none',
+                borderBottom: `2px solid ${inputBorder}`,
+                color: feedback === 'correct' ? '#4ade80' : '#e7e9ea',
+                fontSize: '17px',
+                lineHeight: '24px',
+                padding: '0 4px',
+                outline: 'none',
+                borderRadius: 0,
+                fontFamily: 'inherit',
+                fontWeight: feedback === 'correct' ? 600 : 400,
+                verticalAlign: 'baseline',
+              }}
+              placeholder={'·'.repeat(Math.min(tweet.blank_word.length, 10))}
               spellCheck={false}
               autoComplete="off"
               autoCorrect="off"
@@ -169,42 +207,22 @@ export default function TweetCard({
             />
           );
         })}
-      </p>
+      </div>
 
       {/* Footer */}
-      <div className="flex items-center gap-6 text-gray-500 text-sm pt-3 border-t border-gray-800">
-        <button className="flex items-center gap-1.5 hover:text-pink-400 transition-colors group">
-          <svg
-            className="w-[18px] h-[18px] group-hover:scale-110 transition-transform"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', color: '#71767b', fontSize: '13px', paddingTop: '12px', borderTop: '1px solid #2f3336' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
-          <span>{formatCount(tweet.likes)}</span>
-        </button>
-        <button className="flex items-center gap-1.5 hover:text-green-400 transition-colors group">
-          <svg
-            className="w-[18px] h-[18px] group-hover:scale-110 transition-transform"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
+          {formatCount(tweet.likes)}
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          <span>{formatCount(tweet.retweets)}</span>
-        </button>
+          {formatCount(tweet.retweets)}
+        </span>
       </div>
     </div>
   );

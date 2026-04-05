@@ -191,7 +191,7 @@ export default function TweetLibsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen" style={{ backgroundColor: '#030712', color: '#ffffff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', lineHeight: '1.5' }}>
       <Confetti key={confettiKey} active={confettiActive} />
 
       <div className="max-w-[600px] mx-auto px-4 py-6 sm:py-10">
@@ -239,27 +239,39 @@ export default function TweetLibsPage() {
             </div>
 
             {/* Submit / feedback */}
-            <div className="flex items-center gap-3">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <button
                 onClick={handleSubmit}
                 disabled={feedback !== null || !guess.trim()}
-                className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors duration-200"
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  background: (feedback !== null || !guess.trim()) ? '#1e2028' : '#1d9bf0',
+                  color: (feedback !== null || !guess.trim()) ? '#555' : '#ffffff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  cursor: (feedback !== null || !guess.trim()) ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s',
+                  fontFamily: 'inherit',
+                }}
               >
                 Submit
               </button>
               {feedback === 'correct' && (
-                <span className="text-green-400 font-semibold text-sm animate-pulse">
+                <span style={{ color: '#4ade80', fontWeight: 600, fontSize: '14px' }}>
                   ✓ Correct!
                 </span>
               )}
               {feedback === 'incorrect' && (
-                <span className="text-red-400 font-semibold text-sm">
+                <span style={{ color: '#f87171', fontWeight: 600, fontSize: '14px' }}>
                   ✗ Nope
                 </span>
               )}
             </div>
 
-            <p className="text-gray-600 text-xs text-center mt-3">
+            <p style={{ color: '#3f4450', fontSize: '12px', textAlign: 'center', marginTop: '12px' }}>
               Press Enter to submit
             </p>
           </>
