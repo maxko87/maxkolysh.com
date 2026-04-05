@@ -84,7 +84,7 @@ export default function TweetCard({
       tweet.text.slice(idx + tweet.blank_word.length),
     ];
   }
-  const inputWidth = Math.max(80, tweet.blank_word.length * 11 + 24);
+  const inputWidth = 140;
 
   const borderColor =
     feedback === 'correct'
@@ -270,7 +270,7 @@ export default function TweetCard({
                 animation: guess ? 'none' : 'inputCursorBlink 1.2s ease-in-out infinite',
                 transition: 'background 0.2s',
               }}
-              placeholder={'·'.repeat(Math.min(tweet.blank_word.length, 12))}
+              placeholder="______"
               spellCheck={false}
               autoComplete="off"
               autoCorrect="off"
