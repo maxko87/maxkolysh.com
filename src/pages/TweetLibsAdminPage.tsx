@@ -29,7 +29,7 @@ const C = {
 export default function TweetLibsAdminPage() {
   const [tweets, setTweets] = useState<Tweet[]>(tweetsData as Tweet[]);
   const [filter, setFilter] = useState('');
-  const [deletedIds, setDeletedIds] = useState<Set<number>>(new Set());
+  const [deletedIds] = useState<Set<number>>(new Set());
   const [showDisabled, setShowDisabled] = useState(true);
 
   const filtered = tweets.filter((t) => {
