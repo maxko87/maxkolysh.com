@@ -245,51 +245,42 @@ export default function TweetCard({
             );
           }
 
-          // Waiting for guess: blinking underline cursor effect
+          // Waiting for guess: single underline input
           return (
-            <span key={i} style={{ display: 'inline-block', position: 'relative', verticalAlign: 'baseline' }}>
-              <input
-                ref={inputRef}
-                type="text"
-                value={guess}
-                onChange={(e) => onGuessChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={disabled}
-                style={{
-                  display: 'inline',
-                  width: `${inputWidth}px`,
-                  background: guess ? 'rgba(29, 155, 240, 0.08)' : 'transparent',
-                  border: 'none',
-                  borderBottom: '2px solid #71767b',
-                  color: '#e7e9ea',
-                  fontSize: '17px',
-                  lineHeight: '26px',
-                  padding: '0 3px',
-                  outline: 'none',
-                  borderRadius: 0,
-                  fontFamily: 'inherit',
-                  fontWeight: 400,
-                  verticalAlign: 'baseline',
-                  transition: 'background 0.2s',
-                }}
-                placeholder="______"
-                spellCheck={false}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="off"
-              />
-              {/* Second underline — blue, flashing, slightly wider */}
-              <span style={{
-                position: 'absolute',
-                bottom: '-4px',
-                left: '-2px',
-                right: '-2px',
-                height: '2px',
-                background: '#1d9bf0',
-                borderRadius: '1px',
-                animation: guess ? 'none' : 'inputCursorBlink 1.2s ease-in-out infinite',
-              }} />
-            </span>
+            <input
+              key={i}
+              ref={inputRef}
+              type="text"
+              inputMode="text"
+              enterKeyHint="done"
+              value={guess}
+              onChange={(e) => onGuessChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={disabled}
+              style={{
+                display: 'inline',
+                width: `${inputWidth}px`,
+                background: guess ? 'rgba(29, 155, 240, 0.08)' : 'transparent',
+                border: 'none',
+                borderBottom: '2px solid #1d9bf0',
+                color: '#e7e9ea',
+                fontSize: '17px',
+                lineHeight: '26px',
+                padding: '0 3px',
+                outline: 'none',
+                borderRadius: 0,
+                fontFamily: 'inherit',
+                fontWeight: 400,
+                verticalAlign: 'baseline',
+                transition: 'background 0.2s, border-color 0.2s',
+              }}
+              placeholder=""
+              spellCheck={false}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              autoFocus
+            />
           );
         })}
       </div>
