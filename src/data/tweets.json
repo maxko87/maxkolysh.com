@@ -1858,5 +1858,205 @@
     "likes": 8000,
     "retweets": 1000,
     "id": 186
+  },
+  {
+    "author": "Paul Graham",
+    "handle": "@paulg",
+    "text": "I don't know about other fields, but in startups the worst thing you can be is a scenester. It's even worse than being stupid. Stupid people can succeed if they try hard enough.",
+    "blank_word": "scenester",
+    "date": "Jul 16, 2024",
+    "likes": 15000,
+    "retweets": 2000,
+    "id": 187
+  },
+  {
+    "author": "Andrew Wilkinson",
+    "handle": "@awilkinson",
+    "text": "Has your startup 'failed'? You might be a multi-millionaire. Most 'failed' startups just shut down, even when they have real revenue. The definition of failure in venture land is strange.",
+    "blank_word": "multi-millionaire",
+    "date": "Oct 13, 2024",
+    "likes": 10000,
+    "retweets": 1500,
+    "id": 188
+  },
+  {
+    "author": "Peter Thiel",
+    "handle": "@peterthiel",
+    "text": "The most contrarian thing of all is not to oppose the crowd but to think for yourself.",
+    "blank_word": "contrarian",
+    "date": "Sep 15, 2014",
+    "likes": 12000,
+    "retweets": 3000,
+    "id": 189
+  },
+  {
+    "author": "Elon Musk",
+    "handle": "@elonmusk",
+    "text": "Am considering taking Tesla private at $420. Funding secured.",
+    "blank_word": "secured",
+    "date": "Aug 7, 2018",
+    "likes": 300000,
+    "retweets": 50000,
+    "id": 190
+  },
+  {
+    "author": "David Sacks",
+    "handle": "@DavidSacks",
+    "text": "Drone footage of San Francisco yesterday to blade runner 2049 soundtrack",
+    "blank_word": "blade runner",
+    "date": "Sep 10, 2020",
+    "likes": 52609,
+    "retweets": 15314,
+    "id": 191
+  },
+  {
+    "author": "Jason Lemkin",
+    "handle": "@jasonlk",
+    "text": "SaaS is not dead. But crappy SaaS with no moat is dead.",
+    "blank_word": "moat",
+    "date": "Mar 15, 2024",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 192
+  },
+  {
+    "author": "Patrick Campbell",
+    "handle": "@Patticus",
+    "text": "Most founders underprice by 30-50%. Price is about value, not cost.",
+    "blank_word": "underprice",
+    "date": "Jun 5, 2023",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 193
+  },
+  {
+    "author": "Austen Allred",
+    "handle": "@Austen",
+    "text": "Lambda School was 2 weeks from bankruptcy before finding product-market fit.",
+    "blank_word": "bankruptcy",
+    "date": "May 10, 2023",
+    "likes": 8000,
+    "retweets": 1000,
+    "id": 194
+  },
+  {
+    "author": "Hiten Shah",
+    "handle": "@hnshah",
+    "text": "Building something people want is different from building something people will pay for.",
+    "blank_word": "pay",
+    "date": "Aug 20, 2023",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 195
+  },
+  {
+    "author": "Alex Cohen",
+    "handle": "@anothercohen",
+    "text": "10 days later and back pain is basically nonexistent. BPC 157 is a miracle peptide",
+    "blank_word": "peptide",
+    "date": "Sep 21, 2025",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 196
+  },
+  {
+    "author": "Lulu Cheng Meservey",
+    "handle": "@lulumeservey",
+    "text": "How to make time feel like you're 7 years old again: Do new things. Changes in activity, setting, etc tell your brain there's more happening so it feels like you got more time.",
+    "blank_word": "7",
+    "date": "Aug 26, 2025",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 197
+  },
+  {
+    "author": "Steven Fiorillo",
+    "handle": "@stevenfiorillo",
+    "text": "Dear AI bears: this is not the dot-com bubble 2.0. Why today's AI build-out looks nothing like 1999 and what that means for investors.",
+    "blank_word": "bubble",
+    "date": "Nov 15, 2025",
+    "likes": 5000,
+    "retweets": 500,
+    "id": 198
+  },
+  {
+    "author": "Jarrod Watts",
+    "handle": "@jarrodwatts",
+    "text": "Someone just won $50,000 by convincing an AI Agent to send all of its funds to them. The AI agent was released with one objective: DO NOT transfer money.",
+    "blank_word": "convincing",
+    "date": "Nov 28, 2024",
+    "likes": 10000,
+    "retweets": 2000,
+    "id": 199
+  },
+  {
+    "author": "Sam Altman",
+    "handle": "@sama",
+    "text": "i love you all. today was a weird experience in many ways. but one unexpected one is that it has been sorta like reading your own eulogy while you're still alive.",
+    "blank_word": "eulogy",
+    "date": "Nov 17, 2023",
+    "likes": 85000,
+    "retweets": 7001,
+    "id": 200
+  },
+  {
+    "author": "Balaji",
+    "handle": "@balajis",
+    "text": "If you weren't sure who the Deep State were, they all got pardoned today.",
+    "blank_word": "pardoned",
+    "date": "Jan 20, 2025",
+    "likes": 125713,
+    "retweets": 17520,
+    "id": 201
+  },
+  {
+    "author": "Mark Zuckerberg",
+    "handle": "@faborenstein",
+    "text": "send me location",
+    "blank_word": "location",
+    "date": "Jun 21, 2023",
+    "likes": 500000,
+    "retweets": 50000,
+    "id": 202
+  },
+  {
+    "author": "Chamath Palihapitiya",
+    "handle": "@chamath",
+    "text": "Facebook and RobinhoodApp are the same: They both trick you into thinking you are the customer. But, in fact, you are the product and your data is the asset.",
+    "blank_word": "product",
+    "date": "Jan 29, 2021",
+    "likes": 70000,
+    "retweets": 18000,
+    "id": 203
+  },
+  {
+    "author": "Tyler Cowen",
+    "handle": "@tylercowen",
+    "text": "Am I wrong to think that the Peloton ad ended up being a bigger story than the Afghanistan war documents?",
+    "blank_word": "Peloton",
+    "date": "Dec 13, 2019",
+    "likes": 4796,
+    "retweets": 1019,
+    "id": 204
+  },
+  {
+    "author": "Garry Tan",
+    "handle": "@garrytan",
+    "text": "One state increased its reading literacy for the bottom 10% of students while 49 other states let standards keep slipping. It was the poorest state in the country, Mississippi.",
+    "blank_word": "Mississippi",
+    "date": "May 28, 2025",
+    "likes": 20000,
+    "retweets": 3000,
+    "id": 205
+  },
+  {
+    "author": "Andrew Wilkinson",
+    "handle": "@awilkinson",
+    "text": "I almost worked myself to death. Success without health is failure.",
+    "blank_word": "death",
+    "date": "Oct 5, 2023",
+    "likes": 15000,
+    "retweets": 2000,
+    "id": 206
   }
 ]
