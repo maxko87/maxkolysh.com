@@ -251,48 +251,45 @@ export default function TweetCard({
             );
           }
 
-          // Waiting for guess: single underline input
+          // Waiting for guess: simple underlined span with input
           return (
-            <input
+            <span
               key={i}
-              ref={inputRef}
-              type="text"
-              inputMode="text"
-              enterKeyHint="done"
-              value={guess}
-              onChange={(e) => onGuessChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={disabled}
               style={{
-                display: 'inline',
-                width: `${inputWidth}px`,
-                background: guess ? 'rgba(29, 155, 240, 0.08)' : 'transparent',
-                border: 'none',
-                borderTop: 'none',
-                borderLeft: 'none',
-                borderRight: 'none',
+                display: 'inline-block',
                 borderBottom: '2px solid #1d9bf0',
-                color: '#e7e9ea',
-                fontSize: '17px',
-                lineHeight: '26px',
-                padding: '0 3px',
-                outline: 'none',
-                borderRadius: 0,
-                fontFamily: 'inherit',
-                fontWeight: 400,
-                verticalAlign: 'baseline',
-                textDecoration: 'none',
-                boxShadow: 'none',
-                WebkitAppearance: 'none' as const,
-                transition: 'background 0.2s, border-color 0.2s',
+                minWidth: '120px',
               }}
-              placeholder=""
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              autoFocus
-            />
+            >
+              <input
+                ref={inputRef}
+                type="text"
+                inputMode="text"
+                enterKeyHint="done"
+                value={guess}
+                onChange={(e) => onGuessChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={disabled}
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#e7e9ea',
+                  fontSize: '17px',
+                  lineHeight: '24px',
+                  padding: 0,
+                  margin: 0,
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                }}
+                placeholder=""
+                spellCheck={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                autoFocus
+              />
+            </span>
           );
         })}
       </div>
