@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import allTweetsData from '../data/tweets.json';
 
@@ -259,9 +259,20 @@ export default function TweetLibsPage() {
   }, [feedback, currentIndex]);
 
   // Global Enter key to advance when showing feedback
+  // Use a ref to skip the Enter that triggered submit (same keypress)
+  const feedbackJustSet = useRef(false);
+  useEffect(() => {
+    if (feedback !== null) {
+      feedbackJustSet.current = true;
+      // Reset after a tick so the next Enter works
+      const t = setTimeout(() => { feedbackJustSet.current = false; }, 100);
+      return () => clearTimeout(t);
+    }
+  }, [feedback]);
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && feedback !== null) {
+      if (e.key === 'Enter' && feedback !== null && !feedbackJustSet.current) {
         handleNext();
       }
     };
