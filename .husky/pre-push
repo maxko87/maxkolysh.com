@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "🔍 Running tsc before push..."
+npx tsc

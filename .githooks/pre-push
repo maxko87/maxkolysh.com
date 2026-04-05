@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "🔍 Running tsc before push..."
+npx tsc || { echo "❌ tsc failed — fix errors before pushing"; exit 1; }
+echo "✅ tsc passed"
