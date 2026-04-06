@@ -215,7 +215,7 @@ export default function TweetLibsPage() {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [_streak, setStreak] = useState(0);
+
   const [guess, setGuess] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [gameState, setGameState] = useState<'playing' | 'ended'>('playing');
@@ -247,7 +247,6 @@ export default function TweetLibsPage() {
     if (feedback !== null) return;
     setFeedback('incorrect');
     canAdvance.current = false;
-    setStreak(0);
   }, [feedback]);
 
   const handleSubmit = useCallback(() => {
@@ -267,11 +266,9 @@ export default function TweetLibsPage() {
 
     if (isCorrect) {
       setScore((s) => s + 1);
-      setStreak((s) => s + 1);
       setConfettiKey((k) => k + 1);
       setConfettiActive(true);
     } else {
-      setStreak(0);
     }
   }, [feedback, guess, currentTweet]);
 
@@ -323,7 +320,6 @@ export default function TweetLibsPage() {
     setTweets(pickRandom(allTweets, ROUND_SIZE));
     setCurrentIndex(0);
     setScore(0);
-    setStreak(0);
     setGuess('');
     setFeedback(null);
     setGameState('playing');

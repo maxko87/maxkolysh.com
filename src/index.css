@@ -1082,8 +1082,5 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes inputCursorBlink {
-  0%, 100% { border-bottom-color: #1d9bf0; }
-  50%       { border-bottom-color: rgba(29, 155, 240, 0.15); }
-}
+
 
