@@ -20,21 +20,13 @@ function StartupNamesPage() {
 
         <p>
           <em>
-            [This essay was also hard for me to find online &mdash; it got deleted from the internet at some point. I pulled it from the{' '}
-            <a href="https://web.archive.org/web/20120806163542/aux.messymatters.com/pgnames.html" target="_blank" rel="noopener noreferrer">Wayback Machine</a>{' '}
-            (<a href="https://web.archive.org/web/20120806163542id_/http://aux.messymatters.com:80/pgnames.html" target="_blank" rel="noopener noreferrer">original</a>)
-            and put it here so it doesn&rsquo;t disappear again. &mdash;max]
-          </em>
-        </p>
-
-        <p>
-          <em>
-            [This was originally published on the now-defunct Infogami and was surprisingly hard to find online, so I put it here.
-            I&rsquo;ve added commentary, with our now internet-decades of hindsight, in brackets.
-            I&rsquo;ve also summarized the names mentioned (and alluded to) along 7 dimensions:
+            Paul Graham originally published this on Infogami in 2006. It was later annotated by{' '}
+            <a href="https://web.archive.org/web/20120806163542/aux.messymatters.com/pgnames.html" target="_blank" rel="noopener noreferrer">dreeves</a>,
+            who added bracketed commentary and the nominology charts rating each name on
             Evocativity, Brevity, Greppability, Googlability, Pronounceability, Spellability, and Verbability.
-            These are discussed in my own article, &ldquo;Nominology&rdquo;.
-            &mdash;dreeves]
+            Both versions eventually disappeared from the internet. I pulled this from the{' '}
+            <a href="https://web.archive.org/web/20120806163542id_/http://aux.messymatters.com:80/pgnames.html" target="_blank" rel="noopener noreferrer">Wayback Machine</a>{' '}
+            so it doesn&rsquo;t vanish again. &mdash;max
           </em>
         </p>
 
