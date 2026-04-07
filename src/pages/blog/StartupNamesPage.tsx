@@ -1,13 +1,9 @@
 import { Link } from 'react-router-dom';
 
-const NOM_LINK = "http://messymatters.com/nominology";
-
 function NomImage({ name, title }: { name: string; title?: string }) {
   return (
     <div style={{ textAlign: 'center', margin: '1.5em 0' }} title={title || ''}>
-      <a href={NOM_LINK} target="_blank" rel="noopener noreferrer">
-        <img src={`/images/nominology/nomin_${name}.png`} alt={`Nominology chart for ${name}`} />
-      </a>
+      <img src={`/images/nominology/nomin_${name}.png`} alt={`Nominology chart for ${name}`} />
     </div>
   );
 }
@@ -24,11 +20,20 @@ function StartupNamesPage() {
 
         <p>
           <em>
+            [This essay was also hard for me to find online &mdash; it got deleted from the internet at some point. I pulled it from the{' '}
+            <a href="https://web.archive.org/web/20120806163542/aux.messymatters.com/pgnames.html" target="_blank" rel="noopener noreferrer">Wayback Machine</a>{' '}
+            (<a href="https://web.archive.org/web/20120806163542id_/http://aux.messymatters.com:80/pgnames.html" target="_blank" rel="noopener noreferrer">original</a>)
+            and put it here so it doesn&rsquo;t disappear again. &mdash;max]
+          </em>
+        </p>
+
+        <p>
+          <em>
             [This was originally published on the now-defunct Infogami and was surprisingly hard to find online, so I put it here.
             I&rsquo;ve added commentary, with our now internet-decades of hindsight, in brackets.
             I&rsquo;ve also summarized the names mentioned (and alluded to) along 7 dimensions:
             Evocativity, Brevity, Greppability, Googlability, Pronounceability, Spellability, and Verbability.
-            These are discussed in my own article, &ldquo;<a href={NOM_LINK} target="_blank" rel="noopener noreferrer">Nominology</a>&rdquo;.
+            These are discussed in my own article, &ldquo;Nominology&rdquo;.
             &mdash;dreeves]
           </em>
         </p>
