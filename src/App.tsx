@@ -4,6 +4,7 @@ import CalculatorPage from './pages/CalculatorPage';
 import VCsHateRecruitingPage from './pages/blog/VCsHateRecruitingPage';
 import RequestIntrosPage from './pages/blog/RequestIntrosPage';
 import LearnedLeaguePage from './pages/blog/LearnedLeaguePage';
+import StartupNamesPage from './pages/blog/StartupNamesPage';
 import TweetLibsAdminPage from './pages/TweetLibsAdminPage';
 import TweetLibsPage from './pages/TweetLibsPage';
 
@@ -25,6 +26,7 @@ function App() {
         <Route path="/why-vcs-hate-recruiting-startups" element={<VCsHateRecruitingPage />} />
         <Route path="/how-to-request-intros" element={<RequestIntrosPage />} />
         <Route path="/learn" element={<LearnedLeaguePage />} />
+        <Route path="/startup-names" element={<StartupNamesPage />} />
         <Route path="/tweetlibs" element={<TweetLibsPage />} />
         <Route path="/tweetlibs/admin" element={<TweetLibsAdminPage />} />
       </Routes>

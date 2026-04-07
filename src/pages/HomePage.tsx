@@ -41,6 +41,13 @@ function HomePage() {
         </section>
 
         <section>
+          <h2>Resources</h2>
+          <div className="links">
+            <Link to="/startup-names">Startup Names (Paul Graham)</Link>
+          </div>
+        </section>
+
+        <section>
           <h2>Contact</h2>
           <div className="links">
             <a
