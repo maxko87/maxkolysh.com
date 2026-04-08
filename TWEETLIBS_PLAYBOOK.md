@@ -25,12 +25,12 @@ TweetLibs is a madlibs guessing game at maxkolysh.com/tweetlibs. Users see a twe
 
 ### The Blank Word — THIS IS THE HARDEST PART
 
+**Only add tweets rated A or A+. Nothing below.**
+
 **Rating system:**
-- **A+** — Completely unexpected, hilarious when revealed (e.g., "meatball", "raccoon", "TRIANGLE")
-- **A** — Surprising, multiple plausible guesses (e.g., "Barbados", "Kyle", "golf")
-- **B+** — Decent, somewhat guessable but still fun
-- **B** — Playable but experienced players will get it
-- **C or below** — Too obvious, skip it
+- **A+** — Completely unexpected, hilarious when revealed (e.g., "meatball", "raccoon", "TRIANGLE", "carousel", "Sex Rain")
+- **A** — Surprising, multiple plausible guesses (e.g., "Barbados", "Kyle", "golf", "biblical")
+- **B+ or below** — Don't add it. If you're on the fence, skip it. The game is only as good as its worst tweet.
 
 **Good blank words are:**
 - ✅ Proper nouns (specific names, places, brands)
@@ -48,6 +48,13 @@ TweetLibs is a madlibs guessing game at maxkolysh.com/tweetlibs. Users see a twe
 
 ### Quick Smell Test
 Read the tweet with the blank. If you can guess the word in <2 seconds, pick a different word or skip the tweet.
+
+### The 8/10 Rule
+Every tweet you add must be an 8/10 or higher. Ask yourself:
+1. Is the tweet genuinely funny on its own? (not just "heh" but actually good)
+2. Is the blank word a genuine surprise when revealed?
+3. Would you text this tweet to a friend? If not, skip it.
+4. When in doubt, don't add it. 130 great tweets > 200 mid tweets.
 
 ## How to Find New Tweets
 
