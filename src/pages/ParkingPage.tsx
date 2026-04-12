@@ -106,9 +106,11 @@ export default function ParkingPage() {
 
     try {
       const loc = await getLocationWithWake(vehicle.id, 6, setStatusMessage);
+      console.log('[Parking] Vehicle location:', { lat: loc.latitude, lng: loc.longitude, heading: loc.heading, timestamp: loc.timestamp });
       setLocation(loc);
       await loadCleaningSchedule(loc.latitude, loc.longitude);
     } catch (err) {
+      console.error('[Parking] Failed to get vehicle location:', err);
       setError(err instanceof Error ? err.message : 'Failed to get vehicle location');
       setState('error');
     }
@@ -119,17 +121,32 @@ export default function ParkingPage() {
     setStatusMessage('Finding street cleaning schedule...');
 
     try {
+      console.log('[Parking] Fetching neighborhood boundaries...');
       const neighborhoods = await fetchNeighborhoods();
+      console.log('[Parking] Loaded neighborhoods:', neighborhoods.features.length, 'total');
+      
       const neighborhood = findNeighborhood(lat, lng, neighborhoods);
+      console.log('[Parking] Point-in-polygon result for', { lat, lng }, '→ neighborhood:', neighborhood);
 
       if (!neighborhood) {
-        setError('Your car does not appear to be parked in San Francisco. This tool only works within SF city limits.');
+        console.warn('[Parking] No neighborhood found! Listing all neighborhood names for debug:',
+          neighborhoods.features.map((f: any) => f.properties?.name || f.properties?.nhood || f.properties?.neighborhood || JSON.stringify(Object.keys(f.properties || {}))).slice(0, 10));
+        setError(`Your car appears to be at (${lat.toFixed(5)}, ${lng.toFixed(5)}) which is outside SF city limits. This tool only works within SF.`);
         setState('error');
         return;
       }
 
+      console.log('[Parking] Fetching street data for neighborhood:', neighborhood);
       const streetData = await fetchNeighborhoodData(neighborhood);
+      console.log('[Parking] Loaded street segments:', streetData.features.length);
+      
       const nearest = findNearestSegment(lat, lng, streetData);
+      console.log('[Parking] Nearest segment:', nearest ? {
+        street: nearest.feature.properties.Corridor,
+        limits: nearest.feature.properties.Limits,
+        distance: nearest.distance,
+        sides: nearest.sides.map(s => s.label),
+      } : 'NONE FOUND');
 
       if (!nearest) {
         setError('Could not find a nearby street segment with cleaning data.');
@@ -140,6 +157,7 @@ export default function ParkingPage() {
       setResult(nearest);
       setState('results');
     } catch (err) {
+      console.error('[Parking] Schedule loading failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to load cleaning schedule');
       setState('error');
     }
