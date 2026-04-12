@@ -37,7 +37,7 @@ export default function ParkingPage() {
   const [error, setError] = useState<string | null>(null);
   const [vehicles, setVehicles] = useState<TeslaVehicle[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<TeslaVehicle | null>(null);
-  const [location, setLocation] = useState<VehicleLocation | null>(null);
+  const [_location, setLocation] = useState<VehicleLocation | null>(null);
   const [result, setResult] = useState<NearestSegmentResult | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');

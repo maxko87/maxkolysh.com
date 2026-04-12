@@ -1,13 +1,23 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const TESLA_CLIENT_ID = "39a99319-b708-4245-a29f-6907373f37ad";
-const TESLA_CLIENT_SECRET = "ta-secret.2MFoIX!OCjup0Nr5";
-const TESLA_TOKEN_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token";
+const TESLA_CLIENT_SECRET="ta-secret.2MFoIX!OCjup0Nr5";
+const TESLA_TOKEN_URL="https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token";
 const TESLA_AUDIENCE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
+
+const DEFAULT_TELEGRAM_CHAT_ID = "-1003751523166";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "https://maxkolysh.com",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
+
+function decodeJwtPayload(token: string): Record<string, unknown> {
+  const parts = token.split(".");
+  const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+  return JSON.parse(atob(payload));
+}
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -57,15 +67,51 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Log token scopes for debugging
+    // Decode JWT to get tesla_user_id (sub claim)
+    let teslaUserId: string | null = null;
     try {
-      const parts = tokenData.access_token.split('.');
-      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      const payload = decodeJwtPayload(tokenData.access_token);
+      teslaUserId = payload.sub as string;
       console.log("Token scopes:", JSON.stringify(payload.scp));
       console.log("Token audience:", JSON.stringify(payload.aud));
+      console.log("Tesla user ID (sub):", teslaUserId);
     } catch (e) {
-      console.log("Could not decode token");
+      console.log("Could not decode token:", e);
     }
+
+    // Upsert into tesla_users table
+    if (teslaUserId) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+        const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+
+        const { error: upsertError } = await supabase
+          .from("tesla_users")
+          .upsert(
+            {
+              tesla_user_id: teslaUserId,
+              access_token: tokenData.access_token,
+              refresh_token: tokenData.refresh_token,
+              token_expires_at: expiresAt,
+              notify_telegram_chat_id: DEFAULT_TELEGRAM_CHAT_ID,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "tesla_user_id" }
+          );
+
+        if (upsertError) {
+          console.error("Failed to upsert tesla_users:", upsertError);
+        } else {
+          console.log("Successfully upserted tesla_users for:", teslaUserId);
+        }
+      } catch (e) {
+        console.error("Error upserting tesla_users:", e);
+      }
+    }
+
     console.log("Tesla token exchange successful");
 
     return new Response(
