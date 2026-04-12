@@ -455,62 +455,70 @@ Deno.serve(async (req) => {
             const lineCoords = geom.type === "MultiLineString" ? geom.coordinates[0] : geom.coordinates;
             const parkedSide = determineSide(lat, lng, lineCoords, sideKeys);
 
-            // Check cleaning schedules
-            const notifications: string[] = [];
+            // Build informational "new location" notification
+            // Find cleaning info for the parked side
+            let cleaningInfo: { start: string; end: string; calendarLink: string | null } | null = null;
+            let cleaningSideKey: string | null = null;
 
             for (const sideKey of sideKeys) {
+              if (parkedSide && parkedSide !== sideKey) continue;
               const sideData = sidesObj[sideKey];
               if (!sideData) continue;
               const cleaning = getRelevantCleaning(sideData);
-              if (!cleaning) continue;
-
-              const isParkedSide = parkedSide === sideKey;
-              const status = getTimeUntil(cleaning.start);
-              const range = formatCleaningRange(cleaning.start, cleaning.end);
-
-              // Only notify about the side they're parked on, or both if uncertain
-              if (parkedSide && !isParkedSide) continue;
-
-              const urgencyEmoji = status === "NOW" ? "🚨" :
-                status.includes("min") || (status.includes("h") && !status.includes("day")) ? "⚠️" : "📋";
-
-              let msg = `${urgencyEmoji} <b>Street Cleaning Alert</b>\n\n`;
-              msg += `🚗 <b>${vehicle.display_name}</b>\n`;
-              msg += `📍 ${corridor}`;
-              if (limits) msg += ` (${limits})`;
-              msg += `\n`;
-              msg += `↔️ ${sideKey} Side`;
-              if (isParkedSide) msg += ` (your side)`;
-              msg += `\n\n`;
-              msg += `🧹 <b>${range}</b>\n`;
-              msg += `⏰ ${status}\n`;
-
-              if (cleaning.calendarLink) {
-                msg += `\n📅 <a href="${cleaning.calendarLink}">Add to Google Calendar</a>`;
+              if (cleaning) {
+                cleaningInfo = cleaning;
+                cleaningSideKey = sideKey;
+                break;
               }
-
-              notifications.push(msg);
             }
 
-            if (notifications.length > 0) {
-              for (const msg of notifications) {
-                // Send Telegram notification
-                if (user.notify_telegram_chat_id) {
-                  await sendTelegramMessage(user.notify_telegram_chat_id, msg);
-                }
-                // Send email notification via Resend
-                if (user.email) {
-                  const subject = `🚗 Street cleaning alert — ${vehicle.display_name}`;
-                  await sendEmailNotification(user.email, subject, telegramToEmailHtml(msg));
-                }
+            const sideLabel = cleaningSideKey ? `${cleaningSideKey.toLowerCase()} side` : "";
+            const locationDesc = `${corridor}${limits ? ` (${limits})` : ""}${sideLabel ? `, ${sideLabel}` : ""}`;
+
+            // Build Telegram message — informational tone
+            let telegramMsg = `<b>${vehicle.display_name} parked on ${corridor}</b>\n\n`;
+            telegramMsg += `📍 ${locationDesc}\n`;
+            if (cleaningInfo) {
+              const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
+              telegramMsg += `\nNext street cleaning: ${range}\n`;
+              if (cleaningInfo.calendarLink) {
+                telegramMsg += `\n<a href="${cleaningInfo.calendarLink}">Add to Google Calendar</a>`;
               }
-              await supabase.from("tesla_users").update({
-                last_notification_at: new Date().toISOString(),
-              }).eq("id", user.id);
-              results.push(`${vehicle.display_name}: sent ${notifications.length} notification(s)`);
             } else {
-              results.push(`${vehicle.display_name}: parked on ${corridor}, no upcoming cleaning`);
+              telegramMsg += `\nNo upcoming street cleaning found.`;
             }
+
+            // Build email HTML — informational tone
+            const emailSubject = `${vehicle.display_name} parked on ${corridor}`;
+            let emailHtml = `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">`;
+            emailHtml += `<p>Your Tesla is parked on ${locationDesc}.</p>`;
+            if (cleaningInfo) {
+              const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
+              emailHtml += `<p><strong>Next street cleaning:</strong> ${range}</p>`;
+              if (cleaningInfo.calendarLink) {
+                emailHtml += `<p><a href="${cleaningInfo.calendarLink}">Add to Google Calendar</a></p>`;
+              }
+            } else {
+              emailHtml += `<p>No upcoming street cleaning found for this location.</p>`;
+            }
+            emailHtml += `<hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">`;
+            emailHtml += `<p style="color: #999; font-size: 12px;">SF Street Cleaning Notifier<br><a href="https://maxkolysh.com/parking">maxkolysh.com/parking</a></p>`;
+            emailHtml += `</div>`;
+
+            // Send notifications
+            if (user.notify_telegram_chat_id) {
+              await sendTelegramMessage(user.notify_telegram_chat_id, telegramMsg);
+            }
+            if (user.email) {
+              await sendEmailNotification(user.email, emailSubject, emailHtml);
+            }
+
+            // Reset last_reminders_sent since location changed, update last_notification_at
+            await supabase.from("tesla_users").update({
+              last_notification_at: new Date().toISOString(),
+              last_reminders_sent: {},
+            }).eq("id", user.id);
+            results.push(`${vehicle.display_name}: parked on ${corridor}, sent info notification`);
           } catch (vErr: any) {
             console.error(`Vehicle error:`, vErr);
             results.push(`Vehicle ${vehicle.display_name}: ${vErr.message}`);
