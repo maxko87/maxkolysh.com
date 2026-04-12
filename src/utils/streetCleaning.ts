@@ -55,8 +55,10 @@ export function findNeighborhood(
 
   for (const feature of neighborhoods.features) {
     if (turf.booleanPointInPolygon(pt, feature)) {
-      // The neighborhood name is in the feature properties
-      const name = feature.properties?.nhood || feature.properties?.name || feature.properties?.NEIGHBORHOOD;
+      // Property is 'FileName' in the kaushalpartani/sf-street-cleaning dataset
+      const props = feature.properties || {};
+      const name = props.FileName || props.NeighborhoodName || props.nhood || props.name || props.NEIGHBORHOOD;
+      console.log('[Parking] Matched neighborhood:', name, 'props:', props);
       if (name) return name;
     }
   }
