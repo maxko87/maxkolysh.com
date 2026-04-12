@@ -147,6 +147,27 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
       );
     }
 
+    if (endpoint === "_internal/delete-user") {
+      const { tesla_user_id } = body;
+      if (!tesla_user_id) {
+        return new Response(
+          JSON.stringify({ error: "Missing tesla_user_id" }),
+          { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { error } = await db.from("tesla_users")
+        .delete()
+        .eq("tesla_user_id", tesla_user_id);
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: "Unknown internal endpoint" }),
       { status: 404, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }

@@ -46,6 +46,8 @@ export default function ParkingPage() {
   const [statusMessage, setStatusMessage] = useState('');
   const [startOverHovered, setStartOverHovered] = useState(false);
   const [errorBtnHovered, setErrorBtnHovered] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -183,6 +185,37 @@ export default function ParkingPage() {
     }
   }
 
+  async function handleDisconnect() {
+    setDisconnecting(true);
+    const userId = getStoredUserId();
+    if (userId) {
+      try {
+        await fetch('https://vjnkdpovepqlsrdzqowd.supabase.co/functions/v1/tesla-proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqbmtkcG92ZXBxbHNyZHpxb3dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzEzMDksImV4cCI6MjA4Mjk0NzMwOX0.XvSX6nUk6Tjyx16cKrb9NvtlXExBzzKILUP8kKdnKsQ',
+          },
+          body: JSON.stringify({
+            endpoint: '_internal/delete-user',
+            body: { tesla_user_id: userId },
+          }),
+        });
+      } catch {
+        // still clear local state even if server delete fails
+      }
+    }
+    clearTokens();
+    setError(null);
+    setVehicles([]);
+    setSelectedVehicle(null);
+    setLocation(null);
+    setResult(null);
+    setShowDisconnectConfirm(false);
+    setDisconnecting(false);
+    setState('landing');
+  }
+
   function handleStartOver() {
     clearTokens();
     setError(null);
@@ -259,12 +292,12 @@ export default function ParkingPage() {
               teslaUserId={getStoredUserId()}
             />
             <button
-              onClick={handleStartOver}
+              onClick={() => setShowDisconnectConfirm(true)}
               onMouseEnter={() => setStartOverHovered(true)}
               onMouseLeave={() => setStartOverHovered(false)}
               style={{
                 fontSize: '0.8rem',
-                color: startOverHovered ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)',
+                color: startOverHovered ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.2)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -272,7 +305,7 @@ export default function ParkingPage() {
                 padding: '0.5rem',
               }}
             >
-              Disconnect & Start Over
+              Disconnect Tesla
             </button>
           </div>
         )}
@@ -314,6 +347,80 @@ export default function ParkingPage() {
           </div>
         )}
       </div>
+
+      {/* Disconnect confirmation modal */}
+      {showDisconnectConfirm && (
+        <div
+          onClick={() => !disconnecting && setShowDisconnectConfirm(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#1C1C1E',
+              border: '1px solid #3A3A3C',
+              borderRadius: '20px',
+              padding: '1.75rem',
+              maxWidth: '340px',
+              width: '100%',
+              textAlign: 'center',
+            }}
+          >
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', margin: '0 0 0.75rem 0' }}>
+              Disconnect Tesla?
+            </h3>
+            <p style={{ color: '#8A8A8E', fontSize: '0.9rem', margin: '0 0 1.25rem 0', lineHeight: 1.5 }}>
+              This will delete your account and stop all email reminders. You'll need to re-authorize to use the app again.
+            </p>
+            <div style={{ display: 'flex', gap: '0.65rem' }}>
+              <button
+                onClick={() => setShowDisconnectConfirm(false)}
+                disabled={disconnecting}
+                style={{
+                  flex: 1,
+                  padding: '0.7rem',
+                  background: '#2C2C2E',
+                  color: '#fff',
+                  border: '1px solid #3A3A3C',
+                  borderRadius: '12px',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDisconnect}
+                disabled={disconnecting}
+                style={{
+                  flex: 1,
+                  padding: '0.7rem',
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  color: '#f87171',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '12px',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  cursor: disconnecting ? 'wait' : 'pointer',
+                  opacity: disconnecting ? 0.6 : 1,
+                }}
+              >
+                {disconnecting ? 'Disconnecting...' : 'Disconnect'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

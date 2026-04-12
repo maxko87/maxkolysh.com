@@ -56,6 +56,7 @@ function parseLimits(streetId: string | undefined): string | null {
 
 export default function CleaningSchedule({ result, onRefresh, refreshing }: CleaningScheduleProps) {
   const [showOtherSide, setShowOtherSide] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const { feature, sides, parkedSide } = result;
   const { Corridor, StreetIdentifier } = feature.properties;
 
@@ -74,21 +75,40 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
             <span style={{ fontSize: '1rem' }}>🚗</span>
             <span style={{ fontSize: '0.95rem', color: '#8A8A8E' }}>Tesla</span>
           </div>
-          <button
-            onClick={onRefresh}
-            disabled={refreshing}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: refreshing ? 'default' : 'pointer',
-              fontSize: '1.1rem',
-              opacity: refreshing ? 0.4 : 0.5,
-              transition: 'opacity 0.2s',
-              padding: '4px',
-            }}
-          >
-            🔄
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <button
+              onClick={() => setShowHelp(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                opacity: 0.35,
+                transition: 'opacity 0.2s',
+                padding: '4px',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.35')}
+            >
+              ❓
+            </button>
+            <button
+              onClick={onRefresh}
+              disabled={refreshing}
+              title="Refresh location"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: refreshing ? 'default' : 'pointer',
+                fontSize: '1.1rem',
+                opacity: refreshing ? 0.4 : 0.5,
+                transition: 'opacity 0.2s',
+                padding: '4px',
+              }}
+            >
+              🔄
+            </button>
+          </div>
         </div>
         <h1 style={{
           fontSize: '1.75rem',
@@ -175,6 +195,70 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
           )}
         </>
       )}
+
+      {/* Help modal */}
+      {showHelp && (
+        <div
+          onClick={() => setShowHelp(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#1C1C1E',
+              border: '1px solid #3A3A3C',
+              borderRadius: '20px',
+              padding: '1.75rem',
+              maxWidth: '380px',
+              width: '100%',
+            }}
+          >
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', margin: '0 0 1rem 0' }}>
+              How it works
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', color: '#ccc', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              <p style={{ margin: 0 }}>
+                <strong style={{ color: '#fff' }}>📍 We find your car.</strong> Using your Tesla's GPS, we detect which street and side you're parked on.
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong style={{ color: '#fff' }}>🧹 We check the schedule.</strong> SF cleans every street on a set schedule — usually twice a month. We look up the next cleaning for your exact spot.
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong style={{ color: '#fff' }}>📧 We remind you.</strong> Turn on email reminders and we'll notify you before cleaning starts — so you never get a ticket.
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong style={{ color: '#fff' }}>🔄 Refresh</strong> re-checks your car's current location if you've moved.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowHelp(false)}
+              style={{
+                width: '100%',
+                marginTop: '1.25rem',
+                padding: '0.7rem',
+                background: '#2C2C2E',
+                color: '#fff',
+                border: '1px solid #3A3A3C',
+                borderRadius: '12px',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -230,8 +314,7 @@ function SideCard({ label, relevant, isParked }: SideCardProps) {
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
           }}>
-            {label}
-            {isParked && ' side'}
+            {label}{!label.toLowerCase().includes('side') && ' Side'}
           </span>
         </div>
 
