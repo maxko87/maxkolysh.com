@@ -238,6 +238,9 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
               <p style={{ margin: 0 }}>
                 <strong style={{ color: '#fff' }}>🔄 Refresh</strong> re-checks your car's current location if you've moved.
               </p>
+              <p style={{ margin: 0 }}>
+                <strong style={{ color: '#fff' }}>🔋 Won't drain your battery.</strong> Our server checks cleaning schedules every 15 minutes using your car's last known location — your car stays asleep. We only wake it briefly when you open the app or tap refresh, and only to read GPS. No commands are ever sent to your vehicle.
+              </p>
             </div>
             <button
               onClick={() => setShowHelp(false)}
