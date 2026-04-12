@@ -490,12 +490,14 @@ Deno.serve(async (req) => {
             }
 
             // Build email HTML — informational tone
-            const emailSubject = `${vehicle.display_name} parked on ${corridor}`;
+            const timeUntil = cleaningInfo ? getTimeUntil(cleaningInfo.start) : null;
+            const timeUntilSuffix = timeUntil ? ` (${timeUntil})` : "";
+            const emailSubject = `${vehicle.display_name} parked on ${corridor}` + (timeUntil ? ` — cleaning ${timeUntil}` : "");
             let emailHtml = `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">`;
             emailHtml += `<p>Your Tesla is parked on ${locationDesc}.</p>`;
             if (cleaningInfo) {
               const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
-              emailHtml += `<p><strong>Next street cleaning:</strong> ${range}</p>`;
+              emailHtml += `<p><strong>Next street cleaning${timeUntilSuffix}:</strong> ${range}</p>`;
               if (cleaningInfo.calendarLink) {
                 emailHtml += `<p><a href="${cleaningInfo.calendarLink}">Add to Google Calendar</a></p>`;
               }
