@@ -21,6 +21,7 @@ interface TeslaUser {
   email: string | null;
   notification_prefs: Record<string, boolean> | null;
   last_reminders_sent: Record<string, string> | null;
+  vehicle_name: string | null;
 }
 
 interface CleaningSide {
@@ -179,7 +180,7 @@ Deno.serve(async (req) => {
     // 1. Get all tesla users with location and notification prefs
     const { data: users, error: fetchError } = await supabase
       .from("tesla_users")
-      .select("id, tesla_user_id, last_latitude, last_longitude, notify_telegram_chat_id, email, notification_prefs, last_reminders_sent");
+      .select("id, tesla_user_id, last_latitude, last_longitude, notify_telegram_chat_id, email, notification_prefs, last_reminders_sent, vehicle_name");
 
     if (fetchError) throw new Error(`DB fetch error: ${fetchError.message}`);
     if (!users || users.length === 0) {
@@ -321,17 +322,18 @@ Deno.serve(async (req) => {
             const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
 
             // Build Telegram message — urgent tone
-            let telegramMsg = `⚠️ <b>Move your car — street cleaning in ${window.label}</b>\n\n`;
-            telegramMsg += `Street cleaning starts in about ${window.label} on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}.\n\n`;
+            const carName = user.vehicle_name || "your car";
+            // Build Telegram message — urgent tone
+            let telegramMsg = `⚠️ <b>Move ${carName} — street cleaning in ${window.label}</b>\n\n`;
+            telegramMsg += `Street cleaning starts in about ${window.label} where ${carName} is parked on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}.\n\n`;
             telegramMsg += `${range}\n\n`;
-            telegramMsg += `Move your car to avoid a ticket.`;
-
+            telegramMsg += `Move ${carName} to avoid a ticket.`;
             // Build email HTML — urgent tone
-            const emailSubject = `Move your car — street cleaning in ${window.label}`;
+            const emailSubject = `Move ${carName} — street cleaning in ${window.label}`;
             let emailHtml = `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">`;
-            emailHtml += `<p>Street cleaning starts in about <strong>${window.label}</strong> on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}.</p>`;
+            emailHtml += `<p>Street cleaning starts in about <strong>${window.label}</strong> where ${carName} is parked on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}.</p>`;
             emailHtml += `<p><strong>${range}</strong></p>`;
-            emailHtml += `<p>Move your car to avoid a ticket.</p>`;
+            emailHtml += `<p>Move ${carName} to avoid a ticket.</p>`;
             emailHtml += `<hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">`;
             emailHtml += `<p style="color: #999; font-size: 12px;">SF Street Cleaning Notifier<br><a href="https://maxkolysh.com/parking">maxkolysh.com/parking</a></p>`;
             emailHtml += `</div>`;

@@ -148,7 +148,7 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
     }
 
     if (endpoint === "_internal/save-location") {
-      const { tesla_user_id, latitude, longitude } = body;
+      const { tesla_user_id, latitude, longitude, vehicle_name } = body;
       if (!tesla_user_id || latitude == null || longitude == null) {
         return new Response(
           JSON.stringify({ error: "Missing tesla_user_id, latitude, or longitude" }),
@@ -162,6 +162,7 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
         last_shift_state: "P",
         last_checked_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        ...(vehicle_name ? { vehicle_name } : {}),
       }).eq("tesla_user_id", tesla_user_id);
 
       if (error) throw error;

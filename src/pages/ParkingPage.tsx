@@ -119,7 +119,7 @@ export default function ParkingPage() {
       // Save location to backend so the cron job always has a stored location
       const userId = getStoredUserId();
       if (userId) {
-        saveLocationToBackend(userId, loc.latitude, loc.longitude);
+        saveLocationToBackend(userId, loc.latitude, loc.longitude, vehicle.display_name);
       }
 
       await loadCleaningSchedule(loc.latitude, loc.longitude);
@@ -188,7 +188,7 @@ export default function ParkingPage() {
       // Save updated location to backend
       const userId = getStoredUserId();
       if (userId) {
-        saveLocationToBackend(userId, loc.latitude, loc.longitude);
+        saveLocationToBackend(userId, loc.latitude, loc.longitude, selectedVehicle.display_name);
       }
 
       await loadCleaningSchedule(loc.latitude, loc.longitude);

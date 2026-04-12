@@ -320,14 +320,15 @@ Deno.serve(async (req) => {
 
                   console.log(`Vehicle ${vehicle.display_name}: online, shift=${shiftState}, lat=${lat}, lng=${lng}`);
 
-                  // Update DB with latest state
-                  await supabase.from("tesla_users").update({
-                    last_checked_at: new Date().toISOString(),
-                    last_shift_state: shiftState,
-                    last_latitude: lat,
-                    last_longitude: lng,
-                    updated_at: new Date().toISOString(),
-                  }).eq("id", user.id);
+                 // Update DB with latest state
+                 await supabase.from("tesla_users").update({
+                   last_checked_at: new Date().toISOString(),
+                   last_shift_state: shiftState,
+                   last_latitude: lat,
+                   last_longitude: lng,
+                   vehicle_name: vehicle.display_name,
+                   updated_at: new Date().toISOString(),
+                 }).eq("id", user.id);
                 }
               } catch (e: any) {
                 // 408 = car asleep (race condition), other errors = API issue
