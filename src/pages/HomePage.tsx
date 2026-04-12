@@ -27,7 +27,7 @@ function HomePage() {
             </a>
             <Link to="/learn">Learned League Study Guide</Link>
             <Link to="/carry-calc">GP Carry Calculator</Link>
-            <Link to="/parking">SF Street Cleaning Notifier</Link>
+            <Link to="/parking">SF Tesla Street Cleaning Notifier</Link>
           </div>
         </section>
 

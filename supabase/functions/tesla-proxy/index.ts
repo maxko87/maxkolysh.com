@@ -1,84 +1,84 @@
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
+// Proxies Tesla Fleet API requests to avoid CORS issues
+// Browser -> this function -> Tesla Fleet API -> back to browser
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+const FLEET_API_BASE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "https://maxkolysh.com",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Tesla-Token",
 };
 
-const FLEET_API = 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1';
-
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+Deno.serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
   try {
-    const { endpoint, method, token, body } = await req.json();
+    const url = new URL(req.url);
+    // The Tesla API path is passed as a query param: ?path=/api/1/vehicles
+    const teslaPath = url.searchParams.get("path");
 
-    // Internal endpoint: save notification preferences
-    if (endpoint === '_internal/save-prefs') {
-      return await handleSavePrefs(body);
+    if (!teslaPath) {
+      return new Response(
+        JSON.stringify({ error: "Missing 'path' query parameter" }),
+        { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
     }
 
-    if (!endpoint || !token) {
-      return new Response(JSON.stringify({ error: 'Missing endpoint or token' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    // Get the Tesla access token from the request header
+    const teslaToken = req.headers.get("X-Tesla-Token");
+    if (!teslaToken) {
+      return new Response(
+        JSON.stringify({ error: "Missing X-Tesla-Token header" }),
+        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
     }
 
-    const fetchOptions: RequestInit = {
-      method: method || 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+    // Build the Tesla API request
+    const teslaUrl = `${FLEET_API_BASE}${teslaPath}`;
+    const teslaHeaders: Record<string, string> = {
+      "Authorization": `Bearer ${teslaToken}`,
+      "Content-Type": "application/json",
     };
 
-    if (body && method !== 'GET') {
-      fetchOptions.body = JSON.stringify(body);
+    const fetchOptions: RequestInit = {
+      method: req.method,
+      headers: teslaHeaders,
+    };
+
+    // Forward body for POST requests
+    if (req.method === "POST") {
+      const body = await req.text();
+      if (body) fetchOptions.body = body;
     }
 
-    const res = await fetch(`${FLEET_API}/${endpoint}`, fetchOptions);
-    const data = await res.text();
+    // Decode JWT to check scopes
+    try {
+      const parts = teslaToken.split('.');
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      console.log(`Token scopes: ${JSON.stringify(payload.scp)}, aud: ${JSON.stringify(payload.aud)}`);
+    } catch (e) {
+      console.log('Could not decode token');
+    }
+    console.log(`Proxying ${req.method} ${teslaPath}`);
 
-    return new Response(data, {
-      status: res.status,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const teslaResponse = await fetch(teslaUrl, fetchOptions);
+    const responseText = await teslaResponse.text();
+
+    return new Response(responseText, {
+      status: teslaResponse.status,
+      headers: {
+        ...CORS_HEADERS,
+        "Content-Type": "application/json",
+      },
     });
-  } catch (e) {
-    console.error('Proxy error:', e);
-    return new Response(JSON.stringify({ error: 'Proxy error' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+  } catch (error) {
+    console.error("Proxy error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
   }
 });
-
-async function handleSavePrefs(body: { tesla_user_id: string; vehicle_id: string; notification_prefs: Record<string, boolean> }) {
-  try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const db = createClient(supabaseUrl, supabaseKey);
-
-    const { error } = await db.from('tesla_users').update({
-      vehicle_id: body.vehicle_id,
-      notification_prefs: body.notification_prefs,
-      updated_at: new Date().toISOString(),
-    }).eq('tesla_user_id', body.tesla_user_id);
-
-    if (error) throw error;
-
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (e) {
-    console.error('Save prefs error:', e);
-    return new Response(JSON.stringify({ error: 'Failed to save' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-}

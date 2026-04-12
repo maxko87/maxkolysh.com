@@ -1,128 +1,128 @@
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+const TESLA_CLIENT_ID = "39a99319-b708-4245-a29f-6907373f37ad";
+const TESLA_CLIENT_SECRET="ta-secret.2MFoIX!OCjup0Nr5";
+const TESLA_TOKEN_URL="https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token";
+const TESLA_AUDIENCE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
+
+const DEFAULT_TELEGRAM_CHAT_ID = "-1003751523166";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "https://maxkolysh.com",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+function decodeJwtPayload(token: string): Record<string, unknown> {
+  const parts = token.split(".");
+  const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+  return JSON.parse(atob(payload));
+}
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method not allowed" }),
+      { status: 405, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
   }
 
   try {
     const { code, redirect_uri } = await req.json();
 
-    if (!code) {
-      return new Response(JSON.stringify({ error: 'Missing code' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!code || !redirect_uri) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields: code, redirect_uri" }),
+        { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
     }
 
-    const clientId = Deno.env.get('TESLA_CLIENT_ID') || '39a99319-b708-4245-a29f-6907373f37ad';
-    const clientSecret = Deno.env.get('TESLA_CLIENT_SECRET');
+    console.log("Exchanging Tesla auth code for tokens...");
 
-    if (!clientSecret) {
-      return new Response(JSON.stringify({ error: 'Server misconfigured: missing client secret' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Exchange code for tokens — MUST use fleet-auth endpoint, NOT auth.tesla.com
-    const tokenRes = await fetch('https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: clientId,
-        client_secret: clientSecret,
+    const tokenResponse = await fetch(TESLA_TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        grant_type: "authorization_code",
+        client_id: TESLA_CLIENT_ID,
+        client_secret: TESLA_CLIENT_SECRET,
         code,
-        redirect_uri: redirect_uri || 'https://maxkolysh.com/parking',
-        audience: 'https://fleet-api.prd.na.vn.cloud.tesla.com',
+        redirect_uri,
+        audience: TESLA_AUDIENCE,
       }),
     });
 
-    if (!tokenRes.ok) {
-      const errText = await tokenRes.text();
-      console.error('Token exchange failed:', errText);
-      return new Response(JSON.stringify({ error: 'Token exchange failed', details: errText }), {
-        status: tokenRes.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenResponse.ok) {
+      console.error("Tesla token exchange failed:", JSON.stringify(tokenData));
+      return new Response(
+        JSON.stringify({ error: "Token exchange failed", details: tokenData }),
+        { status: tokenResponse.status, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
     }
 
-    const tokenData = await tokenRes.json();
-
-    // Fetch user profile to get email
-    let email: string | undefined;
-    let teslaUserId: string | undefined;
-
+    // Decode JWT to get tesla_user_id (sub claim)
+    let teslaUserId: string | null = null;
     try {
-      const profileRes = await fetch('https://fleet-api.prd.na.vn.cloud.tesla.com/api/1/users/me', {
-        headers: { Authorization: `Bearer ${tokenData.access_token}` },
-      });
-
-      if (profileRes.ok) {
-        const profile = await profileRes.json();
-        email = profile.response?.email;
-        teslaUserId = profile.response?.id || profile.response?.user_id;
-      }
+      const payload = decodeJwtPayload(tokenData.access_token);
+      teslaUserId = payload.sub as string;
+      console.log("Token scopes:", JSON.stringify(payload.scp));
+      console.log("Token audience:", JSON.stringify(payload.aud));
+      console.log("Tesla user ID (sub):", teslaUserId);
     } catch (e) {
-      console.error('Failed to fetch profile:', e);
+      console.log("Could not decode token:", e);
     }
 
-    // Also try to get user ID from the token's id_token if available
-    if (!teslaUserId && tokenData.id_token) {
-      try {
-        const payload = JSON.parse(atob(tokenData.id_token.split('.')[1]));
-        teslaUserId = payload.sub;
-        if (!email) email = payload.email;
-      } catch {
-        // ignore
-      }
-    }
-
-    // Persist to DB
+    // Upsert into tesla_users table
     if (teslaUserId) {
       try {
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-        const db = createClient(supabaseUrl, supabaseKey);
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const supabase = createClient(supabaseUrl, serviceRoleKey);
 
         const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
 
-        await db.from('tesla_users').upsert({
-          tesla_user_id: teslaUserId,
-          email,
-          access_token: tokenData.access_token,
-          refresh_token: tokenData.refresh_token,
-          token_expires_at: expiresAt,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'tesla_user_id' });
+        const { error: upsertError } = await supabase
+          .from("tesla_users")
+          .upsert(
+            {
+              tesla_user_id: teslaUserId,
+              access_token: tokenData.access_token,
+              refresh_token: tokenData.refresh_token,
+              token_expires_at: expiresAt,
+              notify_telegram_chat_id: DEFAULT_TELEGRAM_CHAT_ID,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "tesla_user_id" }
+          );
+
+        if (upsertError) {
+          console.error("Failed to upsert tesla_users:", upsertError);
+        } else {
+          console.log("Successfully upserted tesla_users for:", teslaUserId);
+        }
       } catch (e) {
-        console.error('DB persist failed:', e);
-        // Non-fatal — still return tokens
+        console.error("Error upserting tesla_users:", e);
       }
     }
 
-    return new Response(JSON.stringify({
-      access_token: tokenData.access_token,
-      refresh_token: tokenData.refresh_token,
-      expires_in: tokenData.expires_in,
-      email,
-      tesla_user_id: teslaUserId,
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (e) {
-    console.error('Error:', e);
-    return new Response(JSON.stringify({ error: 'Internal error' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.log("Tesla token exchange successful");
+
+    return new Response(
+      JSON.stringify(tokenData),
+      { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
   }
 });

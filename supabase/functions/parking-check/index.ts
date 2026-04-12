@@ -1,370 +1,465 @@
-import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import * as turf from "https://esm.sh/@turf/turf@7";
 
-const FLEET_API = 'https://fleet-api.prd.na.vn.cloud.tesla.com/api/1';
-const CLEANING_DATA_BASE = 'https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/main/data';
+// --- Config ---
+const TESLA_CLIENT_ID = "39a99319-b708-4245-a29f-6907373f37ad";
+const TESLA_CLIENT_SECRET = "ta-secret.2MFoIX!OCjup0Nr5";
+const TESLA_TOKEN_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token";
+const FLEET_API_BASE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
+const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/refs/heads/main/data";
 
-serve(async (req) => {
-  // Allow manual trigger via POST or cron via GET
-  if (req.method !== 'GET' && req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+// Location tolerance: if car moved less than 50m, consider it same spot
+const LOCATION_TOLERANCE_M = 50;
+// Only notify about cleaning within 7 days
+const NOTIFY_WITHIN_DAYS = 7;
+// Don't re-notify about same location within 12 hours
+const RENOTIFY_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+// --- Types ---
+interface TeslaUser {
+  id: string;
+  tesla_user_id: string;
+  access_token: string;
+  refresh_token: string;
+  token_expires_at: string;
+  last_checked_at: string | null;
+  last_shift_state: string | null;
+  last_latitude: number | null;
+  last_longitude: number | null;
+  last_notification_at: string | null;
+  notify_telegram_chat_id: string | null;
+}
+
+interface CleaningSide {
+  NextCleaning: string | null;
+  NextNextCleaning: string | null;
+  NextCleaningEnd: string | null;
+  NextNextCleaningEnd: string | null;
+  NextCleaningCalendarLink: string | null;
+  NextNextCleaningCalendarLink: string | null;
+}
+
+// --- Helpers ---
+
+function decodeJwtPayload(token: string): Record<string, unknown> {
+  const parts = token.split(".");
+  const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+  return JSON.parse(atob(payload));
+}
+
+async function refreshTeslaToken(refreshToken: string): Promise<{ access_token: string; refresh_token: string; expires_in: number } | null> {
+  try {
+    const resp = await fetch(TESLA_TOKEN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        grant_type: "refresh_token",
+        client_id: TESLA_CLIENT_ID,
+        client_secret: TESLA_CLIENT_SECRET,
+        refresh_token: refreshToken,
+      }),
+    });
+    if (!resp.ok) {
+      console.error("Token refresh failed:", resp.status, await resp.text());
+      return null;
+    }
+    return await resp.json();
+  } catch (e) {
+    console.error("Token refresh error:", e);
+    return null;
+  }
+}
+
+async function teslaGet(path: string, token: string): Promise<any> {
+  const resp = await fetch(`${FLEET_API_BASE}${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Tesla API ${path} failed (${resp.status}): ${text}`);
+  }
+  return resp.json();
+}
+
+function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const pt1 = turf.point([lon1, lat1]);
+  const pt2 = turf.point([lon2, lat2]);
+  return turf.distance(pt1, pt2, { units: "meters" });
+}
+
+function getRelevantCleaning(side: CleaningSide): { start: string; end: string; calendarLink: string | null } | null {
+  const now = new Date();
+  const withinLimit = new Date(now.getTime() + NOTIFY_WITHIN_DAYS * 24 * 60 * 60 * 1000);
+
+  if (side.NextCleaning) {
+    const nextEnd = side.NextCleaningEnd ? new Date(side.NextCleaningEnd) : new Date(side.NextCleaning);
+    const nextStart = new Date(side.NextCleaning);
+    if (nextEnd > now && nextStart < withinLimit) {
+      return { start: side.NextCleaning, end: side.NextCleaningEnd || side.NextCleaning, calendarLink: side.NextCleaningCalendarLink || null };
+    }
   }
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const resendKey = Deno.env.get('RESEND_API_KEY');
-  const clientId = Deno.env.get('TESLA_CLIENT_ID') || '39a99319-b708-4245-a29f-6907373f37ad';
-  const clientSecret = Deno.env.get('TESLA_CLIENT_SECRET');
-  const db = createClient(supabaseUrl, supabaseKey);
+  if (side.NextNextCleaning) {
+    const nextStart = new Date(side.NextNextCleaning);
+    if (nextStart < withinLimit) {
+      return { start: side.NextNextCleaning, end: side.NextNextCleaningEnd || side.NextNextCleaning, calendarLink: side.NextNextCleaningCalendarLink || null };
+    }
+  }
 
-  const results: string[] = [];
+  return null;
+}
+
+function determineSide(lat: number, lng: number, lineCoords: number[][], sideKeys: string[]): string | null {
+  if (lineCoords.length < 2 || sideKeys.length === 0) return null;
+
+  const pt = turf.point([lng, lat]);
+  const line = turf.lineString(lineCoords);
+  const snapped = turf.nearestPointOnLine(line, pt);
+  const idx = snapped.properties.index ?? 0;
+
+  const segStart = lineCoords[Math.min(idx, lineCoords.length - 2)];
+  const segEnd = lineCoords[Math.min(idx + 1, lineCoords.length - 1)];
+
+  const dx = segEnd[0] - segStart[0];
+  const dy = segEnd[1] - segStart[1];
+  const nearPt = snapped.geometry.coordinates;
+  const px = lng - nearPt[0];
+  const py = lat - nearPt[1];
+  const cross = dx * py - dy * px;
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+
+  let detectedSide: string | null = null;
+  if (absDx >= absDy) {
+    detectedSide = (dx >= 0 ? (cross > 0 ? "North" : "South") : (cross > 0 ? "South" : "North"));
+  } else {
+    detectedSide = (dy >= 0 ? (cross > 0 ? "West" : "East") : (cross > 0 ? "East" : "West"));
+  }
+
+  if (detectedSide && sideKeys.includes(detectedSide)) return detectedSide;
+
+  if (sideKeys.length === 2) {
+    const sorted = [...sideKeys].sort();
+    return cross > 0 ? sorted[0] : sorted[1];
+  }
+
+  return sideKeys[0] || null;
+}
+
+function formatCleaningRange(startStr: string, endStr: string): string {
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  const dateStr = start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/Los_Angeles" });
+  const startTime = start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" });
+  const endTime = end.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Los_Angeles" });
+  return `${dateStr}, ${startTime} - ${endTime}`;
+}
+
+function getTimeUntil(startStr: string): string {
+  const now = new Date();
+  const start = new Date(startStr);
+  const diffMs = start.getTime() - now.getTime();
+  if (diffMs < 0) return "NOW";
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (hours >= 48) return `in ${Math.floor(hours / 24)} days`;
+  if (hours >= 24) return `in 1 day, ${hours - 24} hrs`;
+  const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours >= 1) return `in ${hours}h ${mins}m`;
+  return `in ${mins} min`;
+}
+
+async function sendTelegramMessage(chatId: string, text: string): Promise<void> {
+  const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
+  if (!botToken) {
+    console.error("TELEGRAM_BOT_TOKEN not set");
+    return;
+  }
+  try {
+    const resp = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+      }),
+    });
+    if (!resp.ok) {
+      console.error("Telegram send failed:", resp.status, await resp.text());
+    }
+  } catch (e) {
+    console.error("Telegram error:", e);
+  }
+}
+
+// --- Main handler ---
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    // Get all users with notification prefs
-    const { data: users, error } = await db
-      .from('tesla_users')
-      .select('*')
-      .not('notification_prefs', 'is', null)
-      .not('email', 'is', null);
+    // 1. Get all tesla users
+    const { data: users, error: fetchError } = await supabase
+      .from("tesla_users")
+      .select("*");
 
-    if (error) throw error;
+    if (fetchError) throw new Error(`DB fetch error: ${fetchError.message}`);
     if (!users || users.length === 0) {
-      return new Response(JSON.stringify({ message: 'No users to check', results }), {
-        headers: { 'Content-Type': 'application/json' },
+      return new Response(JSON.stringify({ message: "No users to check" }), {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
-    for (const user of users) {
+    console.log(`Processing ${users.length} user(s)...`);
+    const results: string[] = [];
+
+    for (const user of users as TeslaUser[]) {
       try {
-        // Refresh token if expired
         let accessToken = user.access_token;
-        const expiresAt = new Date(user.token_expires_at);
 
-        if (expiresAt < new Date()) {
-          if (!clientSecret) {
-            results.push(`${user.email}: skipped — no client secret for refresh`);
+        // 2. Check if token expired, refresh if needed
+        const tokenExpiry = new Date(user.token_expires_at);
+        if (tokenExpiry < new Date(Date.now() + 5 * 60 * 1000)) {
+          console.log(`Refreshing token for user ${user.tesla_user_id}...`);
+          const refreshed = await refreshTeslaToken(user.refresh_token);
+          if (!refreshed) {
+            results.push(`${user.tesla_user_id}: token refresh failed`);
             continue;
           }
+          accessToken = refreshed.access_token;
+          const newExpiry = new Date(Date.now() + refreshed.expires_in * 1000).toISOString();
 
-          const refreshRes = await fetch('https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-              grant_type: 'refresh_token',
-              client_id: clientId,
-              client_secret: clientSecret,
-              refresh_token: user.refresh_token,
-            }),
-          });
-
-          if (!refreshRes.ok) {
-            results.push(`${user.email}: token refresh failed`);
-            continue;
-          }
-
-          const newTokens = await refreshRes.json();
-          accessToken = newTokens.access_token;
-
-          await db.from('tesla_users').update({
-            access_token: newTokens.access_token,
-            refresh_token: newTokens.refresh_token || user.refresh_token,
-            token_expires_at: new Date(Date.now() + newTokens.expires_in * 1000).toISOString(),
+          await supabase.from("tesla_users").update({
+            access_token: refreshed.access_token,
+            refresh_token: refreshed.refresh_token,
+            token_expires_at: newExpiry,
             updated_at: new Date().toISOString(),
-          }).eq('id', user.id);
+          }).eq("id", user.id);
         }
 
-        // Get vehicle location (don't wake — only check if already online)
-        const vehicleId = user.vehicle_id;
-        if (!vehicleId) {
-          results.push(`${user.email}: no vehicle selected`);
-          continue;
-        }
+        // 3. Get vehicles
+        const vehiclesResp = await teslaGet("/api/1/vehicles", accessToken);
+        const vehicles = vehiclesResp.response || [];
+        console.log(`User ${user.tesla_user_id}: ${vehicles.length} vehicle(s)`);
 
-        // Check vehicle state without waking
-        let location;
-        try {
-          const dataRes = await fetch(
-            `${FLEET_API}/vehicles/${vehicleId}/vehicle_data?endpoints=location_data`,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-          );
-
-          if (dataRes.status === 408) {
-            // Car is asleep — use last known location if available
-            if (user.last_location) {
-              location = user.last_location;
-            } else {
-              results.push(`${user.email}: car asleep, no cached location`);
+        for (const vehicle of vehicles) {
+          try {
+            // Only check online vehicles — don't wake them up (battery drain)
+            if (vehicle.state !== "online") {
+              console.log(`Vehicle ${vehicle.display_name} is ${vehicle.state}, skipping`);
               continue;
             }
-          } else if (!dataRes.ok) {
-            results.push(`${user.email}: vehicle API error ${dataRes.status}`);
-            continue;
-          } else {
-            const vehicleData = await dataRes.json();
-            const ds = vehicleData.response?.drive_state;
-            if (!ds?.latitude || !ds?.longitude) {
-              results.push(`${user.email}: no location data`);
+
+            // 4. Get vehicle data
+            const vdResp = await teslaGet(
+              `/api/1/vehicles/${vehicle.id}/vehicle_data?endpoints=location_data;drive_state`,
+              accessToken
+            );
+            const vd = vdResp.response;
+            const driveState = vd?.drive_state;
+
+            if (!driveState) {
+              console.log(`No drive_state for ${vehicle.display_name}`);
               continue;
             }
-            location = { latitude: ds.latitude, longitude: ds.longitude };
 
-            // Cache location
-            await db.from('tesla_users').update({
-              last_location: location,
+            const shiftState = driveState.shift_state || "P"; // null usually means P
+            const lat = driveState.latitude;
+            const lng = driveState.longitude;
+
+            console.log(`Vehicle ${vehicle.display_name}: shift=${shiftState}, lat=${lat}, lng=${lng}`);
+
+            // Update DB with latest state
+            await supabase.from("tesla_users").update({
+              last_checked_at: new Date().toISOString(),
+              last_shift_state: shiftState,
+              last_latitude: lat,
+              last_longitude: lng,
               updated_at: new Date().toISOString(),
-            }).eq('id', user.id);
+            }).eq("id", user.id);
+
+            // Only check if parked
+            if (shiftState !== "P" && shiftState !== null) {
+              results.push(`${vehicle.display_name}: driving (${shiftState})`);
+              continue;
+            }
+
+            // 5. Check if same location as last check (within tolerance)
+            if (user.last_latitude && user.last_longitude) {
+              const dist = haversineDistance(lat, lng, user.last_latitude, user.last_longitude);
+              if (dist < LOCATION_TOLERANCE_M) {
+                // Same spot — check cooldown
+                if (user.last_notification_at) {
+                  const sinceNotify = Date.now() - new Date(user.last_notification_at).getTime();
+                  if (sinceNotify < RENOTIFY_COOLDOWN_MS) {
+                    results.push(`${vehicle.display_name}: same location, already notified`);
+                    continue;
+                  }
+                }
+              }
+            }
+
+            // 6. Look up street cleaning data
+            if (!user.notify_telegram_chat_id) {
+              results.push(`${vehicle.display_name}: no telegram chat_id configured`);
+              continue;
+            }
+
+            console.log(`Looking up street cleaning for (${lat}, ${lng})...`);
+
+            // Fetch neighborhood boundaries
+            const nhoodResp = await fetch(`${DATA_BASE_URL}/neighborhoods.geojson`);
+            if (!nhoodResp.ok) throw new Error("Failed to fetch neighborhoods");
+            const neighborhoods = await nhoodResp.json();
+
+            // Find neighborhood via point-in-polygon
+            const pt = turf.point([lng, lat]);
+            let neighborhoodName: string | null = null;
+
+            for (const feature of neighborhoods.features) {
+              if (turf.booleanPointInPolygon(pt, feature)) {
+                const props = feature.properties || {};
+                neighborhoodName = props.FileName || props.NeighborhoodName || props.nhood || props.name || props.NEIGHBORHOOD;
+                break;
+              }
+            }
+
+            if (!neighborhoodName) {
+              results.push(`${vehicle.display_name}: not in SF (${lat}, ${lng})`);
+              continue;
+            }
+
+            console.log(`Neighborhood: ${neighborhoodName}`);
+
+            // Fetch neighborhood street data
+            const streetResp = await fetch(`${DATA_BASE_URL}/neighborhoods/${encodeURIComponent(neighborhoodName)}.geojson`);
+            if (!streetResp.ok) {
+              results.push(`${vehicle.display_name}: no street data for ${neighborhoodName}`);
+              continue;
+            }
+            const streetData = await streetResp.json();
+
+            // Find nearest segment
+            let nearestFeature: any = null;
+            let nearestDistance = Infinity;
+
+            for (const feature of streetData.features) {
+              try {
+                const coords = feature.geometry.type === "MultiLineString"
+                  ? feature.geometry.coordinates[0]
+                  : feature.geometry.coordinates;
+                const line = turf.lineString(coords);
+                const snapped = turf.nearestPointOnLine(line, pt, { units: "meters" });
+                const dist = snapped.properties.dist ?? Infinity;
+                if (dist < nearestDistance) {
+                  nearestDistance = dist;
+                  nearestFeature = feature;
+                }
+              } catch {
+                continue;
+              }
+            }
+
+            if (!nearestFeature || nearestDistance > 100) {
+              results.push(`${vehicle.display_name}: no nearby street segment (${nearestDistance}m)`);
+              continue;
+            }
+
+            const props = nearestFeature.properties;
+            const corridor = props.Corridor || "Unknown Street";
+            const limits = props.Limits || "";
+            const sidesObj = props.Sides || {};
+            const sideKeys = Object.keys(sidesObj).filter((k: string) => sidesObj[k]);
+
+            // Determine which side of street
+            const geom = nearestFeature.geometry;
+            const lineCoords = geom.type === "MultiLineString" ? geom.coordinates[0] : geom.coordinates;
+            const parkedSide = determineSide(lat, lng, lineCoords, sideKeys);
+
+            // Check cleaning schedules
+            const notifications: string[] = [];
+
+            for (const sideKey of sideKeys) {
+              const sideData = sidesObj[sideKey];
+              if (!sideData) continue;
+              const cleaning = getRelevantCleaning(sideData);
+              if (!cleaning) continue;
+
+              const isParkedSide = parkedSide === sideKey;
+              const status = getTimeUntil(cleaning.start);
+              const range = formatCleaningRange(cleaning.start, cleaning.end);
+
+              // Only notify about the side they're parked on, or both if uncertain
+              if (parkedSide && !isParkedSide) continue;
+
+              const urgencyEmoji = status === "NOW" ? "🚨" :
+                status.includes("min") || (status.includes("h") && !status.includes("day")) ? "⚠️" : "📋";
+
+              let msg = `${urgencyEmoji} <b>Street Cleaning Alert</b>\n\n`;
+              msg += `🚗 <b>${vehicle.display_name}</b>\n`;
+              msg += `📍 ${corridor}`;
+              if (limits) msg += ` (${limits})`;
+              msg += `\n`;
+              msg += `↔️ ${sideKey} Side`;
+              if (isParkedSide) msg += ` (your side)`;
+              msg += `\n\n`;
+              msg += `🧹 <b>${range}</b>\n`;
+              msg += `⏰ ${status}\n`;
+
+              if (cleaning.calendarLink) {
+                msg += `\n📅 <a href="${cleaning.calendarLink}">Add to Google Calendar</a>`;
+              }
+
+              notifications.push(msg);
+            }
+
+            if (notifications.length > 0) {
+              for (const msg of notifications) {
+                await sendTelegramMessage(user.notify_telegram_chat_id, msg);
+              }
+              await supabase.from("tesla_users").update({
+                last_notification_at: new Date().toISOString(),
+              }).eq("id", user.id);
+              results.push(`${vehicle.display_name}: sent ${notifications.length} notification(s)`);
+            } else {
+              results.push(`${vehicle.display_name}: parked on ${corridor}, no upcoming cleaning`);
+            }
+          } catch (vErr: any) {
+            console.error(`Vehicle error:`, vErr);
+            results.push(`Vehicle ${vehicle.display_name}: ${vErr.message}`);
           }
-        } catch (e) {
-          // Use cached location
-          if (user.last_location) {
-            location = user.last_location;
-          } else {
-            results.push(`${user.email}: ${e}`);
-            continue;
-          }
         }
-
-        // Find cleaning schedule
-        const cleaning = await findNearestCleaning(location.latitude, location.longitude);
-        if (!cleaning || !cleaning.nextCleaning) {
-          results.push(`${user.email}: no cleaning found at location`);
-          continue;
-        }
-
-        // Check if we should send notification based on user prefs
-        const prefs = user.notification_prefs as Record<string, boolean>;
-        const nextClean = new Date(cleaning.nextCleaning);
-        const now = new Date();
-        const hoursUntil = (nextClean.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-        // Check cooldown (12hrs since last notification for same spot)
-        if (user.last_notified_at) {
-          const lastNotified = new Date(user.last_notified_at);
-          const hoursSinceNotif = (now.getTime() - lastNotified.getTime()) / (1000 * 60 * 60);
-          if (hoursSinceNotif < 12) {
-            results.push(`${user.email}: cooldown active (${Math.round(hoursSinceNotif)}h since last)`);
-            continue;
-          }
-        }
-
-        let shouldNotify = false;
-        let leadTime = '';
-
-        if (prefs['2d'] && hoursUntil <= 48 && hoursUntil > 24) {
-          shouldNotify = true;
-          leadTime = '2 days';
-        } else if (prefs['1d'] && hoursUntil <= 24 && hoursUntil > 3) {
-          shouldNotify = true;
-          leadTime = '1 day';
-        } else if (prefs['3h'] && hoursUntil <= 3 && hoursUntil > 1) {
-          shouldNotify = true;
-          leadTime = '3 hours';
-        } else if (prefs['1h'] && hoursUntil <= 1 && hoursUntil > 0) {
-          shouldNotify = true;
-          leadTime = '1 hour';
-        }
-
-        if (!shouldNotify) {
-          results.push(`${user.email}: cleaning in ${Math.round(hoursUntil)}h — not in notification window`);
-          continue;
-        }
-
-        // Send email via Resend
-        if (resendKey && user.email) {
-          const calUrl = buildCalendarUrl(cleaning);
-          const emailRes = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${resendKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              from: 'SF Parking <parking@maxkolysh.com>',
-              to: user.email,
-              subject: `🚗 Street cleaning in ${leadTime} — move your car!`,
-              html: `
-                <div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto;">
-                  <h2>Street Cleaning Alert</h2>
-                  <p>Your Tesla is parked on <strong>${cleaning.streetName}</strong> (${cleaning.side} side) in ${cleaning.neighborhoodName}.</p>
-                  <p>Street cleaning starts in <strong>${leadTime}</strong>:</p>
-                  <p style="font-size: 18px; font-weight: bold;">
-                    ${nextClean.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                    at ${nextClean.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                  </p>
-                  <a href="${calUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 12px;">
-                    📅 Add to Calendar
-                  </a>
-                  <p style="color: #999; font-size: 12px; margin-top: 24px;">
-                    From <a href="https://maxkolysh.com/parking">SF Street Cleaning Notifier</a>
-                  </p>
-                </div>
-              `,
-            }),
-          });
-
-          if (emailRes.ok) {
-            await db.from('tesla_users').update({
-              last_notified_at: now.toISOString(),
-              last_cleaning_info: cleaning,
-              updated_at: now.toISOString(),
-            }).eq('id', user.id);
-
-            results.push(`${user.email}: ✅ notified — cleaning in ${leadTime}`);
-          } else {
-            const emailErr = await emailRes.text();
-            results.push(`${user.email}: email send failed — ${emailErr}`);
-          }
-        } else {
-          results.push(`${user.email}: no resend key or email`);
-        }
-      } catch (e) {
-        results.push(`${user.email}: error — ${e}`);
+      } catch (uErr: any) {
+        console.error(`User error:`, uErr);
+        results.push(`User ${user.tesla_user_id}: ${uErr.message}`);
       }
     }
 
-    return new Response(JSON.stringify({ message: 'Check complete', results }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (e) {
-    return new Response(JSON.stringify({ error: String(e), results }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.log("Results:", results);
+
+    return new Response(
+      JSON.stringify({ success: true, results }),
+      { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
+  } catch (error: any) {
+    console.error("Fatal error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+    );
   }
 });
-
-// Simplified version of street cleaning lookup for edge function
-interface CleaningInfo {
-  streetName: string;
-  side: string;
-  nextCleaning: string;
-  neighborhoodName: string;
-  recurringPattern?: string;
-}
-
-async function findNearestCleaning(lat: number, lng: number): Promise<CleaningInfo | null> {
-  // Load neighborhood index
-  const indexRes = await fetch(`${CLEANING_DATA_BASE}/neighborhoods.json`);
-  if (!indexRes.ok) return null;
-  const neighborhoods = await indexRes.json();
-
-  // Try nearby neighborhoods
-  const priority = ['NoeValley', 'TheCastro', 'MissionDolores', 'Mission', 'GlenPark', 'BernalHeights', 'Eureka', 'Corona'];
-  const sorted = [
-    ...neighborhoods.filter((n: { FileName: string }) => priority.includes(n.FileName)),
-    ...neighborhoods.filter((n: { FileName: string }) => !priority.includes(n.FileName)),
-  ];
-
-  let bestDist = Infinity;
-  let bestResult: CleaningInfo | null = null;
-
-  for (const hood of sorted.slice(0, 8)) {
-    try {
-      const res = await fetch(`${CLEANING_DATA_BASE}/neighborhoods/${hood.FileName}.geojson`);
-      if (!res.ok) continue;
-      const geojson = await res.json();
-
-      for (const feature of geojson.features) {
-        if (feature.geometry.type !== 'LineString') continue;
-        const coords = feature.geometry.coordinates as number[][];
-        if (coords.length < 2) continue;
-
-        // Simple distance check — nearest point on line
-        const dist = pointToLineDistance(lng, lat, coords);
-        if (dist < bestDist && dist < 0.001) { // ~100m in degrees
-          bestDist = dist;
-
-          const props = feature.properties;
-          if (!props?.Sides) continue;
-
-          const side = determineStreetSide(lat, lng, coords);
-          const sideKey = side as keyof typeof props.Sides;
-          const sideData = props.Sides[sideKey];
-
-          if (sideData?.NextCleaning) {
-            bestResult = {
-              streetName: props.StreetName || 'Unknown',
-              side,
-              nextCleaning: sideData.NextCleaning,
-              neighborhoodName: hood.NeighborhoodName,
-            };
-          }
-        }
-      }
-
-      if (bestDist < 0.0003) break; // Close enough
-    } catch {
-      continue;
-    }
-  }
-
-  return bestResult;
-}
-
-function pointToLineDistance(px: number, py: number, coords: number[][]): number {
-  let minDist = Infinity;
-  for (let i = 0; i < coords.length - 1; i++) {
-    const dist = pointToSegmentDistance(px, py, coords[i][0], coords[i][1], coords[i + 1][0], coords[i + 1][1]);
-    if (dist < minDist) minDist = dist;
-  }
-  return minDist;
-}
-
-function pointToSegmentDistance(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const lenSq = dx * dx + dy * dy;
-  if (lenSq === 0) return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
-
-  let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
-  t = Math.max(0, Math.min(1, t));
-
-  const nearX = x1 + t * dx;
-  const nearY = y1 + t * dy;
-  return Math.sqrt((px - nearX) ** 2 + (py - nearY) ** 2);
-}
-
-function determineStreetSide(lat: number, lng: number, coords: number[][]): string {
-  let minDist = Infinity;
-  let closestIdx = 0;
-
-  for (let i = 0; i < coords.length - 1; i++) {
-    const dist = pointToSegmentDistance(lng, lat, coords[i][0], coords[i][1], coords[i + 1][0], coords[i + 1][1]);
-    if (dist < minDist) {
-      minDist = dist;
-      closestIdx = i;
-    }
-  }
-
-  const p1 = coords[closestIdx];
-  const p2 = coords[closestIdx + 1];
-  const dx = p2[0] - p1[0];
-  const dy = p2[1] - p1[1];
-  const cx = lng - p1[0];
-  const cy = lat - p1[1];
-  const cross = dx * cy - dy * cx;
-
-  const bearing = Math.atan2(dx, dy) * 180 / Math.PI;
-  const absBearing = Math.abs(bearing);
-
-  if (absBearing < 45 || absBearing > 135) {
-    return cross > 0 ? 'East' : 'West';
-  } else {
-    return cross > 0 ? 'North' : 'South';
-  }
-}
-
-function buildCalendarUrl(cleaning: CleaningInfo): string {
-  const date = new Date(cleaning.nextCleaning);
-  const endDate = new Date(date.getTime() + 2 * 60 * 60 * 1000);
-  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: `🚗 Move Car — Street Cleaning (${cleaning.streetName})`,
-    dates: `${fmt(date)}/${fmt(endDate)}`,
-    details: `Street cleaning on ${cleaning.streetName} (${cleaning.side} side) in ${cleaning.neighborhoodName}.`,
-  });
-
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
