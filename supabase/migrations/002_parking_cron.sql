@@ -2,7 +2,7 @@
 create extension if not exists pg_cron with schema pg_catalog;
 create extension if not exists pg_net with schema extensions;
 
--- Schedule the parking check every 15 minutes
+-- Schedule the parking check every 5 minutes
 -- Uses pg_net to call the edge function with the service role key
 select cron.schedule(
   'parking-check',

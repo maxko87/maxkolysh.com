@@ -172,6 +172,28 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
       );
     }
 
+    if (endpoint === "_internal/get-user") {
+      const { tesla_user_id } = body;
+      if (!tesla_user_id) {
+        return new Response(
+          JSON.stringify({ error: "Missing tesla_user_id" }),
+          { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { data, error } = await db.from("tesla_users")
+        .select("last_latitude,last_longitude,last_checked_at,last_shift_state,email,notification_prefs")
+        .eq("tesla_user_id", tesla_user_id)
+        .single();
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify(data || {}),
+        { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
     if (endpoint === "_internal/delete-user") {
       const { tesla_user_id } = body;
       if (!tesla_user_id) {

@@ -239,7 +239,7 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                 <strong style={{ color: '#fff' }}>🔄 Refresh</strong> re-checks your car's current location if you've moved.
               </p>
               <p style={{ margin: 0 }}>
-                <strong style={{ color: '#fff' }}>🔋 Won't drain your battery.</strong> Our server checks every 15 minutes — if your car is awake (e.g. you just drove somewhere), we automatically update your location. If it's asleep, we use your last known spot. We never wake your car or send commands.
+                <strong style={{ color: '#fff' }}>🔋 Won't drain your battery.</strong> Our server checks every 5 minutes — if your car is awake (e.g. you just drove somewhere), we automatically update your location. If it's asleep, we use your last known spot. We never wake your car or send commands.
               </p>
             </div>
             <button
