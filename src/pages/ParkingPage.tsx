@@ -175,7 +175,7 @@ export default function ParkingPage() {
   }
 
   return (
-    <div className="bg-zinc-950 min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: '#09090b', color: '#fff' }}>
       {/* Landing state */}
       {state === 'landing' && (
         <TeslaConnect onConnecting={() => setState('connecting')} />
