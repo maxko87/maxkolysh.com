@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../utils/supabase';
 
 interface NotificationPrefsProps {
   email: string | null;
@@ -24,20 +23,29 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load existing prefs from DB
+  const SUPABASE_URL = 'https://vjnkdpovepqlsrdzqowd.supabase.co';
+
+  // Load existing prefs from DB via edge function
   useEffect(() => {
     if (!teslaUserId) return;
     
     (async () => {
       try {
-        const { data } = await supabase
-          .from('tesla_users')
-          .select('notification_prefs')
-          .eq('tesla_user_id', teslaUserId)
-          .single();
-        
-        if (data?.notification_prefs) {
-          setPrefs(data.notification_prefs);
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/tesla-proxy`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: '_internal/get-prefs',
+            method: 'POST',
+            token: '',
+            body: { tesla_user_id: teslaUserId },
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.notification_prefs) {
+            setPrefs(data.notification_prefs);
+          }
         }
       } catch {
         // Use defaults
@@ -51,12 +59,18 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
     setError(null);
 
     try {
-      const { error: dbError } = await supabase
-        .from('tesla_users')
-        .update({ notification_prefs: prefs })
-        .eq('tesla_user_id', teslaUserId);
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/tesla-proxy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          endpoint: '_internal/save-prefs',
+          method: 'POST',
+          token: '',
+          body: { tesla_user_id: teslaUserId, notification_prefs: prefs },
+        }),
+      });
 
-      if (dbError) throw dbError;
+      if (!res.ok) throw new Error('Failed to save');
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
