@@ -42,8 +42,9 @@ export default function ParkingPage() {
   const [result, setResult] = useState<NearestSegmentResult | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [startOverHovered, setStartOverHovered] = useState(false);
+  const [errorBtnHovered, setErrorBtnHovered] = useState(false);
 
-  // Handle OAuth callback on mount
   useEffect(() => {
     const code = searchParams.get('code');
     const stateParam = searchParams.get('state');
@@ -51,7 +52,6 @@ export default function ParkingPage() {
     if (code && stateParam) {
       handleOAuthCallback();
     } else if (getAccessToken()) {
-      // Already have valid tokens — go to vehicle selection
       setState('authenticated');
       loadVehicles();
     }
@@ -71,9 +71,7 @@ export default function ParkingPage() {
     }
 
     try {
-      // Clean URL
       setSearchParams({}, { replace: true });
-
       const tokens = await exchangeCode(validation.code);
       storeTokens(tokens);
       setState('authenticated');
@@ -92,7 +90,6 @@ export default function ParkingPage() {
       const vehicleList = await getVehicles();
       setVehicles(vehicleList);
 
-      // Auto-select if only one vehicle
       if (vehicleList.length === 1) {
         await handleVehicleSelect(vehicleList[0]);
       }
@@ -174,70 +171,130 @@ export default function ParkingPage() {
     setState('landing');
   }
 
+  const isLoading = state === 'connecting' || state === 'authenticated' || state === 'loading_location' || state === 'loading_schedule';
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12" style={{ backgroundColor: '#09090b', color: '#fff' }}>
-      {/* Landing state */}
-      {state === 'landing' && (
-        <TeslaConnect onConnecting={() => setState('connecting')} />
-      )}
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '3rem 1rem',
+      background: 'linear-gradient(180deg, #09090b 0%, #111114 50%, #0a0a0c 100%)',
+      color: '#ffffff',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Subtle background pattern */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(232, 33, 39, 0.04) 0%, transparent 60%)',
+        pointerEvents: 'none',
+      }} />
 
-      {/* Connecting / Loading states */}
-      {(state === 'connecting' || state === 'authenticated' || state === 'loading_location' || state === 'loading_schedule') && (
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-          <p className="text-zinc-400">{statusMessage}</p>
-        </div>
-      )}
+      <div style={{ position: 'relative', zIndex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Landing state */}
+        {state === 'landing' && (
+          <TeslaConnect onConnecting={() => setState('connecting')} />
+        )}
 
-      {/* Vehicle selection */}
-      {state === 'selecting_vehicle' && (
-        <VehicleSelect
-          vehicles={vehicles}
-          onSelect={handleVehicleSelect}
-          loading={vehicles.length === 0}
-        />
-      )}
-
-      {/* Results */}
-      {state === 'results' && result && (
-        <div className="flex flex-col items-center gap-6 w-full max-w-lg">
-          {location && (
-            <ParkingMap
-              latitude={location.latitude}
-              longitude={location.longitude}
-              streetName={result.feature.properties.Corridor}
-            />
-          )}
-          <CleaningSchedule
-            result={result}
-            onRefresh={handleRefresh}
-            refreshing={refreshing}
-          />
-          <button
-            onClick={handleStartOver}
-            className="text-sm text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
-          >
-            Disconnect & Start Over
-          </button>
-        </div>
-      )}
-
-      {/* Error state */}
-      {state === 'error' && (
-        <div className="flex flex-col items-center gap-4 max-w-md text-center">
-          <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-            <span className="text-2xl">⚠️</span>
+        {/* Loading states */}
+        {isLoading && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
+            <div style={{
+              width: '36px', height: '36px',
+              border: '2.5px solid rgba(255,255,255,0.1)',
+              borderTopColor: '#e82127',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem' }}>{statusMessage}</p>
+            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
           </div>
-          <h2 className="text-xl font-bold text-white">Something went wrong</h2>
-          <p className="text-zinc-400">{error}</p>
-          <button
-            onClick={handleStartOver}
-            className="px-6 py-2.5 bg-white/10 hover:bg-white/15 text-white rounded-lg transition-colors cursor-pointer"
-          >
-            Start Over
-          </button>
-        </div>
-      )}
+        )}
+
+        {/* Vehicle selection */}
+        {state === 'selecting_vehicle' && (
+          <VehicleSelect
+            vehicles={vehicles}
+            onSelect={handleVehicleSelect}
+            loading={vehicles.length === 0}
+          />
+        )}
+
+        {/* Results */}
+        {state === 'results' && result && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '32rem' }}>
+            {location && (
+              <ParkingMap
+                latitude={location.latitude}
+                longitude={location.longitude}
+                streetName={result.feature.properties.Corridor}
+              />
+            )}
+            <CleaningSchedule
+              result={result}
+              onRefresh={handleRefresh}
+              refreshing={refreshing}
+            />
+            <button
+              onClick={handleStartOver}
+              onMouseEnter={() => setStartOverHovered(true)}
+              onMouseLeave={() => setStartOverHovered(false)}
+              style={{
+                fontSize: '0.8rem',
+                color: startOverHovered ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'color 0.2s',
+                padding: '0.5rem',
+              }}
+            >
+              Disconnect & Start Over
+            </button>
+          </div>
+        )}
+
+        {/* Error state */}
+        {state === 'error' && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', maxWidth: '28rem', textAlign: 'center' }}>
+            <div style={{
+              width: '56px', height: '56px',
+              borderRadius: '50%',
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+            }}>
+              ⚠️
+            </div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0 }}>Something went wrong</h2>
+            <p style={{ color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.5 }}>{error}</p>
+            <button
+              onClick={handleStartOver}
+              onMouseEnter={() => setErrorBtnHovered(true)}
+              onMouseLeave={() => setErrorBtnHovered(false)}
+              style={{
+                padding: '0.65rem 1.5rem',
+                background: errorBtnHovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.06)',
+                color: '#fff',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontSize: '0.9rem',
+              }}
+            >
+              Start Over
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

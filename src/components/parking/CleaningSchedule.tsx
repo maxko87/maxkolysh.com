@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { NearestSegmentResult } from '../../utils/streetCleaning';
 import { getCleaningStatus, formatCleaningTime } from '../../utils/streetCleaning';
 
@@ -7,48 +8,78 @@ interface CleaningScheduleProps {
   refreshing?: boolean;
 }
 
+const statusColors: Record<string, { bg: string; text: string; border: string }> = {
+  red: { bg: 'rgba(239, 68, 68, 0.15)', text: '#f87171', border: 'rgba(239, 68, 68, 0.3)' },
+  yellow: { bg: 'rgba(234, 179, 8, 0.15)', text: '#facc15', border: 'rgba(234, 179, 8, 0.3)' },
+  green: { bg: 'rgba(74, 222, 128, 0.15)', text: '#4ade80', border: 'rgba(74, 222, 128, 0.3)' },
+};
+
 export default function CleaningSchedule({ result, onRefresh, refreshing }: CleaningScheduleProps) {
+  const [refreshHovered, setRefreshHovered] = useState(false);
   const { feature, distance, sides } = result;
   const { Corridor, Limits } = feature.properties;
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-lg">
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '32rem' }}>
       {/* Street info header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-white">{Corridor}</h2>
-        <p className="text-zinc-400">{Limits}</p>
-        <p className="text-xs text-zinc-600">{Math.round(distance)}m from your car</p>
+      <div style={{ textAlign: 'center' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: 0 }}>{Corridor}</h2>
+        <p style={{ color: 'rgba(255,255,255,0.5)', margin: '0.35rem 0 0 0' }}>{Limits}</p>
+        <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', margin: '0.35rem 0 0 0' }}>
+          {Math.round(distance)}m from your car
+        </p>
       </div>
 
       {/* Cleaning sides */}
       {sides.length === 0 ? (
-        <div className="p-6 bg-white/5 border border-white/10 rounded-xl text-center">
-          <p className="text-zinc-400">No upcoming cleaning scheduled for this block.</p>
+        <div style={{
+          padding: '1.5rem',
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '16px',
+          textAlign: 'center',
+        }}>
+          <p style={{ color: 'rgba(255,255,255,0.45)', margin: 0 }}>No upcoming cleaning scheduled for this block.</p>
         </div>
       ) : (
-        <div className="w-full space-y-4">
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {sides.map(({ label, data }) => {
             const status = data.NextCleaning ? getCleaningStatus(data.NextCleaning) : null;
+            const colors = status ? statusColors[status.color] || statusColors.green : null;
 
             return (
               <div
                 key={label}
-                className="p-5 bg-white/5 border border-white/10 rounded-xl space-y-3"
+                style={{
+                  padding: '1.25rem',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-zinc-400 uppercase tracking-wide">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.4)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}>
                     {label}
                   </span>
-                  {status && (
-                    <span
-                      className={`text-sm font-medium px-2.5 py-0.5 rounded-full ${
-                        status.color === 'red'
-                          ? 'bg-red-500/20 text-red-400'
-                          : status.color === 'yellow'
-                          ? 'bg-yellow-500/20 text-yellow-400'
-                          : 'bg-green-500/20 text-green-400'
-                      }`}
-                    >
+                  {status && colors && (
+                    <span style={{
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '999px',
+                      background: colors.bg,
+                      color: colors.text,
+                      border: `1px solid ${colors.border}`,
+                    }}>
                       {status.emoji} {status.label}
                     </span>
                   )}
@@ -57,29 +88,40 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                 {data.NextCleaning && (
                   <>
                     <div>
-                      <p className="text-white text-lg font-semibold">
+                      <p style={{ color: '#fff', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>
                         {formatCleaningTime(data.NextCleaning)}
                       </p>
-                      <p className="text-sm text-zinc-400">
+                      <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.4)', margin: '0.2rem 0 0 0' }}>
                         {data.FromHour} – {data.ToHour} • {data.WeekDay}s
                       </p>
                     </div>
 
                     {status && (
-                      <p className={`text-sm ${
-                        status.color === 'red' ? 'text-red-400' : 'text-zinc-500'
-                      }`}>
+                      <p style={{
+                        fontSize: '0.875rem',
+                        color: status.color === 'red' ? '#f87171' : 'rgba(255,255,255,0.35)',
+                        margin: 0,
+                      }}>
                         {status.timeUntil}
                       </p>
                     )}
 
-                    <div className="flex gap-3 pt-1">
+                    <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.25rem' }}>
                       {data.NextCleaningCalendarLink && (
                         <a
                           href={data.NextCleaningCalendarLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-lg text-white transition-colors"
+                          style={{
+                            fontSize: '0.8rem',
+                            padding: '0.4rem 0.75rem',
+                            background: 'rgba(255,255,255,0.08)',
+                            borderRadius: '10px',
+                            color: '#fff',
+                            textDecoration: 'none',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            transition: 'background 0.2s',
+                          }}
                         >
                           📅 Add to Calendar
                         </a>
@@ -87,7 +129,7 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                     </div>
 
                     {data.NextNextCleaning && (
-                      <p className="text-xs text-zinc-600">
+                      <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', margin: 0 }}>
                         Following: {formatCleaningTime(data.NextNextCleaning)}
                       </p>
                     )}
@@ -100,11 +142,23 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
       )}
 
       {/* Actions */}
-      <div className="flex gap-3">
+      <div style={{ display: 'flex', gap: '0.75rem' }}>
         <button
           onClick={onRefresh}
           disabled={refreshing}
-          className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+          onMouseEnter={() => setRefreshHovered(true)}
+          onMouseLeave={() => setRefreshHovered(false)}
+          style={{
+            padding: '0.6rem 1.25rem',
+            background: refreshHovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.06)',
+            color: '#fff',
+            fontSize: '0.875rem',
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            transition: 'all 0.2s',
+            opacity: refreshing ? 0.5 : 1,
+            cursor: refreshing ? 'default' : 'pointer',
+          }}
         >
           {refreshing ? 'Refreshing...' : '🔄 Refresh Location'}
         </button>
