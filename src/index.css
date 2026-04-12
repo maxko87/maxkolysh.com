@@ -15,6 +15,27 @@
   animation: confetti-fall linear forwards;
 }
 
+/* Custom tooltip for TweetLibs vote buttons */
+.tl-tooltip-wrap .tl-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #e7e9ea;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  z-index: 10;
+}
+.tl-tooltip-wrap:hover .tl-tooltip {
+  opacity: 1;
+}
+
 /* Global Styles - matching original site */
 * {
   margin: 0;

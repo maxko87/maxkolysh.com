@@ -299,7 +299,7 @@ export default function TweetCard({
         })}
       </div>
 
-      {/* Footer: likes / retweets */}
+      {/* Footer: likes / retweets / link */}
       <div
         style={{
           display: 'flex',
@@ -323,6 +323,18 @@ export default function TweetCard({
           </svg>
           {formatCount(tweet.retweets)}
         </span>
+        <a
+          href={`https://x.com/search?q=from:${tweet.handle.replace('@', '')} ${encodeURIComponent(tweet.text.slice(0, 30))}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ marginLeft: 'auto', color: '#71767b', display: 'flex', alignItems: 'center', transition: 'color 0.15s' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#a1a5ab')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#71767b')}
+        >
+          <svg style={{ width: '15px', height: '15px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+          </svg>
+        </a>
       </div>
     </div>
   );

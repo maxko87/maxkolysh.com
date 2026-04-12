@@ -120,7 +120,7 @@ function Leaderboard({ entries, compact }: { entries: LeaderboardEntry[]; compac
   );
 }
 
-const ROUND_SIZE = 10;
+const ROUND_SIZE = 5;
 
 const C = {
   bg: '#000000',
@@ -801,42 +801,48 @@ export default function TweetLibsPage() {
                   </span>
                   {/* Vote buttons */}
                   <div style={{ display: 'flex', gap: '4px' }}>
-                    <button
-                      onClick={() => handleVote(currentTweet.id, 1)}
-                      style={{
-                        padding: '6px 10px',
-                        background: voted[currentTweet.id] === 1 ? 'rgba(0,186,124,0.15)' : 'transparent',
-                        border: `1px solid ${voted[currentTweet.id] === 1 ? C.green : C.border}`,
-                        borderRadius: '8px',
-                        color: voted[currentTweet.id] === 1 ? C.green : C.secondary,
-                        fontSize: '16px',
-                        cursor: voted[currentTweet.id] ? 'default' : 'pointer',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.15s',
-                        opacity: voted[currentTweet.id] === -1 ? 0.3 : 1,
-                      }}
-                      title="Good tweet"
-                    >
-                      👍
-                    </button>
-                    <button
-                      onClick={() => handleVote(currentTweet.id, -1)}
-                      style={{
-                        padding: '6px 10px',
-                        background: voted[currentTweet.id] === -1 ? 'rgba(244,33,46,0.15)' : 'transparent',
-                        border: `1px solid ${voted[currentTweet.id] === -1 ? C.red : C.border}`,
-                        borderRadius: '8px',
-                        color: voted[currentTweet.id] === -1 ? C.red : C.secondary,
-                        fontSize: '16px',
-                        cursor: voted[currentTweet.id] ? 'default' : 'pointer',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.15s',
-                        opacity: voted[currentTweet.id] === 1 ? 0.3 : 1,
-                      }}
-                      title="Bad tweet"
-                    >
-                      👎
-                    </button>
+                    <span className="tl-tooltip-wrap" style={{ position: 'relative' }}>
+                      <button
+                        onClick={() => handleVote(currentTweet.id, 1)}
+                        style={{
+                          padding: '6px 10px',
+                          background: voted[currentTweet.id] === 1 ? 'rgba(0,186,124,0.15)' : 'transparent',
+                          border: `1px solid ${voted[currentTweet.id] === 1 ? C.green : C.border}`,
+                          borderRadius: '8px',
+                          color: voted[currentTweet.id] === 1 ? C.green : C.secondary,
+                          fontSize: '16px',
+                          cursor: voted[currentTweet.id] ? 'default' : 'pointer',
+                          fontFamily: 'inherit',
+                          transition: 'all 0.15s',
+                          opacity: voted[currentTweet.id] === -1 ? 0.3 : 1,
+                        }}
+                        aria-label="Good tweet"
+                      >
+                        👍
+                      </button>
+                      <span className="tl-tooltip">Good tweet</span>
+                    </span>
+                    <span className="tl-tooltip-wrap" style={{ position: 'relative' }}>
+                      <button
+                        onClick={() => handleVote(currentTweet.id, -1)}
+                        style={{
+                          padding: '6px 10px',
+                          background: voted[currentTweet.id] === -1 ? 'rgba(244,33,46,0.15)' : 'transparent',
+                          border: `1px solid ${voted[currentTweet.id] === -1 ? C.red : C.border}`,
+                          borderRadius: '8px',
+                          color: voted[currentTweet.id] === -1 ? C.red : C.secondary,
+                          fontSize: '16px',
+                          cursor: voted[currentTweet.id] ? 'default' : 'pointer',
+                          fontFamily: 'inherit',
+                          transition: 'all 0.15s',
+                          opacity: voted[currentTweet.id] === 1 ? 0.3 : 1,
+                        }}
+                        aria-label="Bad tweet"
+                      >
+                        👎
+                      </button>
+                      <span className="tl-tooltip">Bad tweet</span>
+                    </span>
                   </div>
                   <button
                     onClick={handleNext}
