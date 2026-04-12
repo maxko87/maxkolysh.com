@@ -3,10 +3,10 @@
 const TESLA_AUTH_URL = 'https://auth.tesla.com/oauth2/v3/authorize';
 // Token exchange via Supabase Edge Function
 const FLEET_API_BASE = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
-const TESLA_CLIENT_ID = '39a99319-b708-4245-a29f-6907373f37ad';
-const TESLA_REDIRECT_URI = 'https://maxkolysh.com/parking';
-const SUPABASE_URL = 'https://vjnkdpovepqlsrdzqowd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqbmtkcG92ZXBxbHNyZHpxb3dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzEzMDksImV4cCI6MjA4Mjk0NzMwOX0.XvSX6nUk6Tjyx16cKrb9NvtlXExBzzKILUP8kKdnKsQ';
+const TESLA_CLIENT_ID = import.meta.env.VITE_TESLA_CLIENT_ID || '';
+const TESLA_REDIRECT_URI = `${window.location.origin}/parking`;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 export interface TeslaTokens {
   access_token: string;
