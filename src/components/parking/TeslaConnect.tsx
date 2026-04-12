@@ -15,6 +15,16 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2.5rem', maxWidth: '560px', width: '100%' }}>
+      <style>{`
+        @media (max-width: 480px) {
+          .parking-steps-grid {
+            flex-direction: column !important;
+          }
+          .parking-steps-grid > div {
+            width: 100% !important;
+          }
+        }
+      `}</style>
       {/* Tesla car silhouette with glow */}
       <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {/* Glow effect */}
@@ -48,33 +58,35 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
           lineHeight: 1.1,
           margin: 0,
         }}>
-          SF Street Cleaning
+          Don't Get Towed
         </h1>
         <p style={{
           fontSize: '1.125rem',
-          color: 'rgba(255,255,255,0.5)',
+          color: 'rgba(255,255,255,0.6)',
           maxWidth: '420px',
           margin: '0.75rem auto 0',
           lineHeight: 1.6,
         }}>
-          Connect your Tesla to see when street cleaning happens where you're parked.
-          Never get a ticket again.
+          Connect your Tesla. We'll check SF street cleaning where you're parked.
         </p>
       </div>
 
       {/* How it works — step cards */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        display: 'flex',
+        flexWrap: 'wrap' as const,
         gap: '1rem',
         width: '100%',
-      }}>
+        justifyContent: 'center',
+      }} className="parking-steps-grid">
         {[
-          { step: '1', label: 'Connect your Tesla', icon: '🔗' },
-          { step: '2', label: 'We read your GPS', icon: '📍' },
-          { step: '3', label: 'See cleaning times', icon: '🧹' },
+          { step: '1', label: 'Connect Tesla', icon: '🔗' },
+          { step: '2', label: 'Read GPS', icon: '📍' },
+          { step: '3', label: 'See schedule', icon: '🧹' },
         ].map(({ step, label, icon }) => (
           <div key={step} style={{
+            flex: '1 1 120px',
+            minWidth: '120px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -100,7 +112,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
             }}>
               {step}
             </div>
-            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.55)', textAlign: 'center', lineHeight: 1.4 }}>
+            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', textAlign: 'center', lineHeight: 1.4 }}>
               {icon} {label}
             </span>
           </div>
@@ -129,14 +141,17 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
             ? '0 8px 30px rgba(232, 33, 39, 0.4), 0 0 0 1px rgba(232, 33, 39, 0.2)'
             : '0 4px 20px rgba(232, 33, 39, 0.25)',
           letterSpacing: '0.01em',
+          outline: 'none',
         }}
+        onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(232, 33, 39, 0.5), 0 4px 20px rgba(232, 33, 39, 0.25)'; }}
+        onBlur={(e) => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(232, 33, 39, 0.25)'; }}
       >
         Connect Tesla →
       </button>
 
       <p style={{
         fontSize: '0.75rem',
-        color: 'rgba(255,255,255,0.25)',
+        color: 'rgba(255,255,255,0.4)',
         maxWidth: '380px',
         textAlign: 'center',
         lineHeight: 1.5,

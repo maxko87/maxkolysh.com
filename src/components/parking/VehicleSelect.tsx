@@ -21,7 +21,7 @@ export default function VehicleSelect({ vehicles, onSelect, loading }: VehicleSe
           animation: 'spin 1s linear infinite',
         }} />
         <p style={{ color: 'rgba(255,255,255,0.45)' }}>Loading your vehicles...</p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+
       </div>
     );
   }

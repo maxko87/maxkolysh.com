@@ -24,8 +24,8 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
       {/* Street info header */}
       <div style={{ textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: 0 }}>{Corridor}</h2>
-        <p style={{ color: 'rgba(255,255,255,0.5)', margin: '0.35rem 0 0 0' }}>{Limits}</p>
-        <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', margin: '0.35rem 0 0 0' }}>
+        <p style={{ color: 'rgba(255,255,255,0.6)', margin: '0.35rem 0 0 0' }}>{Limits}</p>
+        <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: '0.35rem 0 0 0' }}>
           {Math.round(distance)}m from your car
         </p>
       </div>
@@ -39,7 +39,7 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
           borderRadius: '16px',
           textAlign: 'center',
         }}>
-          <p style={{ color: 'rgba(255,255,255,0.45)', margin: 0 }}>No upcoming cleaning scheduled for this block.</p>
+          <p style={{ color: 'rgba(255,255,255,0.6)', margin: 0 }}>No upcoming cleaning scheduled for this block.</p>
         </div>
       ) : (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -129,7 +129,7 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                     </div>
 
                     {data.NextNextCleaning && (
-                      <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', margin: 0 }}>
+                      <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
                         Following: {formatCleaningTime(data.NextNextCleaning)}
                       </p>
                     )}

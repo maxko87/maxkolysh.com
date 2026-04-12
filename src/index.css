@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes confetti-fall {
   0%   { transform: translateY(-10px) rotate(0deg);   opacity: 1; }
   80%  { opacity: 1; }

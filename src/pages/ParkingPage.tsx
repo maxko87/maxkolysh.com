@@ -211,7 +211,7 @@ export default function ParkingPage() {
               animation: 'spin 0.8s linear infinite',
             }} />
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem' }}>{statusMessage}</p>
-            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+
           </div>
         )}
 
