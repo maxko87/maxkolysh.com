@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { NearestSegmentResult } from '../../utils/streetCleaning';
-import { getCleaningStatus, formatCleaningRange } from '../../utils/streetCleaning';
+import { getCleaningStatus } from '../../utils/streetCleaning';
 
 interface CleaningScheduleProps {
   result: NearestSegmentResult;
@@ -8,246 +8,300 @@ interface CleaningScheduleProps {
   refreshing?: boolean;
 }
 
-const statusColors: Record<string, { bg: string; text: string; border: string }> = {
-  red: { bg: 'rgba(239, 68, 68, 0.15)', text: '#f87171', border: 'rgba(239, 68, 68, 0.3)' },
-  yellow: { bg: 'rgba(234, 179, 8, 0.15)', text: '#facc15', border: 'rgba(234, 179, 8, 0.3)' },
-  green: { bg: 'rgba(74, 222, 128, 0.15)', text: '#4ade80', border: 'rgba(74, 222, 128, 0.3)' },
-};
-
 function getOrdinal(n: number): string {
   const suffixes: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th' };
   return suffixes[n] || `${n}th`;
 }
 
-function getRecurringPattern(startStr: string, nextStartStr: string | null, endStr: string): string | null {
+function getRecurringPattern(startStr: string, nextStartStr: string | null, _endStr: string): string | null {
   if (!nextStartStr) return null;
 
   const start = new Date(startStr);
   const nextStart = new Date(nextStartStr);
-  const end = new Date(endStr);
 
   const dayOfWeek = start.toLocaleDateString('en-US', { weekday: 'long' });
   const weekOfMonth1 = Math.ceil(start.getDate() / 7);
   const weekOfMonth2 = Math.ceil(nextStart.getDate() / 7);
 
-  const startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  const endTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  const timeRange = `${startTime} – ${endTime}`;
-
   const gapDays = Math.round((nextStart.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
   if (gapDays >= 25) {
-    // Once a month
-    return `Every ${getOrdinal(weekOfMonth1)} ${dayOfWeek}, ${timeRange}`;
+    return `${getOrdinal(weekOfMonth1)} ${dayOfWeek}`;
   } else {
-    // Twice a month
     const weeks = [weekOfMonth1, weekOfMonth2].sort();
-    return `Every ${getOrdinal(weeks[0])} and ${getOrdinal(weeks[1])} ${dayOfWeek}, ${timeRange}`;
+    return `${getOrdinal(weeks[0])} & ${getOrdinal(weeks[1])} ${dayOfWeek}`;
   }
 }
 
-function parseStreetIdentifier(streetId: string | undefined, corridor: string): string | null {
+function getDaysUntil(dateStr: string): number {
+  const now = new Date();
+  const target = new Date(dateStr);
+  return Math.max(0, Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+}
+
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function parseLimits(streetId: string | undefined): string | null {
   if (!streetId) return null;
-  // StreetIdentifier looks like "Elizabeth St, between Diamond St and Douglass St"
-  const betweenMatch = streetId.match(/,?\s*(between\s+.+)/i);
-  if (betweenMatch) return betweenMatch[1];
-  // If it's different from corridor, show it; otherwise null
-  if (streetId !== corridor) return streetId;
+  const match = streetId.match(/between\s+(.+)\s+and\s+(.+)/i);
+  if (match) return `${match[1]} – ${match[2]}`;
   return null;
 }
 
 export default function CleaningSchedule({ result, onRefresh, refreshing }: CleaningScheduleProps) {
-  const [refreshHovered, setRefreshHovered] = useState(false);
+  const [showOtherSide, setShowOtherSide] = useState(false);
   const { feature, sides, parkedSide } = result;
   const { Corridor, StreetIdentifier } = feature.properties;
 
-  const subtitle = parseStreetIdentifier(StreetIdentifier, Corridor);
+  const limits = parseLimits(StreetIdentifier);
+
+  // Split into parked side and other side
+  const parkedSides = sides.filter(s => parkedSide === null || s.label === parkedSide);
+  const otherSides = sides.filter(s => parkedSide !== null && s.label !== parkedSide);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '32rem' }}>
-      {/* Street info header */}
-      <div style={{ textAlign: 'center' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#fff', margin: 0 }}>
-          You're parked on {Corridor}
-        </h2>
-        {subtitle && (
-          <p style={{ color: 'rgba(255,255,255,0.5)', margin: '0.35rem 0 0 0', fontSize: '0.85rem' }}>
-            {subtitle}
+    <div style={{ width: '100%', maxWidth: '32rem' }}>
+      {/* Header: vehicle + street */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1rem' }}>🚗</span>
+            <span style={{ fontSize: '0.95rem', color: '#8A8A8E' }}>Tesla</span>
+          </div>
+          <button
+            onClick={onRefresh}
+            disabled={refreshing}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: refreshing ? 'default' : 'pointer',
+              fontSize: '1.1rem',
+              opacity: refreshing ? 0.4 : 0.5,
+              transition: 'opacity 0.2s',
+              padding: '4px',
+            }}
+          >
+            🔄
+          </button>
+        </div>
+        <h1 style={{
+          fontSize: '1.75rem',
+          fontWeight: 700,
+          color: '#fff',
+          margin: '0.25rem 0 0 0',
+          lineHeight: 1.2,
+        }}>
+          {Corridor}
+        </h1>
+        {limits && (
+          <p style={{
+            fontSize: '0.95rem',
+            color: '#8A8A8E',
+            margin: '0.25rem 0 0 0',
+          }}>
+            {limits}
           </p>
         )}
       </div>
 
-      {/* Cleaning sides */}
+      {/* Cleaning cards */}
       {sides.length === 0 ? (
-        <div style={{
-          padding: '1.5rem',
-          background: 'rgba(255,255,255,0.06)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '16px',
-          textAlign: 'center',
-        }}>
-          <p style={{ color: 'rgba(255,255,255,0.6)', margin: 0 }}>No upcoming cleaning scheduled for this block.</p>
-        </div>
+        <Card>
+          <p style={{ color: '#8A8A8E', margin: 0, textAlign: 'center' }}>
+            No upcoming cleaning scheduled for this block.
+          </p>
+        </Card>
       ) : (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {sides.map(({ label, relevant }) => {
+        <>
+          {parkedSides.map(({ label, relevant }) => {
             if (!relevant) return null;
-            const status = getCleaningStatus(relevant.start, relevant.end);
-            const colors = statusColors[status.color] || statusColors.green;
-            const isParkedHere = parkedSide !== null && label === parkedSide;
-            const isOtherSide = parkedSide !== null && label !== parkedSide;
-            const isHappeningNow = status.label === 'Happening Now';
-
-            const recurringPattern = getRecurringPattern(relevant.start, relevant.nextStart, relevant.end);
-
             return (
-              <div
+              <SideCard
                 key={label}
-                style={{
-                  padding: '1.25rem',
-                  background: isParkedHere
-                    ? 'rgba(59, 130, 246, 0.08)'
-                    : 'rgba(255,255,255,0.06)',
-                  border: isParkedHere
-                    ? '1px solid rgba(59, 130, 246, 0.3)'
-                    : '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                  opacity: isOtherSide ? 0.55 : 1,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: isParkedHere ? 'rgba(147, 197, 253, 0.9)' : 'rgba(255,255,255,0.4)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}>
-                      {label}
-                    </span>
-                    {isParkedHere && (
-                      <span style={{
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        padding: '0.15rem 0.5rem',
-                        borderRadius: '999px',
-                        background: 'rgba(59, 130, 246, 0.2)',
-                        color: '#93c5fd',
-                        border: '1px solid rgba(59, 130, 246, 0.3)',
-                      }}>
-                        📍 You're here
-                      </span>
-                    )}
-                    {isOtherSide && (
-                      <span style={{
-                        fontSize: '0.65rem',
-                        color: 'rgba(255,255,255,0.3)',
-                      }}>
-                        Other side
-                      </span>
-                    )}
-                  </div>
-                  <span style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    padding: '0.25rem 0.75rem',
-                    borderRadius: '999px',
-                    background: colors.bg,
-                    color: colors.text,
-                    border: `1px solid ${colors.border}`,
-                  }}>
-                    {status.emoji} {status.label}
-                  </span>
-                </div>
-
-                {/* Main cleaning time */}
-                <div>
-                  <p style={{ color: '#fff', fontSize: '1.05rem', fontWeight: 600, margin: 0 }}>
-                    {formatCleaningRange(relevant.start, relevant.end)}
-                  </p>
-                  {isHappeningNow && isParkedHere ? (
-                    <p style={{
-                      fontSize: '1rem',
-                      color: '#ef4444',
-                      margin: '0.5rem 0 0 0',
-                      fontWeight: 700,
-                      letterSpacing: '0.02em',
-                    }}>
-                      🚨 MOVE YOUR CAR!
-                    </p>
-                  ) : (
-                    <p style={{
-                      fontSize: '0.95rem',
-                      color: status.color === 'red' ? '#f87171' : isParkedHere ? '#93c5fd' : 'rgba(255,255,255,0.45)',
-                      margin: '0.4rem 0 0 0',
-                      fontWeight: 600,
-                    }}>
-                      {status.timeUntil}
-                    </p>
-                  )}
-                </div>
-
-                {/* Recurring schedule pattern */}
-                {recurringPattern && (
-                  <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
-                    Recurring: {recurringPattern}
-                  </p>
-                )}
-
-                {/* Calendar link */}
-                {relevant.calendarLink && (
-                  <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.25rem' }}>
-                    <a
-                      href={relevant.calendarLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        fontSize: '0.8rem',
-                        padding: '0.4rem 0.75rem',
-                        background: 'rgba(255,255,255,0.08)',
-                        borderRadius: '10px',
-                        color: '#fff',
-                        textDecoration: 'none',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        transition: 'background 0.2s',
-                      }}
-                    >
-                      📅 Add to Calendar
-                    </a>
-                  </div>
-                )}
-              </div>
+                label={label}
+                relevant={relevant}
+                isParked={parkedSide !== null && label === parkedSide}
+              />
             );
           })}
-        </div>
-      )}
 
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <button
-          onClick={onRefresh}
-          disabled={refreshing}
-          onMouseEnter={() => setRefreshHovered(true)}
-          onMouseLeave={() => setRefreshHovered(false)}
+          {/* Show other side toggle */}
+          {otherSides.length > 0 && (
+            <>
+              <button
+                onClick={() => setShowOtherSide(!showOtherSide)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.35rem',
+                  width: '100%',
+                  background: 'none',
+                  border: 'none',
+                  color: '#8A8A8E',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  padding: '1rem 0',
+                }}
+              >
+                {showOtherSide ? 'Hide' : 'Show'} other side
+                <span style={{
+                  fontSize: '0.75rem',
+                  transform: showOtherSide ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.2s',
+                }}>
+                  ▾
+                </span>
+              </button>
+
+              {showOtherSide && otherSides.map(({ label, relevant }) => {
+                if (!relevant) return null;
+                return (
+                  <SideCard
+                    key={label}
+                    label={label}
+                    relevant={relevant}
+                    isParked={false}
+                  />
+                );
+              })}
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div style={{
+      background: '#141414',
+      border: '1px solid #2C2C2E',
+      borderRadius: '16px',
+      padding: '1.25rem',
+      ...style,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+interface SideCardProps {
+  label: string;
+  relevant: {
+    start: string;
+    end: string;
+    nextStart: string | null;
+    calendarLink: string | null;
+  };
+  isParked: boolean;
+}
+
+function SideCard({ label, relevant, isParked }: SideCardProps) {
+  const status = getCleaningStatus(relevant.start, relevant.end);
+  const daysUntil = getDaysUntil(relevant.start);
+  const dateStr = formatDate(relevant.start);
+  const recurringPattern = getRecurringPattern(relevant.start, relevant.nextStart, relevant.end);
+
+  const startTime = new Date(relevant.start).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const endTime = new Date(relevant.end).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const timeRange = `${startTime} – ${endTime}`;
+
+  const isUrgent = status.color === 'red';
+  const badgeColor = isUrgent ? '#f87171' : '#34C759';
+
+  return (
+    <Card style={{ marginBottom: '0rem' }}>
+      {/* Top row: side label + days badge */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span style={{ color: badgeColor, fontSize: '0.95rem' }}>📍</span>
+          <span style={{
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            color: '#8A8A8E',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+          }}>
+            {label}
+            {isParked && ' side'}
+          </span>
+        </div>
+
+        <span style={{
+          fontSize: '0.8rem',
+          fontWeight: 500,
+          color: badgeColor,
+          border: `1.5px solid ${badgeColor}`,
+          borderRadius: '999px',
+          padding: '0.2rem 0.7rem',
+        }}>
+          {status.label === 'Happening Now' ? 'NOW' : `${daysUntil} day${daysUntil !== 1 ? 's' : ''}`}
+        </span>
+      </div>
+
+      {/* Date */}
+      <p style={{
+        fontSize: '1.5rem',
+        fontWeight: 700,
+        color: '#fff',
+        margin: '0 0 0.25rem 0',
+      }}>
+        {dateStr}
+      </p>
+
+      {/* Time + recurring */}
+      <p style={{
+        fontSize: '0.9rem',
+        color: '#8A8A8E',
+        margin: '0 0 1rem 0',
+      }}>
+        {timeRange}{recurringPattern ? ` · ${recurringPattern}` : ''}
+      </p>
+
+      {/* Calendar button */}
+      {relevant.calendarLink && (
+        <a
+          href={relevant.calendarLink}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
-            padding: '0.6rem 1.25rem',
-            background: refreshHovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.06)',
-            color: '#fff',
-            fontSize: '0.875rem',
-            borderRadius: '12px',
-            border: '1px solid rgba(255,255,255,0.1)',
-            transition: 'all 0.2s',
-            opacity: refreshing ? 0.5 : 1,
-            cursor: refreshing ? 'default' : 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            fontSize: '0.9rem',
+            fontWeight: 500,
+            color: '#E0E0E0',
+            background: '#2C2C2E',
+            border: '1px solid #3A3A3C',
+            borderRadius: '10px',
+            padding: '0.55rem 0.85rem',
+            textDecoration: 'none',
+            transition: 'background 0.2s',
           }}
         >
-          {refreshing ? 'Refreshing...' : '🔄 Refresh Location'}
-        </button>
-      </div>
-    </div>
+          📅 Add to Calendar
+        </a>
+      )}
+
+      {/* Urgent warning */}
+      {isUrgent && isParked && (
+        <p style={{
+          fontSize: '1rem',
+          color: '#ef4444',
+          fontWeight: 700,
+          margin: '0.75rem 0 0 0',
+        }}>
+          🚨 MOVE YOUR CAR!
+        </p>
+      )}
+    </Card>
   );
 }
