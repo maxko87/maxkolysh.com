@@ -336,10 +336,7 @@ Deno.serve(async (req) => {
             emailHtml += `<p style="color: #999; font-size: 12px;">SF Street Cleaning Notifier<br><a href="https://maxkolysh.com/parking">maxkolysh.com/parking</a></p>`;
             emailHtml += `</div>`;
 
-            // Send
-            if (user.notify_telegram_chat_id) {
-              await sendTelegramMessage(user.notify_telegram_chat_id, telegramMsg);
-            }
+            // Send email notification
             if (user.email) {
               await sendEmailNotification(user.email, emailSubject, emailHtml);
             }
