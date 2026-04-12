@@ -105,7 +105,7 @@ export default function ParkingPage() {
     setStatusMessage('Waking up your car and getting location...');
 
     try {
-      const loc = await getLocationWithWake(vehicle.id);
+      const loc = await getLocationWithWake(vehicle.id, 6, setStatusMessage);
       setLocation(loc);
       await loadCleaningSchedule(loc.latitude, loc.longitude);
     } catch (err) {

@@ -170,19 +170,40 @@ export async function getVehicleLocation(vehicleId: number): Promise<VehicleLoca
 }
 
 // Wake vehicle and get location (with retries)
-export async function getLocationWithWake(vehicleId: number, maxRetries = 3): Promise<VehicleLocation> {
+// Tesla cars can take 15-30s to wake up, so we retry with increasing delays
+export async function getLocationWithWake(
+  vehicleId: number,
+  maxRetries = 6,
+  onStatus?: (msg: string) => void,
+): Promise<VehicleLocation> {
+  // First try — maybe car is already awake
+  try {
+    return await getVehicleLocation(vehicleId);
+  } catch {
+    // Car is asleep, wake it up
+    onStatus?.('Your car is asleep. Waking it up...');
+    try {
+      await wakeVehicle(vehicleId);
+    } catch {
+      // wake_up can fail too if car is offline, keep trying
+    }
+  }
+
+  // Retry with 5s intervals — car typically wakes in 10-30s
   for (let attempt = 0; attempt < maxRetries; attempt++) {
+    onStatus?.(`Waiting for car to wake up... (${attempt + 1}/${maxRetries})`);
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     try {
       return await getVehicleLocation(vehicleId);
-    } catch (error) {
-      if (attempt === 0) {
-        await wakeVehicle(vehicleId);
-        // Wait for vehicle to wake up
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-      } else if (attempt < maxRetries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-      } else {
-        throw error;
+    } catch {
+      if (attempt === Math.floor(maxRetries / 2)) {
+        // Try waking again halfway through
+        onStatus?.('Still waiting... sending another wake command...');
+        try { await wakeVehicle(vehicleId); } catch { /* ignore */ }
+      }
+      if (attempt === maxRetries - 1) {
+        throw new Error('Your car didn\'t wake up after 30 seconds. Make sure it has cell service and try again.');
       }
     }
   }
