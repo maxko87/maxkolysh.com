@@ -34,8 +34,8 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
       {sides.length === 0 ? (
         <div style={{
           padding: '1.5rem',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: '16px',
           textAlign: 'center',
         }}>
@@ -52,8 +52,8 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                 key={label}
                 style={{
                   padding: '1.25rem',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '16px',
                   display: 'flex',
                   flexDirection: 'column',

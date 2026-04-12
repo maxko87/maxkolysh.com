@@ -14,7 +14,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2.5rem', maxWidth: '560px', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', maxWidth: '560px', width: '100%' }}>
       <style>{`
         @media (max-width: 480px) {
           .parking-steps-grid {
@@ -26,7 +26,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
         }
       `}</style>
       {/* Tesla car silhouette with glow */}
-      <div style={{ position: 'relative', width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'relative', width: '200px', height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {/* Glow effect */}
         <div style={{
           position: 'absolute',
@@ -71,7 +71,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
         </p>
       </div>
 
-      {/* How it works — step cards */}
+      {/* How it works — step cards (2rem gap from heading) */}
       <div style={{
         display: 'flex',
         flexWrap: 'wrap' as const,
@@ -80,9 +80,9 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
         justifyContent: 'center',
       }} className="parking-steps-grid">
         {[
-          { step: '1', label: 'Connect Tesla', icon: '🔗' },
-          { step: '2', label: 'Read GPS', icon: '📍' },
-          { step: '3', label: 'See schedule', icon: '🧹' },
+          { step: '1', label: 'Link your car', icon: '🔗' },
+          { step: '2', label: 'Find your spot', icon: '📍' },
+          { step: '3', label: 'Get alerts', icon: '🧹' },
         ].map(({ step, label, icon }) => (
           <div key={step} style={{
             flex: '1 1 120px',
@@ -92,8 +92,8 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
             alignItems: 'center',
             gap: '0.75rem',
             padding: '1.25rem 0.75rem',
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: '16px',
             backdropFilter: 'blur(8px)',
           }}>
@@ -125,7 +125,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          padding: '1rem 3rem',
+          padding: '1rem 3.5rem',
           background: hovered
             ? 'linear-gradient(135deg, #ff2d33, #e82127)'
             : 'linear-gradient(135deg, #e82127, #c51d22)',
@@ -149,8 +149,26 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
         Connect Tesla →
       </button>
 
+      {/* Trust block */}
       <p style={{
-        fontSize: '0.75rem',
+        fontSize: '0.8rem',
+        color: 'rgba(255,255,255,0.35)',
+        margin: 0,
+        textAlign: 'center',
+      }}>
+        Built by{' '}
+        <a
+          href="https://maxkolysh.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'underline' }}
+        >
+          Max Kolysh
+        </a>
+      </p>
+
+      <p style={{
+        fontSize: '0.8rem',
         color: 'rgba(255,255,255,0.4)',
         maxWidth: '380px',
         textAlign: 'center',
