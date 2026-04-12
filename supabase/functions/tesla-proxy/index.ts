@@ -54,6 +54,14 @@ Deno.serve(async (req) => {
       if (body) fetchOptions.body = body;
     }
 
+    // Decode JWT to check scopes
+    try {
+      const parts = teslaToken.split('.');
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      console.log(`Token scopes: ${JSON.stringify(payload.scp)}, aud: ${JSON.stringify(payload.aud)}`);
+    } catch (e) {
+      console.log('Could not decode token');
+    }
     console.log(`Proxying ${req.method} ${teslaPath}`);
 
     const teslaResponse = await fetch(teslaUrl, fetchOptions);

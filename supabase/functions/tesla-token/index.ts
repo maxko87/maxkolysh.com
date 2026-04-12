@@ -57,6 +57,15 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Log token scopes for debugging
+    try {
+      const parts = tokenData.access_token.split('.');
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+      console.log("Token scopes:", JSON.stringify(payload.scp));
+      console.log("Token audience:", JSON.stringify(payload.aud));
+    } catch (e) {
+      console.log("Could not decode token");
+    }
     console.log("Tesla token exchange successful");
 
     return new Response(
