@@ -4,6 +4,122 @@ import { supabase, getSessionId } from '../utils/supabase';
 import TweetCard, { type Tweet } from '../components/tweetlibs/TweetCard';
 import Confetti from '../components/tweetlibs/Confetti';
 
+type QuestionResult = 'correct' | 'incorrect';
+
+interface LeaderboardEntry {
+  id: number;
+  player_name: string | null;
+  score: number;
+  total: number;
+  results: string;
+  created_at: string;
+  session_id: string;
+}
+
+function generateEmojiGrid(results: QuestionResult[]): string {
+  return results.map(r => r === 'correct' ? '🟩' : '⬛').join('');
+}
+
+function timeAgo(dateStr: string): string {
+  const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+async function fetchLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]> {
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const { data } = await supabase
+    .from('tweetlibs_scores')
+    .select('*')
+    .gte('created_at', sevenDaysAgo)
+    .order('score', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  return (data as LeaderboardEntry[] | null) ?? [];
+}
+
+async function submitScore(score: number, total: number, results: QuestionResult[], playerName?: string): Promise<void> {
+  try {
+    const emojiGrid = generateEmojiGrid(results);
+    await supabase.from('tweetlibs_scores').insert({
+      player_name: playerName || null,
+      score,
+      total,
+      results: emojiGrid,
+      session_id: getSessionId(),
+    });
+  } catch {
+    // silently fail if RLS blocks insert
+  }
+}
+
+function Leaderboard({ entries, compact }: { entries: LeaderboardEntry[]; compact?: boolean }) {
+  if (entries.length === 0) return null;
+  return (
+    <div style={{ width: '100%' }}>
+      <h3 style={{
+        color: C.text,
+        fontSize: compact ? '15px' : '17px',
+        fontWeight: 700,
+        margin: `0 0 ${compact ? '8' : '12'}px`,
+        fontFamily: 'inherit',
+        textAlign: 'center',
+      }}>
+        {compact ? '🏆 Recent Scores' : '🏆 Leaderboard (7 days)'}
+      </h3>
+      <div style={{
+        background: 'rgba(255,255,255,0.04)',
+        border: `1px solid ${C.border}`,
+        borderRadius: '12px',
+        overflow: 'hidden',
+      }}>
+        {entries.map((entry, i) => (
+          <div
+            key={entry.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: compact ? '8px 12px' : '10px 14px',
+              borderBottom: i < entries.length - 1 ? `1px solid ${C.border}` : 'none',
+              fontSize: compact ? '13px' : '14px',
+              fontFamily: 'inherit',
+            }}
+          >
+            <span style={{
+              color: i < 3 ? ['#FFD700', '#C0C0C0', '#CD7F32'][i] : C.secondary,
+              fontWeight: 700,
+              minWidth: '20px',
+              textAlign: 'center',
+            }}>
+              {i + 1}
+            </span>
+            <span style={{ color: C.text, fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {entry.player_name || 'Anonymous'}
+            </span>
+            {!compact && (
+              <span style={{ fontSize: '12px', letterSpacing: '1px' }}>
+                {entry.results}
+              </span>
+            )}
+            <span style={{ color: C.green, fontWeight: 700, whiteSpace: 'nowrap' }}>
+              {entry.score}/{entry.total}
+            </span>
+            <span style={{ color: C.secondary, fontSize: '12px', whiteSpace: 'nowrap' }}>
+              {timeAgo(entry.created_at)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const ROUND_SIZE = 10;
 
 const C = {
@@ -68,16 +184,52 @@ function EndScreen({
   score,
   total,
   onPlayAgain,
+  results,
 }: {
   score: number;
   total: number;
   onPlayAgain: () => void;
+  results: QuestionResult[];
 }) {
   const [copied, setCopied] = useState(false);
   const [shareHover, setShareHover] = useState(false);
   const [playHover, setPlayHover] = useState(false);
+  const [xHover, setXHover] = useState(false);
+  const [playerName, setPlayerName] = useState('');
+  const [nameSubmitted, setNameSubmitted] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const scoreSubmitted = useRef(false);
 
-  const shareText = `I got ${score}/${total} on TweetLibs 🧠🐦 maxkolysh.com/tweetlibs`;
+  const emojiGrid = generateEmojiGrid(results);
+  const shareText = `TweetLibs 🐦 ${score}/${total}\n\n${emojiGrid}\n\nmaxkolysh.com/tweetlibs`;
+
+  // Auto-submit score and fetch leaderboard on mount
+  useEffect(() => {
+    if (!scoreSubmitted.current) {
+      scoreSubmitted.current = true;
+      submitScore(score, total, results).then(() => {
+        fetchLeaderboard(10).then(setLeaderboard);
+      });
+    }
+  }, [score, total, results]);
+
+  const handleNameSubmit = async () => {
+    if (!playerName.trim()) return;
+    setNameSubmitted(true);
+    try {
+      const sessionId = getSessionId();
+      await supabase
+        .from('tweetlibs_scores')
+        .update({ player_name: playerName.trim() })
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      const fresh = await fetchLeaderboard(10);
+      setLeaderboard(fresh);
+    } catch {
+      // ignore
+    }
+  };
 
   const handleShare = async () => {
     try {
@@ -126,7 +278,7 @@ function EndScreen({
           textAlign: 'left',
         }}
       >
-        <p style={{ color: '#9ca3af', fontSize: '14px', fontFamily: 'monospace', margin: 0, wordBreak: 'break-word' }}>
+        <p style={{ color: '#9ca3af', fontSize: '14px', fontFamily: 'monospace', margin: 0, wordBreak: 'break-word', whiteSpace: 'pre-line' }}>
           {shareText}
         </p>
       </div>
@@ -178,6 +330,33 @@ function EndScreen({
           )}
         </button>
         <button
+          onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank')}
+          onMouseEnter={() => setXHover(true)}
+          onMouseLeave={() => setXHover(false)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '12px 24px',
+            background: xHover ? '#272727' : '#000000',
+            color: '#ffffff',
+            border: '1px solid #536471',
+            borderRadius: '12px',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'background 0.15s',
+            fontFamily: 'inherit',
+            minWidth: '160px',
+          }}
+        >
+          <svg style={{ width: '16px', height: '16px' }} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg>
+          Share on X
+        </button>
+        <button
           onClick={onPlayAgain}
           onMouseEnter={() => setPlayHover(true)}
           onMouseLeave={() => setPlayHover(false)}
@@ -205,6 +384,57 @@ function EndScreen({
           Play again
         </button>
       </div>
+
+      {/* Name input for leaderboard */}
+      <div style={{ marginTop: '24px', textAlign: 'center' }}>
+        {!nameSubmitted ? (
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
+            <input
+              type="text"
+              placeholder="Your name (optional)"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleNameSubmit(); }}
+              maxLength={20}
+              style={{
+                padding: '8px 14px',
+                background: C.card,
+                color: C.text,
+                border: `1px solid ${C.border}`,
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontFamily: 'inherit',
+                outline: 'none',
+                width: '180px',
+              }}
+            />
+            <button
+              onClick={handleNameSubmit}
+              style={{
+                padding: '8px 16px',
+                background: playerName.trim() ? C.blue : C.card,
+                color: playerName.trim() ? '#fff' : C.secondary,
+                border: `1px solid ${playerName.trim() ? C.blue : C.border}`,
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: playerName.trim() ? 'pointer' : 'default',
+                fontFamily: 'inherit',
+                transition: 'all 0.15s',
+              }}
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <p style={{ color: C.green, fontSize: '14px', margin: 0 }}>✓ Name saved!</p>
+        )}
+      </div>
+
+      {/* Leaderboard */}
+      <div style={{ marginTop: '24px' }}>
+        <Leaderboard entries={leaderboard} />
+      </div>
     </div>
   );
 }
@@ -218,11 +448,19 @@ export default function TweetLibsPage() {
 
   const [guess, setGuess] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
-  const [gameState, setGameState] = useState<'playing' | 'ended'>('playing');
+
   const [confettiKey, setConfettiKey] = useState(0);
   const [confettiActive, setConfettiActive] = useState(false);
   const [backHover, setBackHover] = useState(false);
   const [voted, setVoted] = useState<Record<number, 1 | -1>>({});
+  const [gameState, setGameState] = useState<'splash' | 'playing' | 'ended'>('splash');
+  const [splashVisible, setSplashVisible] = useState(false);
+  const [results, setResults] = useState<QuestionResult[]>([]);
+  const [splashLeaderboard, setSplashLeaderboard] = useState<LeaderboardEntry[]>([]);
+  // Trigger splash fade-in after mount
+  useEffect(() => {
+    requestAnimationFrame(() => setSplashVisible(true));
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -236,6 +474,8 @@ export default function TweetLibsPage() {
       }
       setLoading(false);
     })();
+    // Fetch splash leaderboard
+    fetchLeaderboard(5).then(setSplashLeaderboard);
   }, []);
 
   const currentTweet = tweets[currentIndex];
@@ -246,6 +486,7 @@ export default function TweetLibsPage() {
   const handleSkip = useCallback(() => {
     if (feedback !== null) return;
     setFeedback('incorrect');
+    setResults(prev => [...prev, 'incorrect']);
     canAdvance.current = false;
   }, [feedback]);
 
@@ -268,7 +509,9 @@ export default function TweetLibsPage() {
       setScore((s) => s + 1);
       setConfettiKey((k) => k + 1);
       setConfettiActive(true);
+      setResults(prev => [...prev, 'correct']);
     } else {
+      setResults(prev => [...prev, 'incorrect']);
     }
   }, [feedback, guess, currentTweet]);
 
@@ -324,6 +567,10 @@ export default function TweetLibsPage() {
     setFeedback(null);
     setGameState('playing');
     setConfettiActive(false);
+    setResults([]);
+  };
+  const handleStartGame = () => {
+    setGameState('playing');
   };
 
   if (loading) {
@@ -340,19 +587,97 @@ export default function TweetLibsPage() {
         minHeight: '100vh',
         backgroundColor: C.bg,
         color: C.text,
+        display: 'flex',
+        flexDirection: 'column' as const,
+        justifyContent: 'center',
+        alignItems: 'center',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         lineHeight: 1.5,
       }}
     >
       <Confetti key={confettiKey} active={confettiActive} />
-
       <div
         style={{
           maxWidth: '600px',
-          margin: '0 auto',
+          width: '100%',
           padding: '24px 16px 48px',
         }}
       >
+        {gameState === 'splash' ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column' as const,
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              padding: '48px 16px',
+              opacity: splashVisible ? 1 : 0,
+              transform: splashVisible ? 'translateY(0)' : 'translateY(16px)',
+              transition: 'opacity 0.6s ease, transform 0.6s ease',
+            }}
+          >
+            <h1
+              style={{
+                fontSize: '48px',
+                fontWeight: 800,
+                color: C.text,
+                margin: '0 0 12px',
+                letterSpacing: '-0.03em',
+                fontFamily: 'inherit',
+              }}
+            >
+              TweetLibs
+            </h1>
+            <p
+              style={{
+                fontSize: '18px',
+                color: '#9ca3af',
+                margin: '0 0 32px',
+                fontFamily: 'inherit',
+                maxWidth: '360px',
+                lineHeight: 1.5,
+              }}
+            >
+              Guess the missing word from iconic tweets
+            </p>
+            <button
+              onClick={handleStartGame}
+              style={{
+                padding: '14px 48px',
+                background: C.blue,
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '28px',
+                fontSize: '18px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'background 0.15s, transform 0.15s',
+                marginBottom: '16px',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#1a8cd8'; e.currentTarget.style.transform = 'scale(1.03)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = C.blue; e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              Play
+            </button>
+            <p
+              style={{
+                fontSize: '14px',
+                color: C.secondary,
+                margin: 0,
+                fontFamily: 'inherit',
+              }}
+            >
+              {ROUND_SIZE} rounds
+            </p>
+            {/* Mini leaderboard on splash */}
+            <div style={{ marginTop: '24px', width: '100%', maxWidth: '400px' }}>
+              <Leaderboard entries={splashLeaderboard} compact />
+            </div>
+          </div>
+        ) : (
+        <>
         {/* Header */}
         <div
           style={{
@@ -396,8 +721,8 @@ export default function TweetLibsPage() {
             >
               TweetLibs
             </h1>
-            <p style={{ color: C.dim, fontSize: '12px', margin: '2px 0 0', fontFamily: 'inherit' }}>
-              guess the missing word
+            <p style={{ color: '#9ca3af', fontSize: '15px', margin: '4px 0 0', fontFamily: 'inherit' }}>
+              Guess the missing word
             </p>
           </div>
 
@@ -410,7 +735,7 @@ export default function TweetLibsPage() {
         </div>
 
         {gameState === 'ended' ? (
-          <EndScreen score={score} total={ROUND_SIZE} onPlayAgain={handlePlayAgain} />
+          <EndScreen score={score} total={ROUND_SIZE} onPlayAgain={handlePlayAgain} results={results} />
         ) : (
           <>
             <ScoreBar current={currentIndex + 1} total={ROUND_SIZE} />
@@ -434,6 +759,7 @@ export default function TweetLibsPage() {
                   <button
                     onClick={handleSkip}
                     style={{
+                      flex: '0 0 30%',
                       padding: '12px 16px',
                       background: 'transparent',
                       color: C.secondary,
@@ -547,6 +873,8 @@ export default function TweetLibsPage() {
               Press Enter to {feedback !== null ? 'continue' : 'submit'}
             </p>
           </>
+        )}
+        </>
         )}
       </div>
     </div>

@@ -251,14 +251,18 @@ export default function TweetCard({
             );
           }
 
-          // Waiting for guess: simple underlined span with input
-          return (
+         // Waiting for guess: simple underlined span with input
+         return (
             <span
               key={i}
               style={{
                 display: 'inline-block',
-                borderBottom: '2px solid #1d9bf0',
-                minWidth: '120px',
+                background: 'rgba(29, 155, 240, 0.08)',
+                border: '2px solid #1d9bf0',
+                borderRadius: '8px',
+                minWidth: '140px',
+                padding: '4px 8px',
+                verticalAlign: 'baseline',
               }}
             >
               <input
@@ -281,8 +285,9 @@ export default function TweetCard({
                   margin: 0,
                   outline: 'none',
                   fontFamily: 'inherit',
+                  caretColor: '#1d9bf0',
                 }}
-                placeholder=""
+                placeholder="type your guess..."
                 spellCheck={false}
                 autoComplete="off"
                 autoCorrect="off"
