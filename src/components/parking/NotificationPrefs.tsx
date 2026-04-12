@@ -24,6 +24,7 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
   const [error, setError] = useState<string | null>(null);
 
   const SUPABASE_URL = 'https://vjnkdpovepqlsrdzqowd.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqbmtkcG92ZXBxbHNyZHpxb3dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzEzMDksImV4cCI6MjA4Mjk0NzMwOX0.XvSX6nUk6Tjyx16cKrb9NvtlXExBzzKILUP8kKdnKsQ';
 
   // Load existing prefs from DB via edge function
   useEffect(() => {
@@ -33,7 +34,10 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
       try {
         const res = await fetch(`${SUPABASE_URL}/functions/v1/tesla-proxy`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
           body: JSON.stringify({
             endpoint: '_internal/get-prefs',
             method: 'POST',
@@ -61,7 +65,10 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/tesla-proxy`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        },
         body: JSON.stringify({
           endpoint: '_internal/save-prefs',
           method: 'POST',
