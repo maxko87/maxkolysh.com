@@ -1,6 +1,6 @@
 const TESLA_CLIENT_ID = "39a99319-b708-4245-a29f-6907373f37ad";
 const TESLA_CLIENT_SECRET = "ta-secret.2MFoIX!OCjup0Nr5";
-const TESLA_TOKEN_URL = "https://auth.tesla.com/oauth2/v3/token";
+const TESLA_TOKEN_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token";
 const TESLA_AUDIENCE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
 
 const CORS_HEADERS = {

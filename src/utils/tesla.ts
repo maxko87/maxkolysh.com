@@ -1,7 +1,6 @@
 // Tesla OAuth2 + Fleet API helpers
 
 const TESLA_AUTH_URL = 'https://auth.tesla.com/oauth2/v3/authorize';
-const TESLA_AUDIENCE = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
 // All Fleet API calls are proxied through Supabase Edge Function to avoid CORS
 const TESLA_CLIENT_ID = import.meta.env.VITE_TESLA_CLIENT_ID || '';
 const TESLA_REDIRECT_URI = `${window.location.origin}/parking`;
@@ -46,8 +45,7 @@ export function startTeslaOAuth(): void {
     response_type: 'code',
     client_id: TESLA_CLIENT_ID,
     redirect_uri: TESLA_REDIRECT_URI,
-    scope: 'openid vehicle_device_data offline_access',
-    audience: TESLA_AUDIENCE,
+    scope: 'openid vehicle_device_data vehicle_location offline_access',
     state,
   });
 
