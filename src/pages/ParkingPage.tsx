@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import TeslaConnect from '../components/parking/TeslaConnect';
 import VehicleSelect from '../components/parking/VehicleSelect';
 import CleaningSchedule from '../components/parking/CleaningSchedule';
-import ParkingMap from '../components/parking/ParkingMap';
 import {
   validateOAuthCallback,
   exchangeCode,
@@ -247,13 +246,6 @@ export default function ParkingPage() {
         {/* Results */}
         {state === 'results' && result && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '32rem' }}>
-            {location && (
-              <ParkingMap
-                latitude={location.latitude}
-                longitude={location.longitude}
-                streetName={result.feature.properties.Corridor}
-              />
-            )}
             <CleaningSchedule
               result={result}
               onRefresh={handleRefresh}

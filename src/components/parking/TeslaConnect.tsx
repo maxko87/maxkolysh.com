@@ -58,7 +58,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
           lineHeight: 1.1,
           margin: 0,
         }}>
-          Don't Get Towed
+          SF Tesla Street Cleaning Notifier
         </h1>
         <p style={{
           fontSize: '1.125rem',
@@ -67,7 +67,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
           margin: '0.75rem auto 0',
           lineHeight: 1.6,
         }}>
-          Connect your Tesla. We'll check SF street cleaning where you're parked.
+          Connect your Tesla. We'll tell you when to move your car.
         </p>
       </div>
 
