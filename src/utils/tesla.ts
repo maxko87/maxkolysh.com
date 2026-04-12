@@ -163,6 +163,25 @@ async function fleetApiRequest<T>(path: string, options: RequestInit = {}): Prom
   return data.response;
 }
 
+// Save location to backend so cron job has initial/updated coordinates
+export async function saveLocationToBackend(teslaUserId: string, latitude: number, longitude: number): Promise<void> {
+  try {
+    await fetch(`${SUPABASE_URL}/functions/v1/tesla-proxy`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({
+        endpoint: '_internal/save-location',
+        body: { tesla_user_id: teslaUserId, latitude, longitude },
+      }),
+    });
+  } catch (e) {
+    console.warn('Failed to save location to backend:', e);
+  }
+}
+
 // Get list of vehicles
 export async function getVehicles(): Promise<TeslaVehicle[]> {
   return fleetApiRequest<TeslaVehicle[]>('/api/1/vehicles');

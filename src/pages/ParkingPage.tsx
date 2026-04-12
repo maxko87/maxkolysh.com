@@ -13,6 +13,7 @@ import {
   clearTokens,
   getStoredEmail,
   getStoredUserId,
+  saveLocationToBackend,
 } from '../utils/tesla';
 import type { TeslaVehicle, VehicleLocation } from '../utils/tesla';
 import {
@@ -114,6 +115,13 @@ export default function ParkingPage() {
       // Temporary debug — show location to user
       setStatusMessage(`Car found at ${loc.latitude.toFixed(5)}, ${loc.longitude.toFixed(5)} — looking up schedule...`);
       setLocation(loc);
+
+      // Save location to backend so the cron job always has a stored location
+      const userId = getStoredUserId();
+      if (userId) {
+        saveLocationToBackend(userId, loc.latitude, loc.longitude);
+      }
+
       await loadCleaningSchedule(loc.latitude, loc.longitude);
     } catch (err) {
       console.error('[Parking] Failed to get vehicle location:', err);
@@ -176,6 +184,13 @@ export default function ParkingPage() {
     try {
       const loc = await getLocationWithWake(selectedVehicle.id);
       setLocation(loc);
+
+      // Save updated location to backend
+      const userId = getStoredUserId();
+      if (userId) {
+        saveLocationToBackend(userId, loc.latitude, loc.longitude);
+      }
+
       await loadCleaningSchedule(loc.latitude, loc.longitude);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to refresh location');

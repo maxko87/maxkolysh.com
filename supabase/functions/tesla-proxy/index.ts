@@ -147,6 +147,31 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
       );
     }
 
+    if (endpoint === "_internal/save-location") {
+      const { tesla_user_id, latitude, longitude } = body;
+      if (!tesla_user_id || latitude == null || longitude == null) {
+        return new Response(
+          JSON.stringify({ error: "Missing tesla_user_id, latitude, or longitude" }),
+          { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+        );
+      }
+
+      const { error } = await db.from("tesla_users").update({
+        last_latitude: latitude,
+        last_longitude: longitude,
+        last_shift_state: "P",
+        last_checked_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }).eq("tesla_user_id", tesla_user_id);
+
+      if (error) throw error;
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
+      );
+    }
+
     if (endpoint === "_internal/delete-user") {
       const { tesla_user_id } = body;
       if (!tesla_user_id) {

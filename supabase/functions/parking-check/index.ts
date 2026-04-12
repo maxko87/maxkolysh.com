@@ -299,47 +299,71 @@ Deno.serve(async (req) => {
 
         for (const vehicle of vehicles) {
           try {
-            // Only check online vehicles — don't wake them up (battery drain)
-            if (vehicle.state !== "online") {
-              console.log(`Vehicle ${vehicle.display_name} is ${vehicle.state}, skipping`);
+            let lat: number | null = null;
+            let lng: number | null = null;
+            let shiftState: string | null = null;
+
+            // 4. Try to get fresh location if car is awake — never wake it
+            if (vehicle.state === "online") {
+              try {
+                const vdResp = await teslaGet(
+                  `/api/1/vehicles/${vehicle.id}/vehicle_data?endpoints=location_data;drive_state`,
+                  accessToken
+                );
+                const vd = vdResp.response;
+                const driveState = vd?.drive_state;
+
+                if (driveState) {
+                  shiftState = driveState.shift_state || "P"; // null usually means P
+                  lat = driveState.latitude;
+                  lng = driveState.longitude;
+
+                  console.log(`Vehicle ${vehicle.display_name}: online, shift=${shiftState}, lat=${lat}, lng=${lng}`);
+
+                  // Update DB with latest state
+                  await supabase.from("tesla_users").update({
+                    last_checked_at: new Date().toISOString(),
+                    last_shift_state: shiftState,
+                    last_latitude: lat,
+                    last_longitude: lng,
+                    updated_at: new Date().toISOString(),
+                  }).eq("id", user.id);
+                }
+              } catch (e: any) {
+                // 408 = car asleep (race condition), other errors = API issue
+                // Either way, fall back to stored location
+                console.log(`Vehicle ${vehicle.display_name}: online but API error (${e.message}), using stored location`);
+              }
+            } else {
+              console.log(`Vehicle ${vehicle.display_name} is ${vehicle.state}, using stored location`);
+            }
+
+            // Fall back to stored location if we couldn't get fresh data
+            if (lat === null || lng === null) {
+              lat = user.last_latitude;
+              lng = user.last_longitude;
+              shiftState = user.last_shift_state || "P";
+            }
+
+            // No location at all — user never opened the app or location was never stored
+            if (lat === null || lng === null) {
+              results.push(`${vehicle.display_name}: no location available (car ${vehicle.state}, no stored location)`);
               continue;
             }
 
-            // 4. Get vehicle data
-            const vdResp = await teslaGet(
-              `/api/1/vehicles/${vehicle.id}/vehicle_data?endpoints=location_data;drive_state`,
-              accessToken
-            );
-            const vd = vdResp.response;
-            const driveState = vd?.drive_state;
-
-            if (!driveState) {
-              console.log(`No drive_state for ${vehicle.display_name}`);
-              continue;
-            }
-
-            const shiftState = driveState.shift_state || "P"; // null usually means P
-            const lat = driveState.latitude;
-            const lng = driveState.longitude;
-
-            console.log(`Vehicle ${vehicle.display_name}: shift=${shiftState}, lat=${lat}, lng=${lng}`);
-
-            // Update DB with latest state
-            await supabase.from("tesla_users").update({
-              last_checked_at: new Date().toISOString(),
-              last_shift_state: shiftState,
-              last_latitude: lat,
-              last_longitude: lng,
-              updated_at: new Date().toISOString(),
-            }).eq("id", user.id);
-
-            // Only check if parked
+            // If driving, skip cleaning check
             if (shiftState !== "P" && shiftState !== null) {
               results.push(`${vehicle.display_name}: driving (${shiftState})`);
               continue;
             }
 
-            // 5. Check if same location as last check (within tolerance)
+            // Update last_checked_at timestamp
+            await supabase.from("tesla_users").update({
+              last_checked_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            }).eq("id", user.id);
+
+            // 5. Check if same location as last notification (within tolerance) — cooldown
             if (user.last_latitude && user.last_longitude) {
               const dist = haversineDistance(lat, lng, user.last_latitude, user.last_longitude);
               if (dist < LOCATION_TOLERANCE_M) {
@@ -355,8 +379,8 @@ Deno.serve(async (req) => {
             }
 
             // 6. Look up street cleaning data
-            if (!user.notify_telegram_chat_id) {
-              results.push(`${vehicle.display_name}: no telegram chat_id configured`);
+            if (!user.notify_telegram_chat_id && !user.email) {
+              results.push(`${vehicle.display_name}: no notification channel configured`);
               continue;
             }
 
