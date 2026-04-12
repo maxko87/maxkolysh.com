@@ -16,7 +16,7 @@ const statusColors: Record<string, { bg: string; text: string; border: string }>
 
 export default function CleaningSchedule({ result, onRefresh, refreshing }: CleaningScheduleProps) {
   const [refreshHovered, setRefreshHovered] = useState(false);
-  const { feature, distance, sides } = result;
+  const { feature, distance, sides, parkedSide } = result;
   const { Corridor, StreetIdentifier } = feature.properties;
 
   return (
@@ -51,30 +51,61 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
             if (!relevant) return null;
             const status = getCleaningStatus(relevant.start, relevant.end);
             const colors = statusColors[status.color] || statusColors.green;
+            const isParkedHere = parkedSide !== null && label === parkedSide;
+            const isOtherSide = parkedSide !== null && label !== parkedSide;
+            const isHappeningNow = status.label === 'Happening Now';
 
             return (
               <div
                 key={label}
                 style={{
                   padding: '1.25rem',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: isParkedHere
+                    ? 'rgba(59, 130, 246, 0.08)'
+                    : 'rgba(255,255,255,0.06)',
+                  border: isParkedHere
+                    ? '1px solid rgba(59, 130, 246, 0.3)'
+                    : '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '16px',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.75rem',
+                  opacity: isOtherSide ? 0.55 : 1,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.4)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                  }}>
-                    {label}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: isParkedHere ? 'rgba(147, 197, 253, 0.9)' : 'rgba(255,255,255,0.4)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      {label}
+                    </span>
+                    {isParkedHere && (
+                      <span style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        padding: '0.15rem 0.5rem',
+                        borderRadius: '999px',
+                        background: 'rgba(59, 130, 246, 0.2)',
+                        color: '#93c5fd',
+                        border: '1px solid rgba(59, 130, 246, 0.3)',
+                      }}>
+                        📍 You're here
+                      </span>
+                    )}
+                    {isOtherSide && (
+                      <span style={{
+                        fontSize: '0.65rem',
+                        color: 'rgba(255,255,255,0.3)',
+                      }}>
+                        Other side
+                      </span>
+                    )}
+                  </div>
                   <span style={{
                     fontSize: '0.8rem',
                     fontWeight: 600,
@@ -90,17 +121,29 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
 
                 {/* Main cleaning time */}
                 <div>
-                  <p style={{ color: '#fff', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>
+                  <p style={{ color: '#fff', fontSize: '1.05rem', fontWeight: 600, margin: 0 }}>
                     {formatCleaningRange(relevant.start, relevant.end)}
                   </p>
-                  <p style={{
-                    fontSize: '0.875rem',
-                    color: status.color === 'red' ? '#f87171' : 'rgba(255,255,255,0.5)',
-                    margin: '0.35rem 0 0 0',
-                    fontWeight: 500,
-                  }}>
-                    {status.timeUntil}
-                  </p>
+                  {isHappeningNow && isParkedHere ? (
+                    <p style={{
+                      fontSize: '1rem',
+                      color: '#ef4444',
+                      margin: '0.5rem 0 0 0',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em',
+                    }}>
+                      🚨 MOVE YOUR CAR!
+                    </p>
+                  ) : (
+                    <p style={{
+                      fontSize: '0.95rem',
+                      color: status.color === 'red' ? '#f87171' : isParkedHere ? '#93c5fd' : 'rgba(255,255,255,0.45)',
+                      margin: '0.4rem 0 0 0',
+                      fontWeight: 600,
+                    }}>
+                      {status.timeUntil}
+                    </p>
+                  )}
                 </div>
 
                 {/* Calendar link */}
