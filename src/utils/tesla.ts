@@ -205,14 +205,14 @@ export async function getVehicleLocation(vehicleId: number): Promise<VehicleLoca
 export async function getLocationWithWake(
   vehicleId: number,
   maxRetries = 6,
-  onStatus?: (msg: string) => void,
+  onStatus?: (msg: string, progress: number) => void,
 ): Promise<VehicleLocation> {
   // First try — maybe car is already awake
   try {
     return await getVehicleLocation(vehicleId);
   } catch {
     // Car is asleep, wake it up
-    onStatus?.('Your car is asleep. Waking it up...');
+    onStatus?.('Waking up your car...', 0.3);
     try {
       await wakeVehicle(vehicleId);
     } catch {
@@ -220,9 +220,13 @@ export async function getLocationWithWake(
     }
   }
 
+  const progressMap: Record<number, number> = { 0: 0.3, 1: 0.6, 2: 0.9 };
+
   // Retry with 5s intervals — car typically wakes in 10-30s
   for (let attempt = 0; attempt < maxRetries; attempt++) {
-    onStatus?.(`Waiting for car to wake up... (${attempt + 1}/${maxRetries})`);
+    const progress = progressMap[attempt] ?? 0.95;
+    const msg = attempt >= Math.floor(maxRetries / 2) ? 'Almost there...' : 'Waking up your car...';
+    onStatus?.(msg, progress);
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
     try {
@@ -230,7 +234,7 @@ export async function getLocationWithWake(
     } catch {
       if (attempt === Math.floor(maxRetries / 2)) {
         // Try waking again halfway through
-        onStatus?.('Still waiting... sending another wake command...');
+        onStatus?.('Almost there...', progress);
         try { await wakeVehicle(vehicleId); } catch { /* ignore */ }
       }
       if (attempt === maxRetries - 1) {

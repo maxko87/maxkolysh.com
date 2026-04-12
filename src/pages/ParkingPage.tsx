@@ -45,6 +45,7 @@ export default function ParkingPage() {
   const [result, setResult] = useState<NearestSegmentResult | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [progress, setProgress] = useState(0);
   const [startOverHovered, setStartOverHovered] = useState(false);
   const [errorBtnHovered, setErrorBtnHovered] = useState(false);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
@@ -66,6 +67,7 @@ export default function ParkingPage() {
   async function handleOAuthCallback() {
     setState('connecting');
     setStatusMessage('Exchanging authorization code...');
+    setProgress(0.1);
 
     const validation = validateOAuthCallback(searchParams);
 
@@ -90,6 +92,7 @@ export default function ParkingPage() {
   async function loadVehicles() {
     setState('selecting_vehicle');
     setStatusMessage('Loading your vehicles...');
+    setProgress(0.2);
 
     try {
       const vehicleList = await getVehicles();
@@ -108,12 +111,17 @@ export default function ParkingPage() {
     setSelectedVehicle(vehicle);
     setState('loading_location');
     setStatusMessage('Waking up your car and getting location...');
+    setProgress(0.3);
 
     try {
-      const loc = await getLocationWithWake(vehicle.id, 6, setStatusMessage);
+      const loc = await getLocationWithWake(vehicle.id, 6, (msg, prog) => {
+        setStatusMessage(msg);
+        setProgress(prog);
+      });
       console.log('[Parking] Vehicle location:', { lat: loc.latitude, lng: loc.longitude, heading: loc.heading, timestamp: loc.timestamp });
       // Temporary debug — show location to user
       setStatusMessage(`Car found at ${loc.latitude.toFixed(5)}, ${loc.longitude.toFixed(5)} — looking up schedule...`);
+      setProgress(0.8);
       setLocation(loc);
 
       // Save location to backend so the cron job always has a stored location
@@ -133,6 +141,7 @@ export default function ParkingPage() {
   async function loadCleaningSchedule(lat: number, lng: number) {
     setState('loading_schedule');
     setStatusMessage('Finding street cleaning schedule...');
+    setProgress(0.9);
 
     try {
       console.log('[Parking] Fetching neighborhood boundaries...');
@@ -272,16 +281,24 @@ export default function ParkingPage() {
 
         {/* Loading states */}
         {isLoading && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
             <div style={{
-              width: '36px', height: '36px',
-              border: '2.5px solid rgba(255,255,255,0.1)',
-              borderTopColor: '#e82127',
-              borderRadius: '50%',
-              animation: 'spin 0.8s linear infinite',
-            }} />
+              width: '100%',
+              maxWidth: '280px',
+              height: '4px',
+              borderRadius: '2px',
+              background: 'rgba(255,255,255,0.08)',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                width: `${progress * 100}%`,
+                height: '100%',
+                borderRadius: '2px',
+                background: '#e82127',
+                transition: 'width 0.5s ease',
+              }} />
+            </div>
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem' }}>{statusMessage}</p>
-
           </div>
         )}
 

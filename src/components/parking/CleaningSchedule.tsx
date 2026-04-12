@@ -83,12 +83,12 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: '0.85rem',
-                opacity: 0.35,
+                opacity: 0.6,
                 transition: 'opacity 0.2s',
                 padding: '4px',
               }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.35')}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1.0')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.6')}
             >
               ❓
             </button>
@@ -101,10 +101,12 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                 border: 'none',
                 cursor: refreshing ? 'default' : 'pointer',
                 fontSize: '1.1rem',
-                opacity: refreshing ? 0.4 : 0.5,
+                opacity: refreshing ? 0.4 : 0.6,
                 transition: 'opacity 0.2s',
                 padding: '4px',
               }}
+              onMouseEnter={e => { if (!refreshing) e.currentTarget.style.opacity = '1.0'; }}
+              onMouseLeave={e => { if (!refreshing) e.currentTarget.style.opacity = '0.6'; }}
             >
               🔄
             </button>
