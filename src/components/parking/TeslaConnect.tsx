@@ -75,7 +75,7 @@ export default function TeslaConnect({ onConnecting }: TeslaConnectProps) {
           margin: 0,
           lineHeight: 1.5,
         }}>
-          Only reads location. No data stored. SF only.
+          Only reads location. Never sends commands. SF only.
         </p>
         <p style={{
           fontSize: '0.75rem',
