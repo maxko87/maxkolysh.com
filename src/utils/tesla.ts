@@ -12,6 +12,8 @@ export interface TeslaTokens {
   refresh_token: string;
   expires_in: number;
   token_type: string;
+  email?: string;
+  tesla_user_id?: string;
 }
 
 export interface TeslaVehicle {
@@ -45,7 +47,7 @@ export function startTeslaOAuth(): void {
     response_type: 'code',
     client_id: TESLA_CLIENT_ID,
     redirect_uri: TESLA_REDIRECT_URI,
-    scope: 'openid vehicle_device_data vehicle_location offline_access',
+    scope: 'openid profile email vehicle_device_data vehicle_location offline_access',
     state,
     prompt: 'consent',
     prompt_missing_scopes: 'true',
@@ -105,6 +107,16 @@ export function storeTokens(tokens: TeslaTokens): void {
   sessionStorage.setItem('tesla_access_token', tokens.access_token);
   sessionStorage.setItem('tesla_refresh_token', tokens.refresh_token);
   sessionStorage.setItem('tesla_token_expires', String(Date.now() + tokens.expires_in * 1000));
+  if (tokens.email) sessionStorage.setItem('tesla_email', tokens.email);
+  if (tokens.tesla_user_id) sessionStorage.setItem('tesla_user_id', tokens.tesla_user_id);
+}
+
+export function getStoredEmail(): string | null {
+  return sessionStorage.getItem('tesla_email');
+}
+
+export function getStoredUserId(): string | null {
+  return sessionStorage.getItem('tesla_user_id');
 }
 
 // Get stored access token

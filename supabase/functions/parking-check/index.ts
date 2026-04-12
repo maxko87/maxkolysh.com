@@ -34,6 +34,8 @@ interface TeslaUser {
   last_longitude: number | null;
   last_notification_at: string | null;
   notify_telegram_chat_id: string | null;
+  email: string | null;
+  notification_prefs: Record<string, boolean> | null;
 }
 
 interface CleaningSide {
@@ -197,6 +199,45 @@ async function sendTelegramMessage(chatId: string, text: string): Promise<void> 
   } catch (e) {
     console.error("Telegram error:", e);
   }
+}
+
+async function sendEmailNotification(email: string, subject: string, htmlBody: string): Promise<void> {
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendKey) {
+    console.error("RESEND_API_KEY not set");
+    return;
+  }
+  try {
+    const resp = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "SF Parking <parking@maxkolysh.com>",
+        to: email,
+        subject,
+        html: htmlBody,
+      }),
+    });
+    if (!resp.ok) {
+      console.error("Resend send failed:", resp.status, await resp.text());
+    }
+  } catch (e) {
+    console.error("Email error:", e);
+  }
+}
+
+function telegramToEmailHtml(telegramMsg: string): string {
+  // Convert Telegram HTML to email-friendly HTML
+  return `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+    ${telegramMsg.replace(/\n/g, "<br>")}
+    <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+    <p style="color: #999; font-size: 12px;">
+      From <a href="https://maxkolysh.com/parking">SF Street Cleaning Notifier</a>
+    </p>
+  </div>`;
 }
 
 // --- Main handler ---
@@ -429,7 +470,15 @@ Deno.serve(async (req) => {
 
             if (notifications.length > 0) {
               for (const msg of notifications) {
-                await sendTelegramMessage(user.notify_telegram_chat_id, msg);
+                // Send Telegram notification
+                if (user.notify_telegram_chat_id) {
+                  await sendTelegramMessage(user.notify_telegram_chat_id, msg);
+                }
+                // Send email notification via Resend
+                if (user.email) {
+                  const subject = `🚗 Street cleaning alert — ${vehicle.display_name}`;
+                  await sendEmailNotification(user.email, subject, telegramToEmailHtml(msg));
+                }
               }
               await supabase.from("tesla_users").update({
                 last_notification_at: new Date().toISOString(),

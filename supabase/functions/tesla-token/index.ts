@@ -67,8 +67,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Decode JWT to get tesla_user_id (sub claim)
+    // Decode JWT to get tesla_user_id (sub claim) and email
     let teslaUserId: string | null = null;
+    let email: string | null = null;
     try {
       const payload = decodeJwtPayload(tokenData.access_token);
       teslaUserId = payload.sub as string;
@@ -77,6 +78,33 @@ Deno.serve(async (req) => {
       console.log("Tesla user ID (sub):", teslaUserId);
     } catch (e) {
       console.log("Could not decode token:", e);
+    }
+
+    // Try to get email from id_token first
+    if (tokenData.id_token) {
+      try {
+        const idPayload = decodeJwtPayload(tokenData.id_token);
+        email = (idPayload.email as string) || null;
+        console.log("Email from id_token:", email);
+      } catch (e) {
+        console.log("Could not decode id_token:", e);
+      }
+    }
+
+    // Fallback: fetch user profile from Fleet API
+    if (!email) {
+      try {
+        const profileRes = await fetch(`${TESLA_AUDIENCE}/api/1/users/me`, {
+          headers: { Authorization: `Bearer ${tokenData.access_token}` },
+        });
+        if (profileRes.ok) {
+          const profile = await profileRes.json();
+          email = profile.response?.email || null;
+          console.log("Email from profile API:", email);
+        }
+      } catch (e) {
+        console.log("Could not fetch profile:", e);
+      }
     }
 
     // Upsert into tesla_users table
@@ -96,6 +124,7 @@ Deno.serve(async (req) => {
               access_token: tokenData.access_token,
               refresh_token: tokenData.refresh_token,
               token_expires_at: expiresAt,
+              email: email,
               notify_telegram_chat_id: DEFAULT_TELEGRAM_CHAT_ID,
               updated_at: new Date().toISOString(),
             },
@@ -115,7 +144,7 @@ Deno.serve(async (req) => {
     console.log("Tesla token exchange successful");
 
     return new Response(
-      JSON.stringify(tokenData),
+      JSON.stringify({ ...tokenData, email, tesla_user_id: teslaUserId }),
       { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   } catch (error) {

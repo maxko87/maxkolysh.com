@@ -11,6 +11,8 @@ import {
   getVehicles,
   getLocationWithWake,
   clearTokens,
+  getStoredEmail,
+  getStoredUserId,
 } from '../utils/tesla';
 import type { TeslaVehicle, VehicleLocation } from '../utils/tesla';
 import {
@@ -20,6 +22,7 @@ import {
   findNearestSegment,
 } from '../utils/streetCleaning';
 import type { NearestSegmentResult } from '../utils/streetCleaning';
+import NotificationPrefs from '../components/parking/NotificationPrefs';
 
 type PageState =
   | 'landing'
@@ -250,6 +253,10 @@ export default function ParkingPage() {
               result={result}
               onRefresh={handleRefresh}
               refreshing={refreshing}
+            />
+            <NotificationPrefs
+              email={getStoredEmail()}
+              teslaUserId={getStoredUserId()}
             />
             <button
               onClick={handleStartOver}
