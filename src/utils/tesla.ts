@@ -47,6 +47,8 @@ export function startTeslaOAuth(): void {
     redirect_uri: TESLA_REDIRECT_URI,
     scope: 'openid vehicle_device_data vehicle_location offline_access',
     state,
+    prompt: 'login',
+    prompt_missing_scopes: 'true',
   });
 
   window.location.href = `${TESLA_AUTH_URL}?${params.toString()}`;
