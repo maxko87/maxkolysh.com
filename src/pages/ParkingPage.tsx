@@ -107,6 +107,8 @@ export default function ParkingPage() {
     try {
       const loc = await getLocationWithWake(vehicle.id, 6, setStatusMessage);
       console.log('[Parking] Vehicle location:', { lat: loc.latitude, lng: loc.longitude, heading: loc.heading, timestamp: loc.timestamp });
+      // Temporary debug — show location to user
+      setStatusMessage(`Car found at ${loc.latitude.toFixed(5)}, ${loc.longitude.toFixed(5)} — looking up schedule...`);
       setLocation(loc);
       await loadCleaningSchedule(loc.latitude, loc.longitude);
     } catch (err) {
