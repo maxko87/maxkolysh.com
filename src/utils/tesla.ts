@@ -1,8 +1,7 @@
 // Tesla OAuth2 + Fleet API helpers
 
 const TESLA_AUTH_URL = 'https://auth.tesla.com/oauth2/v3/authorize';
-// Token exchange via Supabase Edge Function
-const FLEET_API_BASE = 'https://fleet-api.prd.na.vn.cloud.tesla.com';
+// All Fleet API calls are proxied through Supabase Edge Function to avoid CORS
 const TESLA_CLIENT_ID = import.meta.env.VITE_TESLA_CLIENT_ID || '';
 const TESLA_REDIRECT_URI = `${window.location.origin}/parking`;
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
@@ -123,18 +122,21 @@ export function clearTokens(): void {
   sessionStorage.removeItem('tesla_token_expires');
 }
 
-// Make authenticated Fleet API request
+// Make authenticated Fleet API request via Supabase proxy (avoids CORS)
 async function fleetApiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getAccessToken();
   if (!token) throw new Error('Not authenticated');
 
-  const response = await fetch(`${FLEET_API_BASE}${path}`, {
-    ...options,
+  const proxyUrl = `${SUPABASE_URL}/functions/v1/tesla-proxy?path=${encodeURIComponent(path)}`;
+
+  const response = await fetch(proxyUrl, {
+    method: options.method || 'GET',
     headers: {
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
-      ...options.headers,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'X-Tesla-Token': token,
     },
+    body: options.method === 'POST' ? options.body : undefined,
   });
 
   if (!response.ok) {
