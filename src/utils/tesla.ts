@@ -45,7 +45,7 @@ export function startTeslaOAuth(): void {
     response_type: 'code',
     client_id: TESLA_CLIENT_ID,
     redirect_uri: TESLA_REDIRECT_URI,
-    scope: 'openid vehicle_device_data vehicle_location offline_access',
+    scope: 'openid vehicle_device_data offline_access',
     state,
   });
 
