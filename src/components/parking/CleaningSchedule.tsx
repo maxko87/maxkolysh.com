@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { NearestSegmentResult } from '../../utils/streetCleaning';
-import { getCleaningStatus, formatCleaningTime } from '../../utils/streetCleaning';
+import { getCleaningStatus, formatCleaningRange, formatCleaningTime } from '../../utils/streetCleaning';
 
 interface CleaningScheduleProps {
   result: NearestSegmentResult;
@@ -17,14 +17,18 @@ const statusColors: Record<string, { bg: string; text: string; border: string }>
 export default function CleaningSchedule({ result, onRefresh, refreshing }: CleaningScheduleProps) {
   const [refreshHovered, setRefreshHovered] = useState(false);
   const { feature, distance, sides } = result;
-  const { Corridor, Limits } = feature.properties;
+  const { Corridor, StreetIdentifier } = feature.properties;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', maxWidth: '32rem' }}>
       {/* Street info header */}
       <div style={{ textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', margin: 0 }}>{Corridor}</h2>
-        <p style={{ color: 'rgba(255,255,255,0.6)', margin: '0.35rem 0 0 0' }}>{Limits}</p>
+        {StreetIdentifier && (
+          <p style={{ color: 'rgba(255,255,255,0.6)', margin: '0.35rem 0 0 0', fontSize: '0.9rem' }}>
+            {StreetIdentifier}
+          </p>
+        )}
         <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: '0.35rem 0 0 0' }}>
           {Math.round(distance)}m from your car
         </p>
@@ -43,9 +47,10 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
         </div>
       ) : (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {sides.map(({ label, data }) => {
-            const status = data.NextCleaning ? getCleaningStatus(data.NextCleaning) : null;
-            const colors = status ? statusColors[status.color] || statusColors.green : null;
+          {sides.map(({ label, relevant }) => {
+            if (!relevant) return null;
+            const status = getCleaningStatus(relevant.start, relevant.end);
+            const colors = statusColors[status.color] || statusColors.green;
 
             return (
               <div
@@ -70,70 +75,62 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                   }}>
                     {label}
                   </span>
-                  {status && colors && (
-                    <span style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '999px',
-                      background: colors.bg,
-                      color: colors.text,
-                      border: `1px solid ${colors.border}`,
-                    }}>
-                      {status.emoji} {status.label}
-                    </span>
-                  )}
+                  <span style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    padding: '0.25rem 0.75rem',
+                    borderRadius: '999px',
+                    background: colors.bg,
+                    color: colors.text,
+                    border: `1px solid ${colors.border}`,
+                  }}>
+                    {status.emoji} {status.label}
+                  </span>
                 </div>
 
-                {data.NextCleaning && (
-                  <>
-                    <div>
-                      <p style={{ color: '#fff', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>
-                        {formatCleaningTime(data.NextCleaning)}
-                      </p>
-                      <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.4)', margin: '0.2rem 0 0 0' }}>
-                        {data.FromHour} – {data.ToHour} • {data.WeekDay}s
-                      </p>
-                    </div>
+                {/* Main cleaning time */}
+                <div>
+                  <p style={{ color: '#fff', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>
+                    {formatCleaningRange(relevant.start, relevant.end)}
+                  </p>
+                  <p style={{
+                    fontSize: '0.875rem',
+                    color: status.color === 'red' ? '#f87171' : 'rgba(255,255,255,0.5)',
+                    margin: '0.35rem 0 0 0',
+                    fontWeight: 500,
+                  }}>
+                    {status.timeUntil}
+                  </p>
+                </div>
 
-                    {status && (
-                      <p style={{
-                        fontSize: '0.875rem',
-                        color: status.color === 'red' ? '#f87171' : 'rgba(255,255,255,0.35)',
-                        margin: 0,
-                      }}>
-                        {status.timeUntil}
-                      </p>
-                    )}
+                {/* Calendar link */}
+                {relevant.calendarLink && (
+                  <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.25rem' }}>
+                    <a
+                      href={relevant.calendarLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontSize: '0.8rem',
+                        padding: '0.4rem 0.75rem',
+                        background: 'rgba(255,255,255,0.08)',
+                        borderRadius: '10px',
+                        color: '#fff',
+                        textDecoration: 'none',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        transition: 'background 0.2s',
+                      }}
+                    >
+                      📅 Add to Calendar
+                    </a>
+                  </div>
+                )}
 
-                    <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.25rem' }}>
-                      {data.NextCleaningCalendarLink && (
-                        <a
-                          href={data.NextCleaningCalendarLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            fontSize: '0.8rem',
-                            padding: '0.4rem 0.75rem',
-                            background: 'rgba(255,255,255,0.08)',
-                            borderRadius: '10px',
-                            color: '#fff',
-                            textDecoration: 'none',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            transition: 'background 0.2s',
-                          }}
-                        >
-                          📅 Add to Calendar
-                        </a>
-                      )}
-                    </div>
-
-                    {data.NextNextCleaning && (
-                      <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
-                        Following: {formatCleaningTime(data.NextNextCleaning)}
-                      </p>
-                    )}
-                  </>
+                {/* Following cleaning */}
+                {relevant.nextStart && (
+                  <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', margin: 0 }}>
+                    Following: {formatCleaningTime(relevant.nextStart)}
+                  </p>
                 )}
               </div>
             );

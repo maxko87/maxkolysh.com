@@ -6,36 +6,35 @@ import type { Feature, FeatureCollection, LineString, MultiLineString, Polygon, 
 const DATA_BASE_URL = 'https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/refs/heads/main/data';
 
 export interface CleaningSide {
-  BlockSweepID: string;
-  WeekDay: string;
-  Week1: boolean;
-  Week2: boolean;
-  Week3: boolean;
-  Week4: boolean;
-  Week5: boolean;
-  FromHour: string;
-  ToHour: string;
-  Holidays: string;
   NextCleaning: string | null;
-  NextCleaningEnd: string | null;
   NextNextCleaning: string | null;
+  NextCleaningEnd: string | null;
+  NextNextCleaningEnd: string | null;
   NextCleaningCalendarLink: string | null;
+  NextNextCleaningCalendarLink: string | null;
+}
+
+export interface RelevantCleaning {
+  start: string;
+  end: string;
+  calendarLink: string | null;
+  nextStart: string | null;
+  nextEnd: string | null;
+  nextCalendarLink: string | null;
 }
 
 export interface StreetSegmentProperties {
   Corridor: string;
   Limits: string;
-  CNN: number;
-  East: CleaningSide | null;
-  West: CleaningSide | null;
-  North: CleaningSide | null;
-  South: CleaningSide | null;
+  StreetIdentifier?: string;
+  CNN?: number;
+  Sides: { [key: string]: CleaningSide };
 }
 
 export interface NearestSegmentResult {
   feature: Feature<LineString | MultiLineString, StreetSegmentProperties>;
   distance: number; // in meters
-  sides: { label: string; data: CleaningSide }[];
+  sides: { label: string; data: CleaningSide; relevant: RelevantCleaning | null }[];
 }
 
 // Fetch all neighborhood boundaries
@@ -55,7 +54,6 @@ export function findNeighborhood(
 
   for (const feature of neighborhoods.features) {
     if (turf.booleanPointInPolygon(pt, feature)) {
-      // Property is 'FileName' in the kaushalpartani/sf-street-cleaning dataset
       const props = feature.properties || {};
       const name = props.FileName || props.NeighborhoodName || props.nhood || props.name || props.NEIGHBORHOOD;
       console.log('[Parking] Matched neighborhood:', name, 'props:', props);
@@ -76,6 +74,41 @@ export async function fetchNeighborhoodData(
   return response.json();
 }
 
+// Get the relevant upcoming cleaning from a side's data
+export function getRelevantCleaning(side: CleaningSide): RelevantCleaning | null {
+  const now = new Date();
+
+  // Check if NextCleaning is in the future
+  if (side.NextCleaning) {
+    const nextEnd = side.NextCleaningEnd ? new Date(side.NextCleaningEnd) : new Date(side.NextCleaning);
+    if (nextEnd > now) {
+      // NextCleaning is still relevant (hasn't ended yet)
+      return {
+        start: side.NextCleaning,
+        end: side.NextCleaningEnd || side.NextCleaning,
+        calendarLink: side.NextCleaningCalendarLink || null,
+        nextStart: side.NextNextCleaning || null,
+        nextEnd: side.NextNextCleaningEnd || null,
+        nextCalendarLink: side.NextNextCleaningCalendarLink || null,
+      };
+    }
+  }
+
+  // NextCleaning is past, fall back to NextNextCleaning
+  if (side.NextNextCleaning) {
+    return {
+      start: side.NextNextCleaning,
+      end: side.NextNextCleaningEnd || side.NextNextCleaning,
+      calendarLink: side.NextNextCleaningCalendarLink || null,
+      nextStart: null,
+      nextEnd: null,
+      nextCalendarLink: null,
+    };
+  }
+
+  return null;
+}
+
 // Find the nearest street segment to a GPS point
 export function findNearestSegment(
   lat: number,
@@ -91,7 +124,6 @@ export function findNearestSegment(
       let line: Feature<LineString>;
 
       if (feature.geometry.type === 'MultiLineString') {
-        // Convert MultiLineString to LineString (use first line)
         line = turf.lineString(feature.geometry.coordinates[0]);
       } else {
         line = feature as unknown as Feature<LineString>;
@@ -105,21 +137,24 @@ export function findNearestSegment(
         nearestFeature = feature;
       }
     } catch {
-      // Skip invalid geometries
       continue;
     }
   }
 
   if (!nearestFeature) return null;
 
-  // Extract populated sides
-  const sides: { label: string; data: CleaningSide }[] = [];
-  const props = nearestFeature.properties;
+  // Extract populated sides from the nested Sides object
+  const sides: { label: string; data: CleaningSide; relevant: RelevantCleaning | null }[] = [];
+  const sidesObj = nearestFeature.properties.Sides;
 
-  for (const sideKey of ['East', 'West', 'North', 'South'] as const) {
-    const sideData = props[sideKey];
-    if (sideData && sideData.NextCleaning) {
-      sides.push({ label: `${sideKey} Side`, data: sideData });
+  if (sidesObj && typeof sidesObj === 'object') {
+    for (const [sideKey, sideData] of Object.entries(sidesObj)) {
+      if (sideData) {
+        const relevant = getRelevantCleaning(sideData);
+        if (relevant) {
+          sides.push({ label: `${sideKey} Side`, data: sideData, relevant });
+        }
+      }
     }
   }
 
@@ -131,24 +166,31 @@ export function findNearestSegment(
 }
 
 // Get cleaning status based on time until next cleaning
-export function getCleaningStatus(nextCleaning: string): {
+export function getCleaningStatus(startStr: string, endStr: string): {
   label: string;
   color: 'green' | 'yellow' | 'red';
   emoji: string;
   timeUntil: string;
 } {
   const now = new Date();
-  const cleaning = new Date(nextCleaning);
-  const diffMs = cleaning.getTime() - now.getTime();
-  const diffHours = diffMs / (1000 * 60 * 60);
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  const diffToStart = start.getTime() - now.getTime();
+  const diffHoursToStart = diffToStart / (1000 * 60 * 60);
 
-  const timeUntil = formatTimeUntil(diffMs);
+  // Currently happening
+  if (now >= start && now <= end) {
+    const remaining = end.getTime() - now.getTime();
+    return { label: 'Happening Now', color: 'red', emoji: '🔴', timeUntil: `Ends in ${formatTimeUntil(remaining)}` };
+  }
 
-  if (diffHours < 0) {
+  const timeUntil = formatTimeUntil(diffToStart);
+
+  if (diffHoursToStart < 0) {
     return { label: 'Passed', color: 'green', emoji: '✅', timeUntil: 'Already passed' };
-  } else if (diffHours < 4) {
+  } else if (diffHoursToStart < 4) {
     return { label: 'Move Now', color: 'red', emoji: '🔴', timeUntil };
-  } else if (diffHours < 24) {
+  } else if (diffHoursToStart < 24) {
     return { label: 'Soon', color: 'yellow', emoji: '🟡', timeUntil };
   } else {
     return { label: 'Safe', color: 'green', emoji: '🟢', timeUntil };
@@ -164,11 +206,11 @@ function formatTimeUntil(diffMs: number): string {
   if (hours >= 48) {
     const days = Math.floor(hours / 24);
     const remainingHours = hours % 24;
-    return `${days} days, ${remainingHours} hours`;
+    return `in ${days} days, ${remainingHours} hrs`;
   } else if (hours >= 1) {
-    return `${hours} hours, ${minutes} minutes`;
+    return `in ${hours} hrs, ${minutes} min`;
   } else {
-    return `${minutes} minutes`;
+    return `in ${minutes} min`;
   }
 }
 
@@ -182,4 +224,18 @@ export function formatCleaningTime(dateStr: string): string {
     hour: 'numeric',
     minute: '2-digit',
   });
+}
+
+// Format a time range for display
+export function formatCleaningRange(startStr: string, endStr: string): string {
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  const dateStr = start.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+  const startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const endTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return `${dateStr}, ${startTime} – ${endTime}`;
 }
