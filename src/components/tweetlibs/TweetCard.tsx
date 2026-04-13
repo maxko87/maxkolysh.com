@@ -17,6 +17,7 @@ export interface Tweet {
   week_start?: string;
   week_end?: string;
   difficulty?: number;
+  image_url?: string;
 }
 
 interface TweetCardProps {
@@ -90,16 +91,19 @@ export default function TweetCard({
     }
   };
 
+  // Strip t.co URLs from display text (they look ugly, image is shown separately)
+  const displayText = tweet.text.replace(/\s*https?:\/\/t\.co\/\S+/g, '').trim();
+
   // Only blank the FIRST occurrence of the word
-  const idx = tweet.text.toLowerCase().indexOf(tweet.blank_word.toLowerCase());
+  const idx = displayText.toLowerCase().indexOf(tweet.blank_word.toLowerCase());
   let parts: string[];
   if (idx === -1) {
-    parts = [tweet.text];
+    parts = [displayText];
   } else {
     parts = [
-      tweet.text.slice(0, idx),
-      tweet.text.slice(idx, idx + tweet.blank_word.length),
-      tweet.text.slice(idx + tweet.blank_word.length),
+      displayText.slice(0, idx),
+      displayText.slice(idx, idx + tweet.blank_word.length),
+      displayText.slice(idx + tweet.blank_word.length),
     ];
   }
   const inputWidth = 140;
@@ -333,6 +337,30 @@ export default function TweetCard({
           );
         })}
       </div>
+
+      {/* Tweet image */}
+      {tweet.image_url && (
+        <div
+          style={{
+            marginBottom: '12px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            border: '1px solid #2f3336',
+          }}
+        >
+          <img
+            src={tweet.image_url}
+            alt=""
+            style={{
+              width: '100%',
+              display: 'block',
+              maxHeight: '300px',
+              objectFit: 'cover',
+            }}
+            loading="lazy"
+          />
+        </div>
+      )}
 
       {/* Footer: likes / retweets / link */}
       <div
