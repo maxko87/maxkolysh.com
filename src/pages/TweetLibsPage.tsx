@@ -44,7 +44,7 @@ function getCurrentWeekRange(): { monday: string; sunday: string; displayRange: 
   sunday.setDate(monday.getDate() + 6);
 
   const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+  const isoDate = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
   return {
     monday: isoDate(monday),
