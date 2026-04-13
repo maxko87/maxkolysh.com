@@ -495,7 +495,7 @@ Deno.serve(async (req) => {
             const timeUntilSuffix = timeUntil ? ` (${timeUntil})` : "";
             const emailSubject = `${vehicle.display_name} parked on ${corridor}` + (timeUntil ? ` — cleaning ${timeUntil}` : "");
             let emailHtml = `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">`;
-            emailHtml += `<p>Your Tesla is parked on ${locationDesc}.</p>`;
+            emailHtml += `<p>${vehicle.display_name} is parked on ${locationDesc}.</p>`;
             if (cleaningInfo) {
               const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
               emailHtml += `<p><strong>Next street cleaning${timeUntilSuffix}:</strong> ${range}</p>`;
