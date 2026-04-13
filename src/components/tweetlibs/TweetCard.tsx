@@ -11,13 +11,6 @@ export interface Tweet {
   retweets: number;
   disabled?: boolean;
   humor_score?: number;
-  tweet_id?: string;
-  category?: string;
-  online_score?: number;
-  week_start?: string;
-  week_end?: string;
-  difficulty?: number;
-  image_url?: string;
 }
 
 interface TweetCardProps {
@@ -59,14 +52,6 @@ function avatarGradient(name: string) {
   return `linear-gradient(135deg, ${from}, ${to})`;
 }
 
-function getTweetUrl(tweet: Tweet): string {
-  if (tweet.tweet_id) {
-    const handle = tweet.handle.replace('@', '');
-    return `https://x.com/${handle}/status/${tweet.tweet_id}`;
-  }
-  return `https://www.google.com/search?q=site:x.com+${encodeURIComponent(tweet.handle.replace('@', ''))}+${encodeURIComponent('"' + tweet.text.slice(0, 40) + '"')}`;
-}
-
 export default function TweetCard({
   tweet,
   guess,
@@ -91,19 +76,16 @@ export default function TweetCard({
     }
   };
 
-  // Strip t.co URLs from display text (they look ugly, image is shown separately)
-  const displayText = tweet.text.replace(/\s*https?:\/\/t\.co\/\S+/g, '').trim();
-
   // Only blank the FIRST occurrence of the word
-  const idx = displayText.toLowerCase().indexOf(tweet.blank_word.toLowerCase());
+  const idx = tweet.text.toLowerCase().indexOf(tweet.blank_word.toLowerCase());
   let parts: string[];
   if (idx === -1) {
-    parts = [displayText];
+    parts = [tweet.text];
   } else {
     parts = [
-      displayText.slice(0, idx),
-      displayText.slice(idx, idx + tweet.blank_word.length),
-      displayText.slice(idx + tweet.blank_word.length),
+      tweet.text.slice(0, idx),
+      tweet.text.slice(idx, idx + tweet.blank_word.length),
+      tweet.text.slice(idx + tweet.blank_word.length),
     ];
   }
   const inputWidth = 140;
@@ -130,29 +112,8 @@ export default function TweetCard({
               ? '0 0 24px rgba(239, 68, 68, 0.12)'
               : 'none',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        position: 'relative' as const,
       }}
     >
-      {/* Category badge */}
-      {tweet.category && (
-        <span
-          style={{
-            position: 'absolute',
-            top: '12px',
-            right: '48px',
-            background: 'rgba(29, 155, 240, 0.15)',
-            color: '#1d9bf0',
-            fontSize: '11px',
-            fontWeight: 600,
-            padding: '2px 8px',
-            borderRadius: '10px',
-            textTransform: 'capitalize',
-          }}
-        >
-          {tweet.category}
-        </span>
-      )}
-
       {/* Header row */}
       <div
         style={{
@@ -338,30 +299,6 @@ export default function TweetCard({
         })}
       </div>
 
-      {/* Tweet image */}
-      {tweet.image_url && (
-        <div
-          style={{
-            marginBottom: '12px',
-            borderRadius: '12px',
-            overflow: 'hidden',
-            border: '1px solid #2f3336',
-          }}
-        >
-          <img
-            src={tweet.image_url}
-            alt=""
-            style={{
-              width: '100%',
-              display: 'block',
-              maxHeight: '300px',
-              objectFit: 'cover',
-            }}
-            loading="lazy"
-          />
-        </div>
-      )}
-
       {/* Footer: likes / retweets / link */}
       <div
         style={{
@@ -388,7 +325,7 @@ export default function TweetCard({
         </span>
         {feedback !== null && (
           <a
-            href={getTweetUrl(tweet)}
+            href={`https://www.google.com/search?q=site:x.com+${encodeURIComponent(tweet.handle.replace('@', ''))}+${encodeURIComponent('"' + tweet.text.slice(0, 40) + '"')}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ marginLeft: 'auto', color: '#71767b', display: 'flex', alignItems: 'center', transition: 'color 0.15s' }}
