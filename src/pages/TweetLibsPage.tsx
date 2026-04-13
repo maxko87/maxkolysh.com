@@ -4,6 +4,7 @@ import { supabase, getSessionId } from '../utils/supabase';
 import TweetCard, { type Tweet } from '../components/tweetlibs/TweetCard';
 import Confetti from '../components/tweetlibs/Confetti';
 
+type GameMode = 'classic' | 'weekly';
 type QuestionResult = 'correct' | 'incorrect';
 
 interface LeaderboardEntry {
@@ -14,6 +15,7 @@ interface LeaderboardEntry {
   results: string;
   created_at: string;
   session_id: string;
+  mode?: string;
 }
 
 function generateEmojiGrid(results: QuestionResult[]): string {
@@ -31,6 +33,26 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`;
 }
 
+function getCurrentWeekRange(): { monday: string; sunday: string; displayRange: string } {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = day === 0 ? -6 : 1 - day; // Monday
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diff);
+  monday.setHours(0, 0, 0, 0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const isoDate = (d: Date) => d.toISOString().slice(0, 10);
+
+  return {
+    monday: isoDate(monday),
+    sunday: isoDate(sunday),
+    displayRange: `${fmt(monday)} – ${fmt(sunday)}`,
+  };
+}
+
 async function fetchLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]> {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const { data } = await supabase
@@ -43,7 +65,7 @@ async function fetchLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]>
   return (data as LeaderboardEntry[] | null) ?? [];
 }
 
-async function submitScore(score: number, total: number, results: QuestionResult[], playerName?: string): Promise<void> {
+async function submitScore(score: number, total: number, results: QuestionResult[], mode: GameMode, playerName?: string): Promise<void> {
   try {
     const emojiGrid = generateEmojiGrid(results);
     await supabase.from('tweetlibs_scores').insert({
@@ -52,10 +74,21 @@ async function submitScore(score: number, total: number, results: QuestionResult
       total,
       results: emojiGrid,
       session_id: getSessionId(),
+      mode,
     });
   } catch {
     // silently fail if RLS blocks insert
   }
+}
+
+async function fetchWeeklyTweets(): Promise<Tweet[]> {
+  const { monday } = getCurrentWeekRange();
+  const { data } = await supabase
+    .from('tweetlibs_weekly_tweets')
+    .select('*')
+    .eq('week_start', monday)
+    .eq('disabled', false);
+  return (data as Tweet[] | null) ?? [];
 }
 
 function Leaderboard({ entries, compact }: { entries: LeaderboardEntry[]; compact?: boolean }) {
@@ -101,6 +134,18 @@ function Leaderboard({ entries, compact }: { entries: LeaderboardEntry[]; compac
             </span>
             <span style={{ color: C.text, fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {entry.player_name || 'Anonymous'}
+            </span>
+            {/* Mode badge */}
+            <span style={{
+              fontSize: '10px',
+              fontWeight: 700,
+              padding: '1px 5px',
+              borderRadius: '4px',
+              background: entry.mode === 'weekly' ? 'rgba(29, 155, 240, 0.15)' : 'rgba(113, 118, 123, 0.15)',
+              color: entry.mode === 'weekly' ? '#1d9bf0' : '#71767b',
+              letterSpacing: '0.5px',
+            }}>
+              {entry.mode === 'weekly' ? 'TW' : 'CL'}
             </span>
             {!compact && (
               <span style={{ fontSize: '12px', letterSpacing: '1px' }}>
@@ -185,11 +230,13 @@ function EndScreen({
   total,
   onPlayAgain,
   results,
+  gameMode,
 }: {
   score: number;
   total: number;
   onPlayAgain: () => void;
   results: QuestionResult[];
+  gameMode: GameMode;
 }) {
   const [copied, setCopied] = useState(false);
   const [shareHover, setShareHover] = useState(false);
@@ -201,17 +248,18 @@ function EndScreen({
   const scoreSubmitted = useRef(false);
 
   const emojiGrid = generateEmojiGrid(results);
-  const shareText = `TweetLibs 🐦 ${score}/${total}\n\n${emojiGrid}\n\nmaxkolysh.com/tweetlibs`;
+  const modeLabel = gameMode === 'weekly' ? ' This Week' : '';
+  const shareText = `TweetLibs 🐦${modeLabel} ${score}/${total}\n\n${emojiGrid}\n\nmaxkolysh.com/tweetlibs`;
 
   // Auto-submit score and fetch leaderboard on mount
   useEffect(() => {
     if (!scoreSubmitted.current) {
       scoreSubmitted.current = true;
-      submitScore(score, total, results).then(() => {
+      submitScore(score, total, results, gameMode).then(() => {
         fetchLeaderboard(10).then(setLeaderboard);
       });
     }
-  }, [score, total, results]);
+  }, [score, total, results, gameMode]);
 
   const handleNameSubmit = async () => {
     if (!playerName.trim()) return;
@@ -266,6 +314,20 @@ function EndScreen({
       >
         {score}/{total}
       </div>
+      {gameMode === 'weekly' && (
+        <span style={{
+          display: 'inline-block',
+          background: 'rgba(29, 155, 240, 0.15)',
+          color: C.blue,
+          fontSize: '12px',
+          fontWeight: 700,
+          padding: '3px 10px',
+          borderRadius: '10px',
+          marginBottom: '8px',
+        }}>
+          This Week
+        </span>
+      )}
       <p style={{ color: C.secondary, fontSize: '17px', marginBottom: '32px' }}>{message}</p>
 
       <div
@@ -457,6 +519,10 @@ export default function TweetLibsPage() {
   const [splashVisible, setSplashVisible] = useState(false);
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [splashLeaderboard, setSplashLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [gameMode, setGameMode] = useState<GameMode>('classic');
+  const [weeklyTweets, setWeeklyTweets] = useState<Tweet[]>([]);
+  const [weeklyLoading, setWeeklyLoading] = useState(true);
+
   // Trigger splash fade-in after mount
   useEffect(() => {
     requestAnimationFrame(() => setSplashVisible(true));
@@ -464,6 +530,7 @@ export default function TweetLibsPage() {
 
   useEffect(() => {
     (async () => {
+      // Fetch classic tweets
       const { data } = await supabase
         .from('tweetlibs_tweets')
         .select('*')
@@ -474,6 +541,14 @@ export default function TweetLibsPage() {
       }
       setLoading(false);
     })();
+
+    // Fetch weekly tweets
+    (async () => {
+      const weekly = await fetchWeeklyTweets();
+      setWeeklyTweets(weekly);
+      setWeeklyLoading(false);
+    })();
+
     // Fetch splash leaderboard
     fetchLeaderboard(5).then(setSplashLeaderboard);
   }, []);
@@ -560,7 +635,8 @@ export default function TweetLibsPage() {
   };
 
   const handlePlayAgain = () => {
-    setTweets(pickRandom(allTweets, ROUND_SIZE));
+    const pool = gameMode === 'weekly' ? weeklyTweets : allTweets;
+    setTweets(pickRandom(pool, ROUND_SIZE));
     setCurrentIndex(0);
     setScore(0);
     setGuess('');
@@ -569,7 +645,16 @@ export default function TweetLibsPage() {
     setConfettiActive(false);
     setResults([]);
   };
-  const handleStartGame = () => {
+
+  const handleStartGame = (mode: GameMode) => {
+    setGameMode(mode);
+    const pool = mode === 'weekly' ? weeklyTweets : allTweets;
+    setTweets(pickRandom(pool, ROUND_SIZE));
+    setCurrentIndex(0);
+    setScore(0);
+    setGuess('');
+    setFeedback(null);
+    setResults([]);
     setGameState('playing');
   };
 
@@ -580,6 +665,9 @@ export default function TweetLibsPage() {
       </div>
     );
   }
+
+  const weekRange = getCurrentWeekRange();
+  const hasWeeklyTweets = !weeklyLoading && weeklyTweets.length >= ROUND_SIZE;
 
   return (
     <div
@@ -639,38 +727,135 @@ export default function TweetLibsPage() {
                 lineHeight: 1.5,
               }}
             >
-              Guess the missing word from iconic tweets
+              Guess the missing word
             </p>
+
+            {/* This Week mode card */}
             <button
-              onClick={handleStartGame}
+              onClick={() => hasWeeklyTweets && handleStartGame('weekly')}
+              disabled={!hasWeeklyTweets}
               style={{
-                padding: '14px 48px',
-                background: C.blue,
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '28px',
-                fontSize: '18px',
-                fontWeight: 700,
-                cursor: 'pointer',
+                width: '100%',
+                maxWidth: '380px',
+                background: hasWeeklyTweets ? 'rgba(29, 155, 240, 0.06)' : 'rgba(255,255,255,0.02)',
+                border: hasWeeklyTweets ? '1.5px solid rgba(29, 155, 240, 0.4)' : `1px solid ${C.border}`,
+                borderRadius: '16px',
+                padding: '20px 24px',
+                cursor: hasWeeklyTweets ? 'pointer' : 'default',
+                transition: 'all 0.2s',
                 fontFamily: 'inherit',
-                transition: 'background 0.15s, transform 0.15s',
-                marginBottom: '16px',
+                textAlign: 'center',
+                marginBottom: '12px',
+                boxShadow: hasWeeklyTweets ? '0 0 20px rgba(29, 155, 240, 0.08)' : 'none',
+                opacity: hasWeeklyTweets ? 1 : 0.5,
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#1a8cd8'; e.currentTarget.style.transform = 'scale(1.03)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = C.blue; e.currentTarget.style.transform = 'scale(1)'; }}
+              onMouseEnter={(e) => {
+                if (hasWeeklyTweets) {
+                  e.currentTarget.style.borderColor = 'rgba(29, 155, 240, 0.7)';
+                  e.currentTarget.style.boxShadow = '0 0 30px rgba(29, 155, 240, 0.15)';
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (hasWeeklyTweets) {
+                  e.currentTarget.style.borderColor = 'rgba(29, 155, 240, 0.4)';
+                  e.currentTarget.style.boxShadow = '0 0 20px rgba(29, 155, 240, 0.08)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
+              }}
             >
-              Play
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '6px' }}>
+                <span style={{ fontSize: '20px' }}>📅</span>
+                <span style={{
+                  fontSize: '20px',
+                  fontWeight: 700,
+                  color: hasWeeklyTweets ? C.text : C.secondary,
+                }}>
+                  This Week
+                </span>
+                {!hasWeeklyTweets && (
+                  <span style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    background: 'rgba(113, 118, 123, 0.2)',
+                    color: C.secondary,
+                    padding: '2px 8px',
+                    borderRadius: '8px',
+                  }}>
+                    Coming Soon
+                  </span>
+                )}
+              </div>
+              <div style={{
+                fontSize: '14px',
+                color: hasWeeklyTweets ? C.blue : C.secondary,
+                fontWeight: 500,
+                marginBottom: '4px',
+              }}>
+                {weekRange.displayRange}
+              </div>
+              <div style={{
+                fontSize: '13px',
+                color: C.secondary,
+              }}>
+                {hasWeeklyTweets ? 'How online were you?' : 'Weekly tweets drop every Monday'}
+              </div>
             </button>
+
+            {/* Classic mode card */}
+            <button
+              onClick={() => handleStartGame('classic')}
+              style={{
+                width: '100%',
+                maxWidth: '380px',
+                background: 'rgba(255,255,255,0.03)',
+                border: `1px solid ${C.border}`,
+                borderRadius: '16px',
+                padding: '16px 24px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                fontFamily: 'inherit',
+                textAlign: 'center',
+                marginBottom: '20px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#555';
+                e.currentTarget.style.transform = 'scale(1.02)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = C.border;
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '4px' }}>
+                <span style={{ fontSize: '18px' }}>🏛️</span>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: C.text,
+                }}>
+                  Classic
+                </span>
+              </div>
+              <div style={{
+                fontSize: '13px',
+                color: C.secondary,
+              }}>
+                Iconic tweets of all time
+              </div>
+            </button>
+
             <p
               style={{
                 fontSize: '14px',
                 color: C.secondary,
-                margin: 0,
+                margin: '0 0 0',
                 fontFamily: 'inherit',
               }}
             >
               {ROUND_SIZE} rounds
             </p>
+
             {/* Mini leaderboard on splash */}
             <div style={{ marginTop: '24px', width: '100%', maxWidth: '400px' }}>
               <Leaderboard entries={splashLeaderboard} compact />
@@ -722,7 +907,7 @@ export default function TweetLibsPage() {
               TweetLibs
             </h1>
             <p style={{ color: '#9ca3af', fontSize: '15px', margin: '4px 0 0', fontFamily: 'inherit' }}>
-              Guess the missing word
+              {gameMode === 'weekly' ? 'This Week' : 'Guess the missing word'}
             </p>
           </div>
 
@@ -735,7 +920,7 @@ export default function TweetLibsPage() {
         </div>
 
         {gameState === 'ended' ? (
-          <EndScreen score={score} total={ROUND_SIZE} onPlayAgain={handlePlayAgain} results={results} />
+          <EndScreen score={score} total={ROUND_SIZE} onPlayAgain={handlePlayAgain} results={results} gameMode={gameMode} />
         ) : (
           <>
             <ScoreBar current={currentIndex + 1} total={ROUND_SIZE} />

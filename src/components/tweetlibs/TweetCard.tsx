@@ -11,6 +11,12 @@ export interface Tweet {
   retweets: number;
   disabled?: boolean;
   humor_score?: number;
+  tweet_id?: string;
+  category?: string;
+  online_score?: number;
+  week_start?: string;
+  week_end?: string;
+  difficulty?: number;
 }
 
 interface TweetCardProps {
@@ -50,6 +56,14 @@ function avatarGradient(name: string) {
   const idx = name.charCodeAt(0) % AVATAR_COLORS.length;
   const [from, to] = AVATAR_COLORS[idx];
   return `linear-gradient(135deg, ${from}, ${to})`;
+}
+
+function getTweetUrl(tweet: Tweet): string {
+  if (tweet.tweet_id) {
+    const handle = tweet.handle.replace('@', '');
+    return `https://x.com/${handle}/status/${tweet.tweet_id}`;
+  }
+  return `https://www.google.com/search?q=site:x.com+${encodeURIComponent(tweet.handle.replace('@', ''))}+${encodeURIComponent('"' + tweet.text.slice(0, 40) + '"')}`;
 }
 
 export default function TweetCard({
@@ -112,8 +126,29 @@ export default function TweetCard({
               ? '0 0 24px rgba(239, 68, 68, 0.12)'
               : 'none',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        position: 'relative' as const,
       }}
     >
+      {/* Category badge */}
+      {tweet.category && (
+        <span
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '48px',
+            background: 'rgba(29, 155, 240, 0.15)',
+            color: '#1d9bf0',
+            fontSize: '11px',
+            fontWeight: 600,
+            padding: '2px 8px',
+            borderRadius: '10px',
+            textTransform: 'capitalize',
+          }}
+        >
+          {tweet.category}
+        </span>
+      )}
+
       {/* Header row */}
       <div
         style={{
@@ -325,7 +360,7 @@ export default function TweetCard({
         </span>
         {feedback !== null && (
           <a
-            href={`https://www.google.com/search?q=site:x.com+${encodeURIComponent(tweet.handle.replace('@', ''))}+${encodeURIComponent('"' + tweet.text.slice(0, 40) + '"')}`}
+            href={getTweetUrl(tweet)}
             target="_blank"
             rel="noopener noreferrer"
             style={{ marginLeft: 'auto', color: '#71767b', display: 'flex', alignItems: 'center', transition: 'color 0.15s' }}
