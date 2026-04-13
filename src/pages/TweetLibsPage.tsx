@@ -179,8 +179,17 @@ const C = {
   dim: '#3f4450',
 };
 
+/** Filter out tweets where blank_word doesn't appear in the display text */
+function filterPlayable(arr: Tweet[]): Tweet[] {
+  return arr.filter(t => {
+    const display = t.text.replace(/\s*https?:\/\/t\.co\/\S+/g, '').trim();
+    return display.toLowerCase().includes(t.blank_word.toLowerCase());
+  });
+}
+
 function pickRandom(arr: Tweet[], n: number): Tweet[] {
-  return [...arr].sort(() => Math.random() - 0.5).slice(0, n);
+  const playable = filterPlayable(arr);
+  return [...playable].sort(() => Math.random() - 0.5).slice(0, n);
 }
 
 function ScoreBar({ current, total }: { current: number; total: number }) {
