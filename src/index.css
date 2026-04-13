@@ -1107,5 +1107,525 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ============================================
+   Let Robots Drive — /let-robots-drive
+   ============================================ */
 
+.lrd-page {
+  background: #0a0a0a;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
+.lrd-red { color: #e53e3e; }
+.lrd-green { color: #38b2ac; }
+.lrd-bold { font-weight: 700; }
+
+/* HERO */
+.lrd-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  position: relative;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.lrd-hero-inner {
+  max-width: 720px;
+}
+
+.lrd-hero-subtitle {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.lrd-counter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.lrd-counter-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lrd-counter-num {
+  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.lrd-counter-label {
+  font-size: 1rem;
+  color: #888;
+}
+
+.lrd-hero-rates {
+  margin-bottom: 2rem;
+}
+
+.lrd-hero-rates p {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.lrd-hero-year {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 3rem;
+}
+
+.lrd-scroll-hint {
+  font-size: 1.5rem;
+  color: #444;
+  animation: lrd-bounce 2s infinite;
+}
+
+@keyframes lrd-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* SECTIONS */
+.lrd-section {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem;
+}
+
+.lrd-section-dark {
+  max-width: 100%;
+  background: #111;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.lrd-section-dark > * {
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lrd-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.lrd-section-sub {
+  font-size: 1.1rem;
+  color: #999;
+  margin-bottom: 2.5rem;
+}
+
+.lrd-subsection-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ccc;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* CARDS (Section 2) */
+.lrd-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.lrd-card {
+  background: #151515;
+  border: 1px solid #252525;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+}
+
+.lrd-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.lrd-card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.lrd-card-stat {
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.lrd-card-detail {
+  font-size: 0.9rem;
+  color: #777;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* BAR COMPARISONS (Section 3) */
+.lrd-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.lrd-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lrd-bar-label {
+  font-size: 0.95rem;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.lrd-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lrd-bar-tag {
+  font-size: 0.75rem;
+  width: 50px;
+  text-align: right;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.lrd-bar-track {
+  flex: 1;
+  height: 24px;
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lrd-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.lrd-bar-human {
+  background: #e53e3e;
+}
+
+.lrd-bar-waymo {
+  background: #38b2ac;
+}
+
+.lrd-bar-val {
+  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+  font-size: 0.85rem;
+  width: 40px;
+  text-align: right;
+  color: #aaa;
+  flex-shrink: 0;
+}
+
+.lrd-bar-reduction {
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+/* VULNERABLE ROAD USERS GRID */
+.lrd-vuln-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.lrd-vuln-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lrd-vuln-value {
+  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.lrd-vuln-label {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* SCALE SECTION (Section 4) */
+.lrd-scale-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.lrd-scale-row {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid #1a1a1a;
+  align-items: flex-start;
+}
+
+.lrd-scale-pct {
+  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 70px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.lrd-scale-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.lrd-scale-deaths {
+  font-size: 1.1rem;
+}
+
+.lrd-scale-note {
+  font-size: 0.9rem;
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+/* MEDICINE SECTION (Section 5) */
+.lrd-medicine-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.lrd-med-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lrd-med-label {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.lrd-med-track {
+  height: 28px;
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lrd-med-fill {
+  height: 100%;
+  background: #555;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.lrd-med-highlight {
+  background: #38b2ac;
+}
+
+.lrd-med-val {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.lrd-quote {
+  margin-top: 2.5rem;
+  padding: 1.5rem 2rem;
+  border-left: 3px solid #38b2ac;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #ccc;
+  background: #0d0d0d;
+  border-radius: 0 8px 8px 0;
+}
+
+/* CAVEATS (Section 6) */
+.lrd-section-caveats {
+  max-width: 820px;
+  margin: 0 auto;
+  border-top: 1px solid #1a1a1a;
+}
+
+.lrd-caveats-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+.lrd-caveats-list li {
+  line-height: 1.6;
+}
+
+.lrd-caveats-note {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* CTA */
+.lrd-cta {
+  text-align: center;
+  padding: 5rem 1.5rem 3rem;
+  border-top: 1px solid #1a1a1a;
+}
+
+.lrd-cta-line {
+  font-size: 1.25rem;
+  color: #999;
+  margin-bottom: 0.5rem;
+}
+
+.lrd-cta-headline {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2rem;
+}
+
+.lrd-cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.lrd-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.lrd-btn:hover {
+  opacity: 0.85;
+}
+
+.lrd-btn-twitter {
+  background: #1d9bf0;
+  color: #fff;
+}
+
+.lrd-btn-copy {
+  background: #252525;
+  color: #e0e0e0;
+  border: 1px solid #333;
+}
+
+.lrd-cta-author {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.lrd-link {
+  color: #38b2ac;
+  text-decoration: underline;
+}
+
+/* SOURCES */
+.lrd-sources {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  border-top: 1px solid #1a1a1a;
+}
+
+.lrd-sources-toggle {
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #888;
+  padding: 0.5rem 0;
+}
+
+.lrd-sources-toggle:hover {
+  color: #ccc;
+}
+
+.lrd-sources-list {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lrd-sources-list li {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.lrd-sources-list a {
+  color: #38b2ac;
+  text-decoration: none;
+}
+
+.lrd-sources-list a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE — tablet+ */
+@media (min-width: 640px) {
+  .lrd-counter-row {
+    flex-direction: row;
+    justify-content: center;
+    gap: 4rem;
+  }
+
+  .lrd-counter-num {
+    font-size: 4.5rem;
+  }
+
+  .lrd-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lrd-section-title {
+    font-size: 2.5rem;
+  }
+
+  .lrd-cta-headline {
+    font-size: 3rem;
+  }
+
+  .lrd-scale-pct {
+    font-size: 2rem;
+    min-width: 90px;
+  }
+}

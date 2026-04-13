@@ -9,6 +9,7 @@ import StartupNamesPage from './pages/blog/StartupNamesPage';
 import TweetLibsAdminPage from './pages/TweetLibsAdminPage';
 import TweetLibsPage from './pages/TweetLibsPage';
 import ParkingPage from './pages/ParkingPage';
+import LetRobotsDrivePage from './pages/LetRobotsDrivePage';
 
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Max Kolysh',
@@ -20,6 +21,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/tweetlibs': 'TweetLibs — Max Kolysh',
   '/tweetlibs/admin': 'TweetLibs Admin — Max Kolysh',
   '/parking': 'SF Street Cleaning — Max Kolysh',
+  '/let-robots-drive': 'Let Robots Drive — The Case for Autonomous Vehicles',
 };
 
 function PageTitle() {
@@ -53,6 +55,7 @@ function App() {
         <Route path="/tweetlibs" element={<TweetLibsPage />} />
         <Route path="/tweetlibs/admin" element={<TweetLibsAdminPage />} />
         <Route path="/parking" element={<ParkingPage />} />
+        <Route path="/let-robots-drive" element={<LetRobotsDrivePage />} />
       </Routes>
     </BrowserRouter>
   );
