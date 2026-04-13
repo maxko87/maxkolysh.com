@@ -39,6 +39,7 @@ function HomePage() {
               Why VCs Hate Recruiting Startups
             </Link>
             <Link to="/how-to-request-intros">How to Request Intros</Link>
+            <Link to="/let-robots-drive">Let Robots Drive</Link>
           </div>
         </section>
 
