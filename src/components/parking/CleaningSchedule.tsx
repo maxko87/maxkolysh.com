@@ -50,7 +50,7 @@ function formatDate(dateStr: string): string {
 function parseLimits(streetId: string | undefined): string | null {
   if (!streetId) return null;
   const match = streetId.match(/between\s+(.+)\s+and\s+(.+)/i);
-  if (match) return `${match[1]} – ${match[2]}`;
+  if (match) return `between ${match[1].trim()} and ${match[2].trim()}`;
   return null;
 }
 

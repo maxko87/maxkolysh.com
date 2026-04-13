@@ -474,7 +474,8 @@ Deno.serve(async (req) => {
             }
 
             const sideLabel = cleaningSideKey ? `${cleaningSideKey.toLowerCase()} side` : "";
-            const locationDesc = `${corridor}${limits ? ` (${limits})` : ""}${sideLabel ? `, ${sideLabel}` : ""}`;
+            const betweenLimits = limits ? limits.replace(/\s*-\s*/g, " and ").trim() : "";
+            const locationDesc = `${corridor}${sideLabel ? ` (${sideLabel})` : ""}${betweenLimits ? ` between ${betweenLimits}` : ""}`;
 
             // Build Telegram message — informational tone
             let telegramMsg = `<b>${vehicle.display_name} parked on ${corridor}</b>\n\n`;
