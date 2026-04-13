@@ -171,9 +171,8 @@ function getTimeUntil(startStr: string): string {
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
   if (hours >= 48) return `in ${Math.floor(hours / 24)} days`;
   if (hours >= 24) return `in 1 day, ${hours - 24} hrs`;
-  const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  if (hours >= 1) return `in ${hours}h ${mins}m`;
-  return `in ${mins} min`;
+  if (hours >= 1) return `in ${hours} hours`;
+  return `in less than 1 hour`;
 }
 
 async function sendTelegramMessage(chatId: string, text: string): Promise<void> {
