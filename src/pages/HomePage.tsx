@@ -19,7 +19,6 @@ function HomePage() {
         <section>
          <h2>Projects</h2>
          <div className="links">
-            <Link to="/tweetlibs">TweetLibs</Link>
            <a href="https://feelme.app" target="_blank" rel="noopener noreferrer">
               Feel Me
             </a>
@@ -29,6 +28,7 @@ function HomePage() {
             <Link to="/learn">Learned League Study Guide</Link>
             <Link to="/carry-calc">GP Carry Calculator</Link>
             <Link to="/parking">SF Tesla Street Cleaning Alerts</Link>
+            <Link to="/tweetlibs">TweetLibs</Link>
           </div>
         </section>
 
