@@ -301,6 +301,7 @@ Deno.serve(async (req) => {
             let lat: number | null = null;
             let lng: number | null = null;
             let shiftState: string | null = null;
+            let speed: number | null = null;
 
             // 4. Try to get fresh location if car is awake — never wake it
             if (vehicle.state === "online") {
@@ -313,11 +314,14 @@ Deno.serve(async (req) => {
                 const driveState = vd?.drive_state;
 
                 if (driveState) {
-                  shiftState = driveState.shift_state || "P"; // null usually means P
+                  // Keep raw shift_state: null means parked/off, "P" means park,
+                  // "D"/"R"/"N" means driving/moving. Don't coerce null to "P".
+                  shiftState = driveState.shift_state ?? null;
+                  speed = driveState.speed ?? null;
                   lat = driveState.latitude;
                   lng = driveState.longitude;
 
-                  console.log(`Vehicle ${vehicle.display_name}: online, shift=${shiftState}, lat=${lat}, lng=${lng}`);
+                  console.log(`Vehicle ${vehicle.display_name}: online, shift=${shiftState}, speed=${speed}, lat=${lat}, lng=${lng}`);
 
                  // Update DB with latest state
                  await supabase.from("tesla_users").update({
@@ -342,7 +346,8 @@ Deno.serve(async (req) => {
             if (lat === null || lng === null) {
               lat = user.last_latitude;
               lng = user.last_longitude;
-              shiftState = user.last_shift_state || "P";
+              shiftState = user.last_shift_state ?? null;
+              // No speed data available from stored state; null = not moving
             }
 
             // No location at all — user never opened the app or location was never stored
@@ -351,9 +356,12 @@ Deno.serve(async (req) => {
               continue;
             }
 
-            // If driving, skip cleaning check
-            if (shiftState !== "P" && shiftState !== null) {
-              results.push(`${vehicle.display_name}: driving (${shiftState})`);
+            // If driving, skip cleaning check.
+            // Car is driving if: shift_state is D/R/N (not null or P), OR speed > 0.
+            // shift_state null = parked/off, "P" = park gear. Anything else = moving.
+            const isDriving = (shiftState !== null && shiftState !== "P") || (speed !== null && speed > 0);
+            if (isDriving) {
+              results.push(`${vehicle.display_name}: driving (shift=${shiftState}, speed=${speed})`);
               continue;
             }
 
