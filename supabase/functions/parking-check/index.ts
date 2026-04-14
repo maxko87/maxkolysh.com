@@ -10,8 +10,6 @@ const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-stree
 
 // Location tolerance: if car moved less than 50m, consider it same spot
 const LOCATION_TOLERANCE_M = 50;
-// Only notify about cleaning within 14 days (covers biweekly schedules)
-const NOTIFY_WITHIN_DAYS = 14;
 // Don't re-notify about same location within 12 hours
 const RENOTIFY_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 
@@ -97,21 +95,16 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 function getRelevantCleaning(side: CleaningSide): { start: string; end: string; calendarLink: string | null } | null {
   const now = new Date();
-  const withinLimit = new Date(now.getTime() + NOTIFY_WITHIN_DAYS * 24 * 60 * 60 * 1000);
 
   if (side.NextCleaning) {
     const nextEnd = side.NextCleaningEnd ? new Date(side.NextCleaningEnd) : new Date(side.NextCleaning);
-    const nextStart = new Date(side.NextCleaning);
-    if (nextEnd > now && nextStart < withinLimit) {
+    if (nextEnd > now) {
       return { start: side.NextCleaning, end: side.NextCleaningEnd || side.NextCleaning, calendarLink: side.NextCleaningCalendarLink || null };
     }
   }
 
   if (side.NextNextCleaning) {
-    const nextStart = new Date(side.NextNextCleaning);
-    if (nextStart < withinLimit) {
-      return { start: side.NextNextCleaning, end: side.NextNextCleaningEnd || side.NextNextCleaning, calendarLink: side.NextNextCleaningCalendarLink || null };
-    }
+    return { start: side.NextNextCleaning, end: side.NextNextCleaningEnd || side.NextNextCleaning, calendarLink: side.NextNextCleaningCalendarLink || null };
   }
 
   return null;
