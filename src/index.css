@@ -1253,6 +1253,7 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+  align-items: stretch;
 }
 
 .lrd-card {
@@ -1319,7 +1320,7 @@ body {
   font-size: 0.85rem;
   width: 50px;
   text-align: right;
-  color: #888;
+  color: #aaa;
   flex-shrink: 0;
 }
 
@@ -1343,6 +1344,7 @@ body {
 
 .lrd-bar-waymo {
   background: #38b2ac;
+  min-width: 8px;
 }
 
 .lrd-bar-val {
@@ -1350,7 +1352,7 @@ body {
   font-size: 0.95rem;
   width: 40px;
   text-align: right;
-  color: #aaa;
+  color: #ccc;
   flex-shrink: 0;
 }
 
@@ -1380,8 +1382,8 @@ body {
 }
 
 .lrd-vuln-label {
-  font-size: 1rem;
-  color: #ccc;
+  font-size: 1.1rem;
+  color: #ddd;
 }
 
 /* SCALE SECTION (Section 4) */
@@ -1493,8 +1495,8 @@ body {
 }
 
 .lrd-drug-source {
-  font-size: 0.75rem;
-  color: #555;
+  font-size: 0.8rem;
+  color: #888;
 }
 
 .lrd-quote {
@@ -1521,7 +1523,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  color: #aaa;
+  color: #bbb;
   font-size: 0.95rem;
 }
 
@@ -1544,9 +1546,10 @@ body {
 }
 
 .lrd-cta-line {
-  font-size: 1.25rem;
-  color: #999;
+  font-size: 1.4rem;
+  color: #bbb;
   margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .lrd-cta-headline {
@@ -1584,14 +1587,14 @@ body {
 }
 
 .lrd-btn-copy {
-  background: #252525;
+  background: #2a2a2a;
   color: #e0e0e0;
-  border: 1px solid #333;
+  border: 1px solid #555;
 }
 
 .lrd-cta-author {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1rem;
+  color: #999;
 }
 
 .lrd-link {

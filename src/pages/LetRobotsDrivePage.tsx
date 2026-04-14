@@ -101,21 +101,19 @@ function LetRobotsDrivePage() {
             <div className="lrd-card-icon">🍺</div>
             <h3 className="lrd-card-title">Robots don't drink</h3>
             <p className="lrd-card-stat"><span className="lrd-red">11,904</span> alcohol-impaired driving deaths in 2024</p>
-
+            <p className="lrd-card-stat lrd-card-stat-spacer">&nbsp;</p>
           </div>
           <div className="lrd-card">
             <div className="lrd-card-icon">📱</div>
             <h3 className="lrd-card-title">Robots don't text</h3>
             <p className="lrd-card-stat"><span className="lrd-red">3,208</span> distracted driving deaths in 2024</p>
             <p className="lrd-card-stat"><span className="lrd-red">315,167</span> injuries in 2024</p>
-
           </div>
           <div className="lrd-card">
             <div className="lrd-card-icon">😴</div>
             <h3 className="lrd-card-title">Robots don't get tired</h3>
             <p className="lrd-card-stat"><span className="lrd-red">644</span> drowsy driving deaths in 2024</p>
             <p className="lrd-card-stat"><span className="lrd-red">11,288</span> speeding deaths in 2024</p>
-
           </div>
         </div>
       </section>
@@ -138,7 +136,7 @@ function LetRobotsDrivePage() {
           <VulnStat label="intersection injury crashes" value="96%" />
           <VulnStat label="single-vehicle injury crashes" value="96%" />
         </div>
-        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '2rem' }}>Waymo's rider-only safety record through December 2025, compared to human drivers mile-for-mile</p>
+        <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '2rem' }}>Waymo's rider-only safety record through December 2025, compared to human drivers mile-for-mile</p>
       </section>
       <section className="lrd-section">
         <h2 className="lrd-section-title">What if every car was a Waymo?</h2>
@@ -150,7 +148,7 @@ function LetRobotsDrivePage() {
           <ScaleRow pct="50%" deaths="18,078" note="More than ALL drunk driving deaths" />
           <ScaleRow pct="100%" deaths="36,157" note="~1 death prevented every 14.5 minutes" />
         </div>
-        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '2rem' }}>At Waymo's current safety record (92% fewer serious crashes)</p>
+        <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '2rem' }}>At Waymo's current safety record (92% fewer serious crashes)</p>
       </section>
 
       {/* IF WAYMO WERE A DRUG */}
@@ -165,7 +163,7 @@ function LetRobotsDrivePage() {
           <DrugBar label="Seat belts" lives="~15,000" width={19} source="NHTSA" />
           <DrugBar label="Flu vaccine" lives="~7,000" width={9} source="CDC seasonal estimates" />
         </div>
-        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '2rem' }}>US lives saved per year, by intervention</p>
+        <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '2rem' }}>US lives saved per year, by intervention</p>
       </section>
 
       {/* CAVEATS */}
@@ -236,7 +234,7 @@ function BarComparison({ label, humanVal, waymoVal, reduction }: { label: string
       <div className="lrd-bar-row">
         <span className="lrd-bar-tag">Waymo</span>
         <div className="lrd-bar-track">
-          <div className="lrd-bar-fill lrd-bar-waymo" style={{ width: `${Math.max(waymoPct, 2)}%` }}></div>
+          <div className="lrd-bar-fill lrd-bar-waymo" style={{ width: `${Math.max(waymoPct, 2)}%`, minWidth: '8px' }}></div>
         </div>
         <span className="lrd-bar-val">{waymoVal}</span>
       </div>
