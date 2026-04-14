@@ -69,7 +69,7 @@ function LetRobotsDrivePage() {
       {/* HERO */}
       <section className="lrd-hero">
         <div className="lrd-hero-inner">
-          <p className="lrd-hero-subtitle">Since you opened this page</p>
+          <p className="lrd-hero-subtitle">In the {elapsed < 60 ? `${Math.floor(elapsed)} second${Math.floor(elapsed) !== 1 ? 's' : ''}` : `${Math.floor(elapsed / 60)} minute${Math.floor(elapsed / 60) !== 1 ? 's' : ''}`} since you opened this page</p>
           <div className="lrd-counter-row">
             <div className="lrd-counter-block">
               <span className="lrd-counter-num lrd-red">{deaths}</span>
@@ -155,19 +155,19 @@ function LetRobotsDrivePage() {
         </div>
       </section>
 
-      {/* PERSPECTIVE */}
+      {/* IF WAYMO WERE A DRUG */}
       <section className="lrd-section lrd-section-dark">
-        <h2 className="lrd-section-title">Better than medicine.</h2>
-        <p className="lrd-section-sub">Autonomy vs. other life-saving interventions</p>
+        <h2 className="lrd-section-title">If Waymo were a drug</h2>
+        <p className="lrd-section-sub">US lives saved per year, by intervention</p>
 
-        <div className="lrd-medicine-bars">
-          <MedicineBar label="Statins (gold standard drug)" value={8} displayVal="8% mortality reduction" />
-          <MedicineBar label="Seat belts" value={45} displayVal="45% fatal injury reduction" />
-          <MedicineBar label="Auto emergency braking" value={50} displayVal="50% front-to-rear crash reduction" />
-          <MedicineBar label="Waymo autonomous driving" value={88} displayVal="82–92% injury crash reduction" highlight />
+        <div className="lrd-drug-bars">
+          <DrugBar label="Blood pressure medication" lives="~80,000" width={100} source="CDC / Farley et al." />
+          <DrugBar label="Statins" lives="~50,000" width={62} source="AHA modeling" />
+          <DrugBar label="Childhood vaccines" lives="~37,600" width={47} source="CDC MMWR 2024" />
+          <DrugBar label="Waymo at full deployment" lives="~36,000" width={45} highlight source="Waymo safety data + NHTSA crash stats" />
+          <DrugBar label="Seat belts" lives="~15,000" width={19} source="NHTSA" />
+          <DrugBar label="Flu vaccine" lives="~7,000" width={9} source="CDC seasonal estimates" />
         </div>
-
-
       </section>
 
       {/* CAVEATS */}
@@ -268,14 +268,17 @@ function ScaleRow({ pct, deaths, note }: { pct: string; deaths: string; note: st
   );
 }
 
-function MedicineBar({ label, value, displayVal, highlight }: { label: string; value: number; displayVal: string; highlight?: boolean }) {
+function DrugBar({ label, lives, width, highlight, source }: { label: string; lives: string; width: number; highlight?: boolean; source: string }) {
   return (
-    <div className="lrd-med-row">
-      <p className="lrd-med-label">{label}</p>
-      <div className="lrd-med-track">
-        <div className={`lrd-med-fill ${highlight ? 'lrd-med-highlight' : ''}`} style={{ width: `${value}%` }}></div>
+    <div className={`lrd-drug-row ${highlight ? 'lrd-drug-highlight' : ''}`}>
+      <div className="lrd-drug-info">
+        <span className={`lrd-drug-label ${highlight ? 'lrd-green lrd-bold' : ''}`}>{label}</span>
+        <span className={`lrd-drug-lives ${highlight ? 'lrd-green' : ''}`}>{lives}</span>
       </div>
-      <p className={`lrd-med-val ${highlight ? 'lrd-green lrd-bold' : ''}`}>{displayVal}</p>
+      <div className="lrd-drug-track">
+        <div className={`lrd-drug-fill ${highlight ? 'lrd-drug-fill-highlight' : ''}`} style={{ width: `${Math.max(width, 2)}%` }}></div>
+      </div>
+      <span className="lrd-drug-source">{source}</span>
     </div>
   );
 }
