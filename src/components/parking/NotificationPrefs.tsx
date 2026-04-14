@@ -17,6 +17,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 export default function NotificationPrefs({ email, teslaUserId }: NotificationPrefsProps) {
   const [prefs, setPrefs] = useState<Record<string, boolean>>({
+    park: true,
     '1h': true,
     '3h': false,
     '1d': false,
@@ -93,11 +94,44 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
       }}>
         <span style={{ fontSize: '1rem' }}>📧</span>
         <span style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff' }}>
-          Email Reminders
+          Email Notifications
         </span>
       </div>
 
-      {/* 2x2 grid of toggles */}
+      {/* Just Parked toggle */}
+      <button
+        onClick={() => toggle('park')}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          background: '#1C1C1E',
+          border: '1px solid #2C2C2E',
+          borderRadius: '12px',
+          padding: '0.8rem 0.85rem',
+          cursor: 'pointer',
+          marginBottom: '1rem',
+        }}
+      >
+        <span style={{ fontSize: '0.95rem', color: '#fff' }}>
+          Email me every time I park
+        </span>
+        <ToggleSwitch on={prefs.park !== false} />
+      </button>
+
+      {/* Cleaning Reminders label */}
+      <div style={{
+        fontSize: '0.8rem',
+        color: '#8A8A8E',
+        marginBottom: '0.5rem',
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+      }}>
+        Cleaning Reminders
+      </div>
+
+      {/* 2x2 grid of reminder toggles */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',

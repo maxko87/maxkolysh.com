@@ -509,8 +509,9 @@ Deno.serve(async (req) => {
             emailHtml += `<p style="color: #999; font-size: 12px;">SF Street Cleaning Notifier<br><a href="https://maxkolysh.com/parking">maxkolysh.com/parking</a></p>`;
             emailHtml += `</div>`;
 
-            // Send email notification
-            if (user.email) {
+            // Send email notification (if park pref is not explicitly false)
+            const parkPref = user.notification_prefs?.park;
+            if (user.email && parkPref !== false) {
               await sendEmailNotification(user.email, emailSubject, emailHtml);
 
               // Log notification
