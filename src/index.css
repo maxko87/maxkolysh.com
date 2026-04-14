@@ -1192,6 +1192,12 @@ body {
   font-size: 1.5rem;
   color: #444;
   animation: lrd-bounce 2s infinite;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.lrd-scroll-hint:hover {
+  color: #888;
 }
 
 @keyframes lrd-bounce {

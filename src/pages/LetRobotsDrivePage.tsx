@@ -89,43 +89,43 @@ function LetRobotsDrivePage() {
             <p>1 injury every <span className="lrd-red lrd-bold">13 seconds</span>.</p>
           </div>
           <p className="lrd-hero-year">Based on 2024 US data</p>
-          <div className="lrd-scroll-hint">↓</div>
+          <div className="lrd-scroll-hint" onClick={() => document.getElementById('lrd-robots-dont')?.scrollIntoView({ behavior: 'smooth' })} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') document.getElementById('lrd-robots-dont')?.scrollIntoView({ behavior: 'smooth' }); }}>↓</div>
         </div>
       </section>
 
       {/* WHAT HUMANS DO WRONG */}
-      <section className="lrd-section">
+      <section id="lrd-robots-dont" className="lrd-section">
         <h2 className="lrd-section-title">Robots don't...</h2>
         <div className="lrd-cards">
           <div className="lrd-card">
             <div className="lrd-card-icon">🍺</div>
             <h3 className="lrd-card-title">Robots don't drink</h3>
             <p className="lrd-card-stat"><span className="lrd-red">11,904</span> alcohol-impaired driving deaths in 2024</p>
-            <p className="lrd-card-detail">1 death every 44 minutes, around the clock, every single day.</p>
+
           </div>
           <div className="lrd-card">
             <div className="lrd-card-icon">📱</div>
             <h3 className="lrd-card-title">Robots don't text</h3>
             <p className="lrd-card-stat"><span className="lrd-red">3,208</span> distracted driving deaths in 2024</p>
             <p className="lrd-card-stat"><span className="lrd-red">315,167</span> injuries in 2024</p>
-            <p className="lrd-card-detail">5 seconds of texting at 55 mph = driving a football field blind.</p>
+
           </div>
           <div className="lrd-card">
             <div className="lrd-card-icon">😴</div>
             <h3 className="lrd-card-title">Robots don't get tired</h3>
             <p className="lrd-card-stat"><span className="lrd-red">644</span> drowsy driving deaths in 2024</p>
             <p className="lrd-card-stat"><span className="lrd-red">11,288</span> speeding deaths in 2024</p>
-            <p className="lrd-card-detail">Robots never lose focus, never rush, never fall asleep at the wheel.</p>
+
           </div>
         </div>
       </section>
 
       {/* THE EVIDENCE */}
       <section className="lrd-section lrd-section-dark">
-        <h2 className="lrd-section-title">170.7 million miles. Zero guesswork.</h2>
+        <h2 className="lrd-section-title">Robots drive better.</h2>
         <p className="lrd-section-sub">Waymo's rider-only safety record through December 2025, compared to human drivers mile-for-mile</p>
 
-        <h3 className="lrd-subsection-title">Crashes per million miles</h3>
+        <h3 className="lrd-subsection-title">Per million miles driven</h3>
         <div className="lrd-bars">
           <BarComparison label="Serious-injury-or-worse crashes" humanVal={0.22} waymoVal={0.02} reduction="92%" />
           <BarComparison label="Injury-causing crashes" humanVal={3.90} waymoVal={0.71} reduction="82%" />
@@ -157,8 +157,8 @@ function LetRobotsDrivePage() {
 
       {/* PERSPECTIVE */}
       <section className="lrd-section lrd-section-dark">
-        <h2 className="lrd-section-title">If this were medicine</h2>
-        <p className="lrd-section-sub">How does autonomy compare to other safety interventions?</p>
+        <h2 className="lrd-section-title">Better than medicine.</h2>
+        <p className="lrd-section-sub">Autonomy vs. other life-saving interventions</p>
 
         <div className="lrd-medicine-bars">
           <MedicineBar label="Statins (gold standard drug)" value={8} displayVal="8% mortality reduction" />
@@ -172,7 +172,7 @@ function LetRobotsDrivePage() {
 
       {/* CAVEATS */}
       <section className="lrd-section lrd-section-caveats">
-        <h2 className="lrd-section-title">What we're not claiming</h2>
+        <h2 className="lrd-section-title">Caveats</h2>
         <ul className="lrd-caveats-list">
           <li><strong>Geographic limits: </strong>Waymo's data is strongest for surface streets in its current operating areas (Phoenix, San Francisco, Los Angeles). Highway and rural performance is not yet proven at scale.</li>
           <li><strong>Not yet proven for fatalities: </strong>Waymo acknowledges it doesn't yet have enough miles for a fatalities-only statistical significance test.</li>
@@ -192,7 +192,7 @@ function LetRobotsDrivePage() {
             {copiedLink ? 'Copied!' : 'Copy link'}
           </button>
         </div>
-        <p className="lrd-cta-author">Written by <Link to="/" className="lrd-link">Max Kolysh</Link></p>
+        <p className="lrd-cta-author">Compiled by <Link to="/" className="lrd-link">Max Kolysh</Link></p>
       </section>
 
       {/* SOURCES */}
