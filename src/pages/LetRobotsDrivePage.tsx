@@ -13,6 +13,10 @@ const COST_PER_SECOND = ECONOMIC_COST / SECONDS_PER_YEAR;
 function LetRobotsDrivePage() {
   const [elapsed, setElapsed] = useState(0);
   const startTime = useRef(Date.now());
+  const [baseSeconds] = useState(() => {
+    const now = new Date();
+    return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
+  });
   const [copiedLink, setCopiedLink] = useState(false);
 
   // Live counter
@@ -48,9 +52,10 @@ function LetRobotsDrivePage() {
     };
   }, []);
 
-  const deaths = (elapsed * DEATHS_PER_SECOND).toFixed(2);
-  const injuries = (elapsed * INJURIES_PER_SECOND).toFixed(2);
-  const cost = Math.floor(elapsed * COST_PER_SECOND).toLocaleString('en-US');
+  const totalSecs = baseSeconds + elapsed;
+  const deaths = (totalSecs * DEATHS_PER_SECOND).toFixed(2);
+  const injuries = (totalSecs * INJURIES_PER_SECOND).toFixed(2);
+  const cost = Math.floor(totalSecs * COST_PER_SECOND).toLocaleString('en-US');
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText('https://maxkolysh.com/let-robots-drive').then(() => {
@@ -69,7 +74,7 @@ function LetRobotsDrivePage() {
       {/* HERO */}
       <section className="lrd-hero">
         <div className="lrd-hero-inner">
-          <p className="lrd-hero-subtitle">In the {elapsed < 60 ? `${Math.floor(elapsed)} second${Math.floor(elapsed) !== 1 ? 's' : ''}` : `${Math.floor(elapsed / 60)} minute${Math.floor(elapsed / 60) !== 1 ? 's' : ''}`} since you opened this page</p>
+          <p className="lrd-hero-subtitle">So far today</p>
           <div className="lrd-counter-row">
             <div className="lrd-counter-block">
               <span className="lrd-counter-num lrd-red">{deaths}</span>
@@ -88,7 +93,7 @@ function LetRobotsDrivePage() {
             <p>1 death every <span className="lrd-red lrd-bold">13.4 minutes</span>.</p>
             <p>1 injury every <span className="lrd-red lrd-bold">13 seconds</span>.</p>
           </div>
-          <p className="lrd-hero-year">Based on 2024 US data</p>
+          <p className="lrd-hero-year">Based on 2024 US data • Updates in real-time</p>
           <div className="lrd-scroll-hint" onClick={() => document.getElementById('lrd-robots-dont')?.scrollIntoView({ behavior: 'smooth' })} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') document.getElementById('lrd-robots-dont')?.scrollIntoView({ behavior: 'smooth' }); }}>↓</div>
         </div>
       </section>
@@ -111,11 +116,12 @@ function LetRobotsDrivePage() {
           </div>
           <div className="lrd-card">
             <div className="lrd-card-icon">😴</div>
-            <h3 className="lrd-card-title">Robots don't get tired</h3>
+            <h3 className="lrd-card-title">Robots don't speed or get tired</h3>
             <p className="lrd-card-stat"><span className="lrd-red">644</span> drowsy driving deaths in 2024</p>
             <p className="lrd-card-stat"><span className="lrd-red">11,288</span> speeding deaths in 2024</p>
           </div>
         </div>
+        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '1.5rem' }}>Note: Categories overlap — a drunk driver who was also speeding is counted in both. These are not additive.</p>
       </section>
 
       {/* THE EVIDENCE */}
@@ -128,6 +134,10 @@ function LetRobotsDrivePage() {
           <BarComparison label="Injury-causing crashes" humanVal={3.90} waymoVal={0.71} reduction="82%" />
           <BarComparison label="Airbag deployments" humanVal={1.12} waymoVal={0.05} reduction="96%" />
         </div>
+
+        <p className="lrd-section-sub" style={{ fontSize: '0.85rem', opacity: 0.75, marginTop: '1.5rem', borderLeft: '3px solid var(--lrd-green, #4ade80)', paddingLeft: '1rem' }}>Independently validated: Swiss Re — one of the world's largest reinsurers — found Waymo vehicles had 88% fewer bodily injury claims per mile than the human benchmark.</p>
+
+        <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '1rem' }}>Note: Waymo has proven dramatic reductions in injury crashes. Fatality-specific data is not yet statistically significant due to the rarity of fatal crashes, but the injury reduction strongly suggests a proportional fatality benefit.</p>
 
         <h3 className="lrd-subsection-title">Waymo vs. human drivers: who's safer for people outside the car?</h3>
         <div className="lrd-vuln-grid">
@@ -149,6 +159,7 @@ function LetRobotsDrivePage() {
           <ScaleRow pct="100%" deaths="36,157" note="~1 death prevented every 14.5 minutes" />
         </div>
         <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '2rem' }}>At Waymo's current safety record (92% fewer serious crashes)</p>
+        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '0.5rem' }}>Extrapolated from Waymo's urban surface-street safety record. Actual nationwide impact would depend on highway and rural performance.</p>
       </section>
 
       {/* IF WAYMO WERE A DRUG */}
@@ -159,7 +170,7 @@ function LetRobotsDrivePage() {
           <DrugBar label="Blood pressure medication" lives="~80,000" width={100} source="CDC / Farley et al." />
           <DrugBar label="Statins" lives="~50,000" width={62} source="AHA modeling" />
           <DrugBar label="Childhood vaccines" lives="~37,600" width={47} source="CDC MMWR 2024" />
-          <DrugBar label="Waymo at full deployment" lives="~36,000" width={45} highlight source="Waymo safety data + NHTSA crash stats" />
+          <DrugBar label="Waymo at full deployment (projected)" lives="~36,000" width={45} highlight source="Waymo safety data + NHTSA crash stats" />
           <DrugBar label="Seat belts" lives="~15,000" width={19} source="NHTSA" />
           <DrugBar label="Flu vaccine" lives="~7,000" width={9} source="CDC seasonal estimates" />
         </div>
@@ -174,6 +185,7 @@ function LetRobotsDrivePage() {
           <li><strong>Not yet proven for fatalities: </strong>Waymo acknowledges it doesn't yet have enough miles for a fatalities-only statistical significance test.</li>
           <li><strong>Conservative comparison: </strong>Human crash data is underreported — 60% of property-damage crashes and 32% of injury crashes are never reported to police — which actually makes the comparison <em>conservative</em> for autonomy.</li>
           <li><strong>Single-source data: </strong>This page uses Waymo's published data. Other AV companies may have different safety profiles.</li>
+          <li><strong>Economic transition: </strong>Widespread adoption would affect millions of driving jobs (trucking, ride-hailing, delivery). The safety case is overwhelming, but the transition needs to be managed thoughtfully — retraining programs, gradual rollout timelines, and economic support for displaced workers matter.</li>
         </ul>
 
       </section>
@@ -211,6 +223,7 @@ function LetRobotsDrivePage() {
             <li><a href="https://waymo.com/research/rider-only-ride-hail-safety/" target="_blank" rel="noopener noreferrer">Waymo Ride-Hailing Safety Research</a></li>
             <li><a href="https://www.cdc.gov/transportation-safety/about/cost-of-crash-deaths.html" target="_blank" rel="noopener noreferrer">CDC — Motor Vehicle Crash Deaths Cost</a></li>
             <li><a href="https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813839" target="_blank" rel="noopener noreferrer">NHTSA — The Economic and Societal Impact of Motor Vehicle Crashes</a></li>
+            <li><a href="https://waymo.com/blog/2025/01/swiss-re-independent-validation/" target="_blank" rel="noopener noreferrer">Swiss Re — Independent Validation of Waymo Safety (2025)</a></li>
           </ol>
         </details>
       </section>
