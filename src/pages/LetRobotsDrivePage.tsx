@@ -95,7 +95,7 @@ function LetRobotsDrivePage() {
 
       {/* WHAT HUMANS DO WRONG */}
       <section id="lrd-robots-dont" className="lrd-section">
-        <h2 className="lrd-section-title">Robots don't...</h2>
+        <h2 className="lrd-section-title">Robots don't drink, text, speed, or get tired</h2>
         <div className="lrd-cards">
           <div className="lrd-card">
             <div className="lrd-card-icon">🍺</div>
@@ -123,7 +123,6 @@ function LetRobotsDrivePage() {
       {/* THE EVIDENCE */}
       <section className="lrd-section lrd-section-dark">
         <h2 className="lrd-section-title">Robots drive better.</h2>
-        <p className="lrd-section-sub">Waymo's rider-only safety record through December 2025, compared to human drivers mile-for-mile</p>
 
         <h3 className="lrd-subsection-title">Per million miles driven</h3>
         <div className="lrd-bars">
@@ -139,12 +138,10 @@ function LetRobotsDrivePage() {
           <VulnStat label="intersection injury crashes" value="96%" />
           <VulnStat label="single-vehicle injury crashes" value="96%" />
         </div>
+        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '2rem' }}>Waymo's rider-only safety record through December 2025, compared to human drivers mile-for-mile</p>
       </section>
-
-      {/* THE SCALE */}
       <section className="lrd-section">
         <h2 className="lrd-section-title">What if every car was a Waymo?</h2>
-        <p className="lrd-section-sub">At Waymo's current safety record (92% fewer serious crashes)</p>
 
         <div className="lrd-scale-list">
           <ScaleRow pct="1%" deaths="362" note={null} />
@@ -153,6 +150,7 @@ function LetRobotsDrivePage() {
           <ScaleRow pct="50%" deaths="18,078" note="More than ALL drunk driving deaths" />
           <ScaleRow pct="100%" deaths="36,157" note="~1 death prevented every 14.5 minutes" />
         </div>
+        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '2rem' }}>At Waymo's current safety record (92% fewer serious crashes)</p>
       </section>
 
       {/* IF WAYMO WERE A DRUG */}
