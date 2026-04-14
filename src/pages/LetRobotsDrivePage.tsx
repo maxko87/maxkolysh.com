@@ -156,7 +156,6 @@ function LetRobotsDrivePage() {
       {/* IF WAYMO WERE A DRUG */}
       <section className="lrd-section lrd-section-dark">
         <h2 className="lrd-section-title">If Waymo were a drug</h2>
-        <p className="lrd-section-sub">US lives saved per year, by intervention</p>
 
         <div className="lrd-drug-bars">
           <DrugBar label="Blood pressure medication" lives="~80,000" width={100} source="CDC / Farley et al." />
@@ -166,6 +165,7 @@ function LetRobotsDrivePage() {
           <DrugBar label="Seat belts" lives="~15,000" width={19} source="NHTSA" />
           <DrugBar label="Flu vaccine" lives="~7,000" width={9} source="CDC seasonal estimates" />
         </div>
+        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '2rem' }}>US lives saved per year, by intervention</p>
       </section>
 
       {/* CAVEATS */}
