@@ -1182,10 +1182,20 @@ body {
   margin-bottom: 0.25rem;
 }
 
-.lrd-hero-year {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 3rem;
+.lrd-cite {
+  vertical-align: super;
+  font-size: 0.65em;
+  opacity: 0.5;
+  margin-left: 1px;
+  white-space: nowrap;
+}
+.lrd-cite a {
+  color: inherit;
+  text-decoration: none;
+}
+.lrd-cite a:hover {
+  text-decoration: underline;
+  opacity: 0.8;
 }
 
 .lrd-scroll-hint {
