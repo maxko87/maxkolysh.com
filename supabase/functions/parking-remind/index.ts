@@ -3,7 +3,7 @@ import * as turf from "https://esm.sh/@turf/turf@7";
 
 // --- Config ---
 const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/refs/heads/main/data";
-const NOTIFY_WITHIN_DAYS = 7;
+const NOTIFY_WITHIN_DAYS = 14;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",

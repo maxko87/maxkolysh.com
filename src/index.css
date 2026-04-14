@@ -1254,6 +1254,9 @@ body {
   border: 1px solid #252525;
   border-radius: 12px;
   padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .lrd-card-icon {
@@ -1269,14 +1272,15 @@ body {
 }
 
 .lrd-card-stat {
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin-bottom: 0.4rem;
 }
 
 .lrd-card-detail {
-  font-size: 0.9rem;
-  color: #777;
+  font-size: 1rem;
+  color: #999;
   margin-top: 0.5rem;
+  margin-top: auto;
   font-style: italic;
 }
 
@@ -1294,7 +1298,7 @@ body {
 }
 
 .lrd-bar-label {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: #ccc;
   font-weight: 500;
 }
@@ -1306,7 +1310,7 @@ body {
 }
 
 .lrd-bar-tag {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   width: 50px;
   text-align: right;
   color: #888;
@@ -1337,7 +1341,7 @@ body {
 
 .lrd-bar-val {
   font-family: "SF Mono", "Fira Code", "Courier New", monospace;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   width: 40px;
   text-align: right;
   color: #aaa;
@@ -1345,7 +1349,7 @@ body {
 }
 
 .lrd-bar-reduction {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   text-align: right;
 }
 
@@ -1370,8 +1374,8 @@ body {
 }
 
 .lrd-vuln-label {
-  font-size: 0.85rem;
-  color: #999;
+  font-size: 1rem;
+  color: #ccc;
 }
 
 /* SCALE SECTION (Section 4) */
@@ -1415,6 +1419,15 @@ body {
   font-weight: 600;
 }
 
+.lrd-scale-row:nth-child(1) { border-left: 2px solid #1a3a2a; }
+.lrd-scale-row:nth-child(2) { border-left: 3px solid #1e4a35; }
+.lrd-scale-row:nth-child(3) { border-left: 4px solid #256b4a; }
+.lrd-scale-row:nth-child(4) { border-left: 5px solid #2d8a5e; }
+.lrd-scale-row:nth-child(5) { border-left: 6px solid #38b2ac; background: rgba(56,178,172,0.05); }
+.lrd-scale-row:last-child .lrd-scale-pct { font-size: 2rem; color: #38b2ac; }
+.lrd-scale-row:last-child .lrd-scale-deaths { font-size: 1.3rem; }
+.lrd-scale-row { padding-left: 1rem; }
+
 /* MEDICINE SECTION (Section 5) */
 .lrd-medicine-bars {
   display: flex;
@@ -1429,12 +1442,13 @@ body {
 }
 
 .lrd-med-label {
-  font-size: 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 600;
   color: #ccc;
 }
 
 .lrd-med-track {
-  height: 28px;
+  height: 32px;
   background: #1a1a1a;
   border-radius: 4px;
   overflow: hidden;
@@ -1452,8 +1466,8 @@ body {
 }
 
 .lrd-med-val {
-  font-size: 0.85rem;
-  color: #999;
+  font-size: 0.95rem;
+  color: #bbb;
 }
 
 .lrd-quote {
@@ -1524,9 +1538,9 @@ body {
 }
 
 .lrd-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 1rem 2.25rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -1562,7 +1576,7 @@ body {
 .lrd-sources {
   max-width: 820px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 2rem 1.5rem 6rem;
   border-top: 1px solid #1a1a1a;
 }
 
@@ -1627,5 +1641,9 @@ body {
   .lrd-scale-pct {
     font-size: 2rem;
     min-width: 90px;
+  }
+
+  .lrd-scale-row:last-child .lrd-scale-pct {
+    font-size: 2.5rem;
   }
 }

@@ -4,9 +4,11 @@ import { Link } from 'react-router-dom';
 // Constants
 const DEATHS_PER_YEAR = 39254;
 const INJURIES_PER_YEAR = 2422195;
+const ECONOMIC_COST = 340_000_000_000;
 const SECONDS_PER_YEAR = 365.25 * 24 * 3600;
 const DEATHS_PER_SECOND = DEATHS_PER_YEAR / SECONDS_PER_YEAR;
 const INJURIES_PER_SECOND = INJURIES_PER_YEAR / SECONDS_PER_YEAR;
+const COST_PER_SECOND = ECONOMIC_COST / SECONDS_PER_YEAR;
 
 function LetRobotsDrivePage() {
   const [elapsed, setElapsed] = useState(0);
@@ -46,8 +48,9 @@ function LetRobotsDrivePage() {
     };
   }, []);
 
-  const deaths = (elapsed * DEATHS_PER_SECOND).toFixed(4);
+  const deaths = (elapsed * DEATHS_PER_SECOND).toFixed(2);
   const injuries = (elapsed * INJURIES_PER_SECOND).toFixed(2);
+  const cost = Math.floor(elapsed * COST_PER_SECOND).toLocaleString('en-US');
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText('https://maxkolysh.com/let-robots-drive').then(() => {
@@ -76,12 +79,16 @@ function LetRobotsDrivePage() {
               <span className="lrd-counter-num lrd-red">{injuries}</span>
               <span className="lrd-counter-label">injuries on American roads</span>
             </div>
+            <div className="lrd-counter-block">
+              <span className="lrd-counter-num lrd-red">${cost}</span>
+              <span className="lrd-counter-label">in economic costs</span>
+            </div>
           </div>
           <div className="lrd-hero-rates">
             <p>1 death every <span className="lrd-red lrd-bold">13.4 minutes</span>.</p>
             <p>1 injury every <span className="lrd-red lrd-bold">13 seconds</span>.</p>
           </div>
-          <p className="lrd-hero-year">Based on 2024 US data: 39,254 deaths. 2,422,195 injuries. $340 billion in economic costs.</p>
+          <p className="lrd-hero-year">Based on 2024 US data</p>
           <div className="lrd-scroll-hint">↓</div>
         </div>
       </section>
@@ -99,15 +106,15 @@ function LetRobotsDrivePage() {
           <div className="lrd-card">
             <div className="lrd-card-icon">📱</div>
             <h3 className="lrd-card-title">Robots don't text</h3>
-            <p className="lrd-card-stat"><span className="lrd-red">3,208</span> distracted driving deaths</p>
-            <p className="lrd-card-stat"><span className="lrd-red">315,167</span> injuries</p>
+            <p className="lrd-card-stat"><span className="lrd-red">3,208</span> distracted driving deaths in 2024</p>
+            <p className="lrd-card-stat"><span className="lrd-red">315,167</span> injuries in 2024</p>
             <p className="lrd-card-detail">5 seconds of texting at 55 mph = driving a football field blind.</p>
           </div>
           <div className="lrd-card">
             <div className="lrd-card-icon">😴</div>
             <h3 className="lrd-card-title">Robots don't get tired</h3>
-            <p className="lrd-card-stat"><span className="lrd-red">644</span> drowsy driving deaths</p>
-            <p className="lrd-card-stat"><span className="lrd-red">11,288</span> speeding deaths</p>
+            <p className="lrd-card-stat"><span className="lrd-red">644</span> drowsy driving deaths in 2024</p>
+            <p className="lrd-card-stat"><span className="lrd-red">11,288</span> speeding deaths in 2024</p>
             <p className="lrd-card-detail">Robots never lose focus, never rush, never fall asleep at the wheel.</p>
           </div>
         </div>
@@ -115,29 +122,29 @@ function LetRobotsDrivePage() {
 
       {/* THE EVIDENCE */}
       <section className="lrd-section lrd-section-dark">
-        <h2 className="lrd-section-title">The Evidence</h2>
-        <p className="lrd-section-sub">What Waymo has actually measured over <span className="lrd-green lrd-bold">170.7 million</span> rider-only miles through December 2025</p>
+        <h2 className="lrd-section-title">170.7 million miles. Zero guesswork.</h2>
+        <p className="lrd-section-sub">Waymo's rider-only safety record through December 2025, compared to human drivers mile-for-mile</p>
 
-        <h3 className="lrd-subsection-title">Key comparisons (per million miles)</h3>
+        <h3 className="lrd-subsection-title">Crashes per million miles</h3>
         <div className="lrd-bars">
           <BarComparison label="Serious-injury-or-worse crashes" humanVal={0.22} waymoVal={0.02} reduction="92%" />
           <BarComparison label="Injury-causing crashes" humanVal={3.90} waymoVal={0.71} reduction="82%" />
           <BarComparison label="Airbag deployments" humanVal={1.12} waymoVal={0.05} reduction="96%" />
         </div>
 
-        <h3 className="lrd-subsection-title">Vulnerable road users</h3>
+        <h3 className="lrd-subsection-title">Waymo vs. human drivers: who's safer for people outside the car?</h3>
         <div className="lrd-vuln-grid">
-          <VulnStat label="Pedestrian injury crashes" value="92%" />
-          <VulnStat label="Cyclist injury crashes" value="85%" />
-          <VulnStat label="Intersection injury crashes" value="96%" />
-          <VulnStat label="Single-vehicle injury crashes" value="96%" />
+          <VulnStat label="pedestrian injury crashes" value="92%" />
+          <VulnStat label="cyclist injury crashes" value="85%" />
+          <VulnStat label="intersection injury crashes" value="96%" />
+          <VulnStat label="single-vehicle injury crashes" value="96%" />
         </div>
       </section>
 
       {/* THE SCALE */}
       <section className="lrd-section">
-        <h2 className="lrd-section-title">What if we let them drive?</h2>
-        <p className="lrd-section-sub">If autonomous vehicles drove a share of US miles at Waymo's current safety record (92% fewer serious crashes):</p>
+        <h2 className="lrd-section-title">What if every car was a Waymo?</h2>
+        <p className="lrd-section-sub">At Waymo's current safety record (92% fewer serious crashes)</p>
 
         <div className="lrd-scale-list">
           <ScaleRow pct="1%" deaths="362" note={null} />
@@ -160,21 +167,19 @@ function LetRobotsDrivePage() {
           <MedicineBar label="Waymo autonomous driving" value={88} displayVal="82–92% injury crash reduction" highlight />
         </div>
 
-        <blockquote className="lrd-quote">
-          Don't think of autonomy as a gadget. Think of it as a public-health intervention with effect sizes that would be startling in medicine.
-        </blockquote>
+
       </section>
 
       {/* CAVEATS */}
       <section className="lrd-section lrd-section-caveats">
         <h2 className="lrd-section-title">What we're not claiming</h2>
         <ul className="lrd-caveats-list">
-          <li>Waymo's data is strongest for surface streets in its current operating areas (Phoenix, San Francisco, Los Angeles). Highway and rural performance is not yet proven at scale.</li>
-          <li>Waymo acknowledges it doesn't yet have enough miles for a fatalities-only statistical significance test.</li>
-          <li>Human crash data is underreported — 60% of property-damage crashes and 32% of injury crashes are never reported to police — which actually makes the comparison <em>conservative</em> for autonomy.</li>
-          <li>This page uses Waymo's published data. Other AV companies may have different safety profiles.</li>
+          <li><strong>Geographic limits: </strong>Waymo's data is strongest for surface streets in its current operating areas (Phoenix, San Francisco, Los Angeles). Highway and rural performance is not yet proven at scale.</li>
+          <li><strong>Not yet proven for fatalities: </strong>Waymo acknowledges it doesn't yet have enough miles for a fatalities-only statistical significance test.</li>
+          <li><strong>Conservative comparison: </strong>Human crash data is underreported — 60% of property-damage crashes and 32% of injury crashes are never reported to police — which actually makes the comparison <em>conservative</em> for autonomy.</li>
+          <li><strong>Single-source data: </strong>This page uses Waymo's published data. Other AV companies may have different safety profiles.</li>
         </ul>
-        <p className="lrd-caveats-note">Honest accounting strengthens the case. The data is overwhelming even with these caveats.</p>
+
       </section>
 
       {/* CTA / FOOTER */}

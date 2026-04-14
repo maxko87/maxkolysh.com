@@ -10,8 +10,8 @@ const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-stree
 
 // Location tolerance: if car moved less than 50m, consider it same spot
 const LOCATION_TOLERANCE_M = 50;
-// Only notify about cleaning within 7 days
-const NOTIFY_WITHIN_DAYS = 7;
+// Only notify about cleaning within 14 days (covers biweekly schedules)
+const NOTIFY_WITHIN_DAYS = 14;
 // Don't re-notify about same location within 12 hours
 const RENOTIFY_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 
