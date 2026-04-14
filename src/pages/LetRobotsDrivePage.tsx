@@ -173,19 +173,6 @@ function LetRobotsDrivePage() {
         </div>
       </section>
 
-      {/* CAVEATS */}
-      <section className="lrd-section lrd-section-caveats">
-        <h2 className="lrd-section-title">Caveats</h2>
-        <ul className="lrd-caveats-list">
-          <li><strong>Geographic limits: </strong>Waymo's data is strongest for surface streets in its current operating areas (Phoenix, San Francisco, Los Angeles). Highway and rural performance is not yet proven at scale.</li>
-          <li><strong>Not yet proven for fatalities: </strong>Waymo acknowledges it doesn't yet have enough miles for a fatalities-only statistical significance test.</li>
-          <li><strong>Conservative comparison: </strong>Human crash data is underreported — 60% of property-damage crashes and 32% of injury crashes are never reported to police — which actually makes the comparison <em>conservative</em> for autonomy.</li>
-          <li><strong>Single-source data: </strong>This page uses Waymo's published data. Other AV companies may have different safety profiles.</li>
-          <li><strong>Economic transition: </strong>Widespread adoption would affect millions of driving jobs (trucking, ride-hailing, delivery). The safety case is overwhelming, but the transition needs to be managed thoughtfully — retraining programs, gradual rollout timelines, and economic support for displaced workers matter.</li>
-        </ul>
-
-      </section>
-
       {/* CTA / FOOTER */}
       <section className="lrd-cta">
         <p className="lrd-cta-line">Every day we delay costs lives.</p>
@@ -199,8 +186,8 @@ function LetRobotsDrivePage() {
         <p className="lrd-cta-author">Compiled by <Link to="/" className="lrd-link">Max Kolysh</Link></p>
       </section>
 
-      {/* SOURCES */}
-      <section className="lrd-sources">
+      {/* FOOTER: SOURCES + CAVEATS */}
+      <section className="lrd-sources" style={{ display: 'flex', gap: '2rem', justifyContent: 'center' }}>
         <details>
           <summary className="lrd-sources-toggle">Sources & References</summary>
           <ol className="lrd-sources-list">
@@ -221,6 +208,16 @@ function LetRobotsDrivePage() {
             <li><a href="https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813839" target="_blank" rel="noopener noreferrer">NHTSA — The Economic and Societal Impact of Motor Vehicle Crashes</a></li>
             <li><a href="https://waymo.com/blog/2025/01/swiss-re-independent-validation/" target="_blank" rel="noopener noreferrer">Swiss Re — Independent Validation of Waymo Safety (2025)</a></li>
           </ol>
+        </details>
+        <details>
+          <summary className="lrd-sources-toggle">Caveats</summary>
+          <ul className="lrd-caveats-list">
+            <li>Waymo's data is strongest for surface streets in its current operating areas (Phoenix, San Francisco, Los Angeles). Highway and rural performance is not yet proven at scale.</li>
+            <li>Waymo acknowledges it doesn't yet have enough miles for a fatalities-only statistical significance test.</li>
+            <li>Human crash data is underreported — 60% of property-damage crashes and 32% of injury crashes are never reported to police — which actually makes the comparison <em>conservative</em> for autonomy.</li>
+            <li>This page uses Waymo's published data. Other AV companies may have different safety profiles.</li>
+            <li>Widespread adoption would affect millions of driving jobs (trucking, ride-hailing, delivery). The safety case is overwhelming, but the transition needs to be managed thoughtfully.</li>
+          </ul>
         </details>
       </section>
     </div>
