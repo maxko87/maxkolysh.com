@@ -121,7 +121,6 @@ function LetRobotsDrivePage() {
             <p className="lrd-card-stat"><span className="lrd-red">11,288</span> speeding deaths in 2024</p>
           </div>
         </div>
-        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '1.5rem' }}>Note: Categories overlap — a drunk driver who was also speeding is counted in both. These are not additive.</p>
       </section>
 
       {/* THE EVIDENCE */}
@@ -136,8 +135,6 @@ function LetRobotsDrivePage() {
         </div>
 
         <p className="lrd-section-sub" style={{ fontSize: '0.85rem', opacity: 0.75, marginTop: '1.5rem', borderLeft: '3px solid var(--lrd-green, #4ade80)', paddingLeft: '1rem' }}>Independently validated: Swiss Re — one of the world's largest reinsurers — found Waymo vehicles had 88% fewer bodily injury claims per mile than the human benchmark.</p>
-
-        <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '1rem' }}>Note: Waymo has proven dramatic reductions in injury crashes. Fatality-specific data is not yet statistically significant due to the rarity of fatal crashes, but the injury reduction strongly suggests a proportional fatality benefit.</p>
 
         <h3 className="lrd-subsection-title">Waymo vs. human drivers: who's safer for people outside the car?</h3>
         <div className="lrd-vuln-grid">
@@ -159,12 +156,12 @@ function LetRobotsDrivePage() {
           <ScaleRow pct="100%" deaths="36,157" note="~1 death prevented every 14.5 minutes" />
         </div>
         <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '2rem' }}>At Waymo's current safety record (92% fewer serious crashes)</p>
-        <p className="lrd-section-sub" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '0.5rem' }}>Extrapolated from Waymo's urban surface-street safety record. Actual nationwide impact would depend on highway and rural performance.</p>
       </section>
 
       {/* IF WAYMO WERE A DRUG */}
       <section className="lrd-section lrd-section-dark">
         <h2 className="lrd-section-title">If Waymo were a drug</h2>
+        <p className="lrd-section-sub">US lives saved per year, by intervention</p>
 
         <div className="lrd-drug-bars">
           <DrugBar label="Blood pressure medication" lives="~80,000" width={100} source="CDC / Farley et al." />
@@ -174,7 +171,6 @@ function LetRobotsDrivePage() {
           <DrugBar label="Seat belts" lives="~15,000" width={19} source="NHTSA" />
           <DrugBar label="Flu vaccine" lives="~7,000" width={9} source="CDC seasonal estimates" />
         </div>
-        <p className="lrd-section-sub" style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '2rem' }}>US lives saved per year, by intervention</p>
       </section>
 
       {/* CAVEATS */}
