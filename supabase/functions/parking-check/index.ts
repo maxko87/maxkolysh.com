@@ -512,6 +512,18 @@ Deno.serve(async (req) => {
             // Send email notification
             if (user.email) {
               await sendEmailNotification(user.email, emailSubject, emailHtml);
+
+              // Log notification
+              await supabase.from("notification_log").insert({
+                user_id: user.id,
+                type: "parking_info",
+                email: user.email,
+                subject: emailSubject,
+                street: corridor,
+                location_lat: lat,
+                location_lng: lng,
+                cleaning_date: cleaningInfo?.start || null,
+              });
             }
 
             // Reset last_reminders_sent since location changed, update last_notification_at
