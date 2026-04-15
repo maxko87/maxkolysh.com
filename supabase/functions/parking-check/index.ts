@@ -168,6 +168,16 @@ function getTimeUntil(startStr: string): string {
   return `in less than 1 hour`;
 }
 
+function addParkingDetailsToCalendarLink(url: string, description: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.set("details", description);
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 async function sendTelegramMessage(chatId: string, text: string): Promise<void> {
   const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
   if (!botToken) {
@@ -477,14 +487,21 @@ Deno.serve(async (req) => {
             const betweenLimits = limits ? limits.replace(/\s*-\s*/g, " and ").trim() : "";
             const locationDesc = `${corridor}${sideLabel ? ` (${sideLabel})` : ""}${betweenLimits ? ` between ${betweenLimits}` : ""}`;
 
+            // Build parking date description for calendar links
+            const parkingDate = new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/Los_Angeles" });
+            const parkingDesc = `On ${parkingDate}, you parked on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}.`;
+            const calendarLinkWithDetails = cleaningInfo?.calendarLink
+              ? addParkingDetailsToCalendarLink(cleaningInfo.calendarLink, parkingDesc)
+              : null;
+
             // Build Telegram message — informational tone
             let telegramMsg = `<b>${vehicle.display_name} parked on ${corridor}</b>\n\n`;
             telegramMsg += `📍 ${locationDesc}\n`;
             if (cleaningInfo) {
               const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
               telegramMsg += `\nNext street cleaning: ${range}\n`;
-              if (cleaningInfo.calendarLink) {
-                telegramMsg += `\n<a href="${cleaningInfo.calendarLink}">Add to Google Calendar</a>`;
+              if (calendarLinkWithDetails) {
+                telegramMsg += `\n<a href="${calendarLinkWithDetails}">Add to Google Calendar</a>`;
               }
             } else {
               telegramMsg += `\nNo upcoming street cleaning found.`;
@@ -499,8 +516,8 @@ Deno.serve(async (req) => {
             if (cleaningInfo) {
               const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
               emailHtml += `<p><strong>Next street cleaning${timeUntilSuffix}:</strong> ${range}</p>`;
-              if (cleaningInfo.calendarLink) {
-                emailHtml += `<p><a href="${cleaningInfo.calendarLink}">Add to Google Calendar</a></p>`;
+              if (calendarLinkWithDetails) {
+                emailHtml += `<p><a href="${calendarLinkWithDetails}">Add to Google Calendar</a></p>`;
               }
             } else {
               emailHtml += `<p>No upcoming street cleaning found for this location.</p>`;

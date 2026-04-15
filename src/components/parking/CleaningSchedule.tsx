@@ -47,6 +47,16 @@ function formatDate(dateStr: string): string {
   });
 }
 
+function addParkingDetailsToCalendarLink(url: string, description: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.set('details', description);
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 function parseLimits(streetId: string | undefined): string | null {
   if (!streetId) return null;
   const match = streetId.match(/between\s+(.+)\s+and\s+(.+)/i);
@@ -149,6 +159,7 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                 label={label}
                 relevant={relevant}
                 isParked={parkedSide !== null && label === parkedSide}
+                corridor={Corridor}
               />
             );
           })}
@@ -190,6 +201,7 @@ export default function CleaningSchedule({ result, onRefresh, refreshing }: Clea
                     label={label}
                     relevant={relevant}
                     isParked={false}
+                    corridor={Corridor}
                   />
                 );
               })}
@@ -291,9 +303,10 @@ interface SideCardProps {
     calendarLink: string | null;
   };
   isParked: boolean;
+  corridor: string;
 }
 
-function SideCard({ label, relevant, isParked }: SideCardProps) {
+function SideCard({ label, relevant, isParked, corridor }: SideCardProps) {
   const status = getCleaningStatus(relevant.start, relevant.end);
   const daysUntil = getDaysUntil(relevant.start);
   const dateStr = formatDate(relevant.start);
@@ -355,9 +368,14 @@ function SideCard({ label, relevant, isParked }: SideCardProps) {
       </p>
 
       {/* Calendar button */}
-      {relevant.calendarLink && (
+      {relevant.calendarLink && (() => {
+        const sideStr = label.toLowerCase().includes('side') ? label : `${label} side`;
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const parkingDesc = `On ${today}, you parked on ${corridor} (${sideStr.toLowerCase()}).`;
+        const calendarHref = addParkingDetailsToCalendarLink(relevant.calendarLink, parkingDesc);
+        return (
         <a
-          href={relevant.calendarLink}
+          href={calendarHref}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -377,7 +395,8 @@ function SideCard({ label, relevant, isParked }: SideCardProps) {
         >
           📅 Add to Calendar
         </a>
-      )}
+        );
+      })()}
 
       {/* Urgent warning */}
       {isUrgent && isParked && (
