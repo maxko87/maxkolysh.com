@@ -85,7 +85,6 @@ function LetRobotsDrivePage() {
       {/* HERO */}
       <section className="lrd-hero">
         <div className="lrd-hero-inner">
-          <h1 className="lrd-hero-title">Let Robots Drive</h1>
           <p className="lrd-hero-subtitle">So far today</p>
           <div className="lrd-counter-row">
             <div className="lrd-counter-block">
