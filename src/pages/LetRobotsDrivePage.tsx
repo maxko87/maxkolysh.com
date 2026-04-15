@@ -95,10 +95,7 @@ function LetRobotsDrivePage() {
               <span className="lrd-counter-num lrd-red">{injuries}</span>
               <span className="lrd-counter-label">injuries on American roads<Cite nums={[1, 2]} /></span>
             </div>
-            <div className="lrd-counter-block">
-              <span className="lrd-counter-num lrd-red">${cost}</span>
-              <span className="lrd-counter-label">in economic costs<Cite nums={[15]} /></span>
-            </div>
+
           </div>
           <div className="lrd-hero-rates">
             <p>1 death every <span className="lrd-red lrd-bold">13.4 minutes</span>.</p>
