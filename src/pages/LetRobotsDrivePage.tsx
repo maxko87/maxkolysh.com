@@ -50,7 +50,7 @@ function LetRobotsDrivePage() {
 
     ogTitle?.setAttribute('content', 'Let Robots Drive — The Case for Autonomous Vehicles');
     ogDesc?.setAttribute('content', 'Someone died on an American road 13.4 minutes ago. Here\'s why we need to let robots drive.');
-    ogUrl?.setAttribute('content', 'https://maxkolysh.com/let-robots-drive');
+    ogUrl?.setAttribute('content', 'https://letrobotsdrive.com');
     twitterCard?.setAttribute('content', 'summary_large_image');
 
     return () => {
@@ -67,14 +67,14 @@ function LetRobotsDrivePage() {
 
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText('https://maxkolysh.com/let-robots-drive').then(() => {
+    navigator.clipboard.writeText('https://letrobotsdrive.com').then(() => {
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2000);
     });
   };
 
   const handleTwitterShare = () => {
-    const text = encodeURIComponent('Someone dies on an American road every 13.4 minutes. Self-driving cars could prevent 92% of serious injury crashes. The data is in.\n\nhttps://maxkolysh.com/let-robots-drive');
+    const text = encodeURIComponent('Someone dies on an American road every 13.4 minutes. Self-driving cars could prevent 92% of serious injury crashes. The data is in.\n\nhttps://letrobotsdrive.com');
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   };
 
