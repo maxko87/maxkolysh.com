@@ -85,6 +85,7 @@ function LetRobotsDrivePage() {
       {/* HERO */}
       <section className="lrd-hero">
         <div className="lrd-hero-inner">
+          <h1 className="lrd-hero-title">Let Robots Drive</h1>
           <p className="lrd-hero-subtitle">So far today</p>
           <div className="lrd-counter-row">
             <div className="lrd-counter-block">
@@ -135,7 +136,7 @@ function LetRobotsDrivePage() {
 
       {/* THE EVIDENCE */}
       <section className="lrd-section lrd-section-dark">
-        <h2 className="lrd-section-title">Robots drive better.</h2>
+        <h2 className="lrd-section-title">Robots drive better</h2>
 
         <h3 className="lrd-subsection-title">Per million miles driven</h3>
         <div className="lrd-bars">
