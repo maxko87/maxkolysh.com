@@ -197,22 +197,22 @@ function LetRobotsDrivePage() {
         <details id="lrd-sources">
           <summary className="lrd-sources-toggle">Sources & References</summary>
           <ol className="lrd-sources-list">
-            <li id="source-1"><a href="https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813774" target="_blank" rel="noopener noreferrer">NHTSA 2024 Annual Motor Vehicle Crash Report</a></li>
+            <li id="source-1"><a href="https://rosap.ntl.bts.gov/view/dot/89790" target="_blank" rel="noopener noreferrer">NHTSA — Overview of Motor Vehicle Traffic Crashes in 2024</a></li>
             <li id="source-2"><a href="https://www.fhwa.dot.gov/policyinformation/travel_monitoring/tvt.cfm" target="_blank" rel="noopener noreferrer">FHWA Traffic Volume Trends (VMT data)</a></li>
             <li id="source-3"><a href="https://waymo.com/safety/impact/" target="_blank" rel="noopener noreferrer">Waymo Safety Impact</a></li>
-            <li id="source-4"><a href="https://waymo.com/research/waymos-rider-only-crash-data/" target="_blank" rel="noopener noreferrer">Waymo Rider-Only Crash Data Research</a></li>
-            <li id="source-5"><a href="https://waymo.com/research/do-autonomous-vehicles-reduce-or-induce-speeding/" target="_blank" rel="noopener noreferrer">Waymo Speed Research</a></li>
+            <li id="source-4"><a href="https://waymo.com/research/comparison-of-waymo-rider-only-crash-rates-by-crash-type-to-human-benchmarks" target="_blank" rel="noopener noreferrer">Waymo — Rider-Only Crash Rates by Crash Type vs Human Benchmarks</a></li>
+            <li id="source-5"><a href="https://waymo.com/research/potential-safety-benefits-associated-with-speed-limit-compliance-in-san/" target="_blank" rel="noopener noreferrer">Waymo — Safety Benefits of Speed Limit Compliance</a></li>
             <li id="source-6"><a href="https://www.nhtsa.gov/risky-driving/drunk-driving" target="_blank" rel="noopener noreferrer">NHTSA — Drunk Driving</a></li>
             <li id="source-7"><a href="https://www.nhtsa.gov/risky-driving/distracted-driving" target="_blank" rel="noopener noreferrer">NHTSA — Distracted Driving</a></li>
             <li id="source-8"><a href="https://www.nhtsa.gov/risky-driving/drowsy-driving" target="_blank" rel="noopener noreferrer">NHTSA — Drowsy Driving</a></li>
             <li id="source-9"><a href="https://www.nhtsa.gov/risky-driving/speeding" target="_blank" rel="noopener noreferrer">NHTSA — Speeding</a></li>
-            <li id="source-10"><a href="https://www.iihs.org/topics/advanced-driver-assistance/aeb" target="_blank" rel="noopener noreferrer">IIHS — Automatic Emergency Braking</a></li>
+            <li id="source-10"><a href="https://www.iihs.org/topics/advanced-driver-assistance" target="_blank" rel="noopener noreferrer">IIHS — Advanced Driver Assistance</a></li>
             <li id="source-11"><a href="https://jamanetwork.com/journals/jama/fullarticle/2784800" target="_blank" rel="noopener noreferrer">JAMA — Statin Therapy for Primary Prevention (2022 Review)</a></li>
-            <li id="source-12"><a href="https://www.cochranelibrary.com/cdsr/doi/10.1002/14651858.CD004816.pub4/full" target="_blank" rel="noopener noreferrer">Cochrane — Statins for Primary Prevention</a></li>
-            <li id="source-13"><a href="https://waymo.com/research/rider-only-ride-hail-safety/" target="_blank" rel="noopener noreferrer">Waymo Ride-Hailing Safety Research</a></li>
-            <li id="source-14"><a href="https://www.cdc.gov/transportation-safety/about/cost-of-crash-deaths.html" target="_blank" rel="noopener noreferrer">CDC — Motor Vehicle Crash Deaths Cost</a></li>
-            <li id="source-15"><a href="https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813839" target="_blank" rel="noopener noreferrer">NHTSA — The Economic and Societal Impact of Motor Vehicle Crashes</a></li>
-            <li id="source-16"><a href="https://waymo.com/blog/2025/01/swiss-re-independent-validation/" target="_blank" rel="noopener noreferrer">Swiss Re — Independent Validation of Waymo Safety (2025)</a></li>
+            <li id="source-12"><a href="https://www.cochrane.org/CD004816/VASC_statins-primary-prevention-cardiovascular-disease" target="_blank" rel="noopener noreferrer">Cochrane — Statins for Primary Prevention of Cardiovascular Disease</a></li>
+            <li id="source-13"><a href="https://waymo.com/safety/impact/" target="_blank" rel="noopener noreferrer">Waymo Safety Impact Data Hub</a></li>
+            <li id="source-14"><a href="https://wisqars.cdc.gov/cost" target="_blank" rel="noopener noreferrer">CDC WISQARS — Cost of Injury Data</a></li>
+            <li id="source-15"><a href="https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813403" target="_blank" rel="noopener noreferrer">NHTSA — The Economic and Societal Impact of Motor Vehicle Crashes, 2019</a></li>
+            <li id="source-16"><a href="https://waymo.com/blog/2024/12/new-swiss-re-study-waymo" target="_blank" rel="noopener noreferrer">Swiss Re Study — Waymo is Safer Than Even the Most Advanced Human-Driven Vehicles</a></li>
           </ol>
         </details>
         <details>
