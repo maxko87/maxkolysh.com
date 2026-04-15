@@ -10,8 +10,6 @@ const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-stree
 
 // Location tolerance: if car moved less than 50m, consider it same spot
 const LOCATION_TOLERANCE_M = 50;
-// Don't re-notify about same location within 12 hours
-const RENOTIFY_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -374,18 +372,12 @@ Deno.serve(async (req) => {
               updated_at: new Date().toISOString(),
             }).eq("id", user.id);
 
-            // 5. Check if same location as last notification (within tolerance) — cooldown
+            // 5. Skip if car hasn't moved since last notification
             if (user.last_latitude && user.last_longitude) {
               const dist = haversineDistance(lat, lng, user.last_latitude, user.last_longitude);
               if (dist < LOCATION_TOLERANCE_M) {
-                // Same spot — check cooldown
-                if (user.last_notification_at) {
-                  const sinceNotify = Date.now() - new Date(user.last_notification_at).getTime();
-                  if (sinceNotify < RENOTIFY_COOLDOWN_MS) {
-                    results.push(`${vehicle.display_name}: same location, already notified`);
-                    continue;
-                  }
-                }
+                results.push(`${vehicle.display_name}: same location, already notified`);
+                continue;
               }
             }
 
