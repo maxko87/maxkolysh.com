@@ -1111,6 +1111,11 @@ body {
    Let Robots Drive — /let-robots-drive
    ============================================ */
 
+html:has(.lrd-page),
+html:has(.lrd-page) body {
+  background: #0a0a0a;
+}
+
 .lrd-page {
   background: #0a0a0a;
   color: #e0e0e0;
