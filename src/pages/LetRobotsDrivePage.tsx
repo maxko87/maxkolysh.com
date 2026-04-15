@@ -5,11 +5,9 @@ import { Link } from 'react-router-dom';
 // Constants
 const DEATHS_PER_YEAR = 39254;
 const INJURIES_PER_YEAR = 2422195;
-const ECONOMIC_COST = 340_000_000_000;
 const SECONDS_PER_YEAR = 365.25 * 24 * 3600;
 const DEATHS_PER_SECOND = DEATHS_PER_YEAR / SECONDS_PER_YEAR;
 const INJURIES_PER_SECOND = INJURIES_PER_YEAR / SECONDS_PER_YEAR;
-const COST_PER_SECOND = ECONOMIC_COST / SECONDS_PER_YEAR;
 
 function Cite({ nums }: { nums: number[] }) {
   return (
@@ -66,7 +64,7 @@ function LetRobotsDrivePage() {
   const totalSecs = baseSeconds + elapsed;
   const deaths = (totalSecs * DEATHS_PER_SECOND).toFixed(2);
   const injuries = (totalSecs * INJURIES_PER_SECOND).toFixed(2);
-  const cost = Math.floor(totalSecs * COST_PER_SECOND).toLocaleString('en-US');
+
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText('https://maxkolysh.com/let-robots-drive').then(() => {

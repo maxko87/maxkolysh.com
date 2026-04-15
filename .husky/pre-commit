@@ -1,0 +1,19 @@
+#!/bin/sh
+
+echo "🔍 Running pre-commit checks..."
+
+# Type check + build
+echo "→ tsc && vite build"
+npx tsc && npx vite build || {
+  echo "❌ Build failed. Fix errors before committing."
+  exit 1
+}
+
+# Tests
+echo "→ vitest run"
+npm run test:run || {
+  echo "❌ Tests failed. Fix before committing."
+  exit 1
+}
+
+echo "✅ All checks passed."
