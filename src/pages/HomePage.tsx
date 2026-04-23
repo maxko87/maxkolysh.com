@@ -28,7 +28,6 @@ function HomePage() {
             <Link to="/learn">Learned League Study Guide</Link>
             <Link to="/carry-calc">GP Carry Calculator</Link>
             <Link to="/parking">SF Tesla Street Cleaning Alerts</Link>
-            <Link to="/tweetlibs">TweetLibs</Link>
             <Link to="/let-robots-drive">Let Robots Drive</Link>
           </div>
         </section>
