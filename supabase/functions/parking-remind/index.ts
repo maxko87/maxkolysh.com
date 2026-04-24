@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import * as turf from "https://esm.sh/@turf/turf@7";
+import { AwsClient } from "https://esm.sh/aws4fetch@1.0.20";
 
 // --- Config ---
 const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/refs/heads/main/data";
@@ -19,6 +20,7 @@ interface TeslaUser {
   last_longitude: number | null;
   notify_telegram_chat_id: string | null;
   email: string | null;
+  phone: string | null;
   notification_prefs: Record<string, boolean> | null;
   last_reminders_sent: Record<string, string> | null;
   vehicle_name: string | null;
@@ -137,6 +139,35 @@ async function sendTelegramMessage(chatId: string, text: string): Promise<void> 
   }
 }
 
+async function sendSMS(phoneNumber: string, message: string): Promise<void> {
+  const accessKeyId = Deno.env.get("AWS_SMS_ACCESS_KEY_ID");
+  const secretAccessKey = Deno.env.get("AWS_SMS_SECRET_ACCESS_KEY");
+  const region = Deno.env.get("AWS_SMS_REGION") || "us-east-1";
+  if (!accessKeyId || !secretAccessKey) {
+    console.error("AWS SMS credentials not set");
+    return;
+  }
+  try {
+    const aws = new AwsClient({ accessKeyId, secretAccessKey, region, service: "sns" });
+    const params = new URLSearchParams({
+      Action: "Publish",
+      PhoneNumber: phoneNumber,
+      Message: message,
+      Version: "2010-03-31",
+    });
+    const resp = await aws.fetch(`https://sns.${region}.amazonaws.com/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    if (!resp.ok) {
+      console.error("SMS send failed:", resp.status, await resp.text());
+    }
+  } catch (e) {
+    console.error("SMS error:", e);
+  }
+}
+
 async function sendEmailNotification(email: string, subject: string, htmlBody: string): Promise<void> {
   const resendKey = Deno.env.get("RESEND_API_KEY");
   if (!resendKey) {
@@ -180,7 +211,7 @@ Deno.serve(async (req) => {
     // 1. Get all tesla users with location and notification prefs
     const { data: users, error: fetchError } = await supabase
       .from("tesla_users")
-      .select("id, tesla_user_id, last_latitude, last_longitude, notify_telegram_chat_id, email, notification_prefs, last_reminders_sent, vehicle_name");
+      .select("id, tesla_user_id, last_latitude, last_longitude, notify_telegram_chat_id, email, phone, notification_prefs, last_reminders_sent, vehicle_name");
 
     if (fetchError) throw new Error(`DB fetch error: ${fetchError.message}`);
     if (!users || users.length === 0) {
@@ -208,7 +239,7 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        if (!user.notify_telegram_chat_id && !user.email) {
+        if (!user.notify_telegram_chat_id && !user.email && !user.phone) {
           results.push(`${user.tesla_user_id}: no notification channel`);
           continue;
         }
@@ -349,6 +380,25 @@ Deno.serve(async (req) => {
                 reminder_key: prefKey,
                 email: user.email,
                 subject: emailSubject,
+                street: corridor,
+                location_lat: lat,
+                location_lng: lng,
+                cleaning_date: cleaningInfo.start,
+              });
+            }
+
+            // Send SMS notification (if phone set and sms pref not explicitly false)
+            const smsPref = user.notification_prefs?.sms;
+            if (user.phone && smsPref !== false) {
+              const smsBody = `Move ${carName} — cleaning in ${window.label} on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}. ${range}.`;
+              await sendSMS(user.phone, smsBody);
+
+              await supabase.from("notification_log").insert({
+                user_id: user.id,
+                type: "reminder_sms",
+                reminder_key: prefKey,
+                email: user.phone,
+                subject: smsBody,
                 street: corridor,
                 location_lat: lat,
                 location_lng: lng,

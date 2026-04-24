@@ -104,7 +104,7 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
 
   try {
     if (endpoint === "_internal/save-prefs") {
-      const { tesla_user_id, notification_prefs } = body;
+      const { tesla_user_id, notification_prefs, phone } = body;
       if (!tesla_user_id || !notification_prefs) {
         return new Response(
           JSON.stringify({ error: "Missing tesla_user_id or notification_prefs" }),
@@ -112,10 +112,13 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
         );
       }
 
-      const { error } = await db.from("tesla_users").update({
+      const updateFields: Record<string, unknown> = {
         notification_prefs,
         updated_at: new Date().toISOString(),
-      }).eq("tesla_user_id", tesla_user_id);
+      };
+      if (phone !== undefined) updateFields.phone = phone || null;
+
+      const { error } = await db.from("tesla_users").update(updateFields).eq("tesla_user_id", tesla_user_id);
 
       if (error) throw error;
 
@@ -135,7 +138,7 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
       }
 
       const { data, error } = await db.from("tesla_users")
-        .select("notification_prefs")
+        .select("notification_prefs,phone")
         .eq("tesla_user_id", tesla_user_id)
         .single();
 
@@ -183,7 +186,7 @@ async function handleInternal(endpoint: string, body: any): Promise<Response> {
       }
 
       const { data, error } = await db.from("tesla_users")
-        .select("last_latitude,last_longitude,last_checked_at,last_shift_state,email,notification_prefs")
+        .select("last_latitude,last_longitude,last_checked_at,last_shift_state,email,phone,notification_prefs")
         .eq("tesla_user_id", tesla_user_id)
         .single();
 

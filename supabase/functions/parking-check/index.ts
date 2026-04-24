@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import * as turf from "https://esm.sh/@turf/turf@7";
+import { AwsClient } from "https://esm.sh/aws4fetch@1.0.20";
 
 // --- Config ---
 const TESLA_CLIENT_ID = "39a99319-b708-4245-a29f-6907373f37ad";
@@ -31,6 +32,7 @@ interface TeslaUser {
   last_notification_at: string | null;
   notify_telegram_chat_id: string | null;
   email: string | null;
+  phone: string | null;
   notification_prefs: Record<string, boolean> | null;
 }
 
@@ -229,6 +231,35 @@ async function sendEmailNotification(email: string, subject: string, htmlBody: s
   }
 }
 
+async function sendSMS(phoneNumber: string, message: string): Promise<void> {
+  const accessKeyId = Deno.env.get("AWS_SMS_ACCESS_KEY_ID");
+  const secretAccessKey = Deno.env.get("AWS_SMS_SECRET_ACCESS_KEY");
+  const region = Deno.env.get("AWS_SMS_REGION") || "us-east-1";
+  if (!accessKeyId || !secretAccessKey) {
+    console.error("AWS SMS credentials not set");
+    return;
+  }
+  try {
+    const aws = new AwsClient({ accessKeyId, secretAccessKey, region, service: "sns" });
+    const params = new URLSearchParams({
+      Action: "Publish",
+      PhoneNumber: phoneNumber,
+      Message: message,
+      Version: "2010-03-31",
+    });
+    const resp = await aws.fetch(`https://sns.${region}.amazonaws.com/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    if (!resp.ok) {
+      console.error("SMS send failed:", resp.status, await resp.text());
+    }
+  } catch (e) {
+    console.error("SMS error:", e);
+  }
+}
+
 function telegramToEmailHtml(telegramMsg: string): string {
   // Convert Telegram HTML to email-friendly HTML
   return `<div style="font-family: -apple-system, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
@@ -382,7 +413,7 @@ Deno.serve(async (req) => {
             }
 
             // 6. Look up street cleaning data
-            if (!user.notify_telegram_chat_id && !user.email) {
+            if (!user.notify_telegram_chat_id && !user.email && !user.phone) {
               results.push(`${vehicle.display_name}: no notification channel configured`);
               continue;
             }
@@ -529,6 +560,28 @@ Deno.serve(async (req) => {
                 type: "parking_info",
                 email: user.email,
                 subject: emailSubject,
+                street: corridor,
+                location_lat: lat,
+                location_lng: lng,
+                cleaning_date: cleaningInfo?.start || null,
+              });
+            }
+
+            // Send SMS notification (if phone set and sms pref is not explicitly false)
+            const smsPref = user.notification_prefs?.sms;
+            if (user.phone && smsPref !== false) {
+              let smsBody = `${vehicle.display_name} parked on ${corridor}${sideLabel ? ` (${sideLabel})` : ""}.`;
+              if (cleaningInfo) {
+                const range = formatCleaningRange(cleaningInfo.start, cleaningInfo.end);
+                smsBody += ` Next cleaning: ${range}.`;
+              }
+              await sendSMS(user.phone, smsBody);
+
+              await supabase.from("notification_log").insert({
+                user_id: user.id,
+                type: "parking_info_sms",
+                email: user.phone,
+                subject: smsBody,
                 street: corridor,
                 location_lat: lat,
                 location_lng: lng,
