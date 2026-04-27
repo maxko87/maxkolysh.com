@@ -15,12 +15,12 @@ const PREF_OPTIONS = [
 const SUPABASE_URL = 'https://vjnkdpovepqlsrdzqowd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqbmtkcG92ZXBxbHNyZHpxb3dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNzEzMDksImV4cCI6MjA4Mjk0NzMwOX0.XvSX6nUk6Tjyx16cKrb9NvtlXExBzzKILUP8kKdnKsQ';
 
-function toE164(input: string): string {
-  const digits = input.replace(/\D/g, '');
-  if (digits.length === 10) return '+1' + digits;
-  if (digits.length === 11 && digits.startsWith('1')) return '+' + digits;
-  return input;
-}
+// function toE164(input: string): string {
+//   const digits = input.replace(/\D/g, '');
+//   if (digits.length === 10) return `+1${digits}`;
+//   if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+//   return input.startsWith('+') ? input : `+${digits}`;
+// }
 
 export default function NotificationPrefs({ email, teslaUserId }: NotificationPrefsProps) {
   const [prefs, setPrefs] = useState<Record<string, boolean>>({
@@ -31,7 +31,8 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
     '2d': false,
     sms: false,
   });
-  const [phoneDraft, setPhoneDraft] = useState('');
+  // SMS hidden until AWS SNS sandbox exit is approved
+  // const [phoneDraft, setPhoneDraft] = useState('');
 
   // Load existing prefs
   useEffect(() => {
@@ -52,9 +53,9 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
         if (res.ok) {
           const data = await res.json();
           if (data.notification_prefs) setPrefs({ sms: false, ...data.notification_prefs });
-          if (data.phone) {
-            setPhoneDraft(data.phone);
-          }
+          // if (data.phone) {
+          //   setPhoneDraft(data.phone);
+          // }
         }
       } catch { /* use defaults */ }
     })();
@@ -89,12 +90,12 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
     savePrefs(newPrefs);
   }
 
-  function handlePhoneBlur() {
-    const trimmed = phoneDraft.trim();
-    const formatted = trimmed ? toE164(trimmed) : '';
-    setPhoneDraft(formatted);
-    savePrefs(prefs, formatted || null);
-  }
+  // function handlePhoneBlur() {
+  //   const trimmed = phoneDraft.trim();
+  //   const formatted = trimmed ? toE164(trimmed) : '';
+  //   setPhoneDraft(formatted);
+  //   savePrefs(prefs, formatted || null);
+  // }
 
   if (!email) return null;
 
@@ -191,61 +192,7 @@ export default function NotificationPrefs({ email, teslaUserId }: NotificationPr
         Sending to {email}
       </p>
 
-      {/* SMS Section */}
-      <div style={{ borderTop: '1px solid #2C2C2E', marginTop: '1.25rem', paddingTop: '1.25rem' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.55rem',
-          marginBottom: '1rem',
-        }}>
-          <span style={{ fontSize: '1rem' }}>📱</span>
-          <span style={{ fontSize: '1.05rem', fontWeight: 600, color: '#fff' }}>
-            SMS Notifications
-          </span>
-        </div>
-
-        <input
-          type="tel"
-          placeholder="Phone number"
-          value={phoneDraft}
-          onChange={e => setPhoneDraft(e.target.value)}
-          onBlur={handlePhoneBlur}
-          style={{
-            display: 'block',
-            width: '100%',
-            boxSizing: 'border-box',
-            background: '#1C1C1E',
-            border: '1px solid #2C2C2E',
-            borderRadius: '12px',
-            padding: '0.8rem 0.85rem',
-            color: '#fff',
-            fontSize: '0.95rem',
-            outline: 'none',
-            marginBottom: '0.75rem',
-          }}
-        />
-
-        <button
-          onClick={() => toggle('sms')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            background: '#1C1C1E',
-            border: '1px solid #2C2C2E',
-            borderRadius: '12px',
-            padding: '0.8rem 0.85rem',
-            cursor: 'pointer',
-          }}
-        >
-          <span style={{ fontSize: '0.95rem', color: '#fff' }}>
-            Text me notifications
-          </span>
-          <ToggleSwitch on={prefs.sms === true} />
-        </button>
-      </div>
+      {/* SMS hidden until AWS SNS sandbox exit is approved */}
     </div>
   );
 }
