@@ -305,6 +305,14 @@ Deno.serve(async (req) => {
 
         // 2. Check if token expired, refresh if needed
         const tokenExpiry = new Date(user.token_expires_at);
+
+        // Skip users whose token expired 24h+ ago — refresh is likely permanently broken
+        // (user revoked access, changed password, etc). Saves wasted API calls.
+        if (tokenExpiry < new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+          results.push(`${user.tesla_user_id}: token expired >24h ago, skipping`);
+          continue;
+        }
+
         if (tokenExpiry < new Date(Date.now() + 5 * 60 * 1000)) {
           console.log(`Refreshing token for user ${user.tesla_user_id}...`);
           const refreshed = await refreshTeslaToken(user.refresh_token);
