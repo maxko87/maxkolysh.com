@@ -70,7 +70,7 @@ export default function BreakdownPanel({
                   key={vIdx}
                   style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '0.85em', marginBottom: '6px', paddingLeft: '12px' }}
                 >
-                  <span style={{ color: 'var(--text-tertiary)' }}>{vintageYear} Vintage ({v.yearsIn}y in, {v.realization}% {displayMode === 'dpi' ? 'distributed' : 'marked at multiple'})</span>
+                  <span style={{ color: 'var(--text-tertiary)' }}>{vintageYear} Vintage ({v.yearsIn}y in, {v.realization}% {displayMode === 'dpi' ? 'distributed' : 'marked up'})</span>
                   <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
                 </div>
               );

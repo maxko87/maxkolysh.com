@@ -168,6 +168,11 @@ export const DEPLOYMENT_PRESETS: Record<DeploymentPreset, number[]> = {
   fastest: [0, 0.8, 0.88, 0.92, 0.95, 0.97, 0.98, 0.99, 0.995, 0.998, 1.0], // Fastest - 80% deployed by year 1
 };
 
+// How fast paper marks (TVPI) ramp toward the terminal multiple, as a fraction of
+// terminal profit, scaled over the fund life. Marks lead distributions by years:
+// near-zero in years 0-2, ~40% of terminal profit mid-life, plateau near the end.
+export const MARKUP_CURVE = [0, 0.10, 0.25, 0.40, 0.55, 0.68, 0.78, 0.86, 0.92, 0.97, 1.0];
+
 // Default values
 export const DEFAULT_REALIZATION_CURVE = CURVE_PRESETS.standard;
 export const DEFAULT_DEPLOYMENT_CURVE = DEPLOYMENT_PRESETS.linear;

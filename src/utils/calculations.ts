@@ -1,4 +1,5 @@
 import type { Fund, Scenario, CellData, DisplayMode, FundBreakdown, VintageBreakdown, VintageCalculationSteps, Hurdle } from '../types/calculator';
+import { MARKUP_CURVE } from '../types/calculator';
 
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
@@ -240,6 +241,13 @@ export function getRealizationAtYear(
   return r1 + (r2 - r1) * fraction;
 }
 
+// Get markup percentage at a given year: the fraction of terminal profit reflected
+// in paper marks (TVPI). Calibrated to YC actuals — ES20 had ~37% of terminal
+// profit marked at year 5.5, YC II ~80% at year 8, near-zero in years 0-2.
+export function getMarkupAtYear(year: number, fundYears: number): number {
+  return getRealizationAtYear(year, MARKUP_CURVE, fundYears, 0);
+}
+
 // Get deployment percentage at a given year
 // The curve has 11 points (0-10) which are scaled to match the fund's actual life
 export function getDeploymentAtYear(
@@ -323,10 +331,11 @@ export function calculateVintageSteps(
   // Get deployment and realization percentages
   const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
   const yearsToClear = getEffectiveYearsToClear1X(fund, multiple, fundYears);
-  // 'dpi' counts only carry on cash actually distributed; 'tvpi' values vested carry
-  // at the assumed multiple as soon as capital is deployed (paper, not yet paid)
+  // 'dpi' counts only carry on cash actually distributed; 'tvpi' counts vested carry
+  // accrued on paper marks, which ramp toward the terminal multiple over the fund
+  // life (companies take a decade-plus to be valued at their eventual exit price)
   const realizationPercent = displayMode === 'tvpi'
-    ? (deploymentPercent > 0 ? 1 : 0)
+    ? getMarkupAtYear(vintageAgeInYears, fundYears)
     : getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
 
   // Calculate vesting

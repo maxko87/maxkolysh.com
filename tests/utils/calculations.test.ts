@@ -551,8 +551,22 @@ describe('Display mode: DPI (cash) vs TVPI (paper)', () => {
 
     expect(dpi.realizationPercent).toBe(0)   // before clearing 1x: no cash
     expect(dpi.yourVestedCarry).toBe(0)
-    expect(tvpi.realizationPercent).toBe(1)  // paper value at assumed multiple
+    // marks are partial mid-life, not the full terminal multiple
+    expect(tvpi.realizationPercent).toBeGreaterThan(0)
+    expect(tvpi.realizationPercent).toBeLessThan(1)
     expect(tvpi.yourVestedCarry).toBeGreaterThan(0)
+  })
+
+  it('tvpi marks should ramp over the fund life, not jump to terminal value', () => {
+    // year 3 of a 10-year fund: 30% through life -> 40% of terminal profit marked
+    const early = calculateVintageSteps(mockFund, mockScenario, 0, 5, 2, 'tvpi')
+    const mid = calculateVintageSteps(mockFund, mockScenario, 0, 5, 5, 'tvpi')
+    const late = calculateVintageSteps(mockFund, mockScenario, 0, 5, 9, 'tvpi')
+
+    expect(early.realizationPercent).toBeLessThan(0.3)
+    expect(mid.realizationPercent).toBeGreaterThan(early.realizationPercent)
+    expect(late.realizationPercent).toBeGreaterThan(mid.realizationPercent)
+    expect(late.realizationPercent).toBeLessThanOrEqual(1)
   })
 
   it('tvpi and dpi should converge at full realization', () => {
