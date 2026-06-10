@@ -12,7 +12,7 @@ import {
   calculateAllCells
 } from '../../src/utils/calculations'
 import { CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../../src/types/calculator'
-import { mockFund, mockScenario, mockFundWithHurdles } from '../../src/test/mockData'
+import { mockFund, mockScenario, mockFundWithHurdles, createTestFund } from '../../src/test/mockData'
 
 describe('IRR Calculations', () => {
   describe('calculateIRR', () => {
@@ -505,6 +505,74 @@ describe('Vintage Calculation Steps', () => {
       expect(steps.vintageAgeInYears).toBe(5) // 7 - 2 = 5 years old
       expect(steps.yearsIntoThisVintage).toBe(3) // Worked 5 years, fund started at 2
     })
+  })
+})
+
+describe('User-set yearsToClear1X is honored', () => {
+  it('should use the fund field instead of recomputing from the curve', () => {
+    // mockFund sets yearsToClear1X: 5; the curve-based estimate for 3x would be ~6.5y
+    const lateFund = createTestFund({ yearsToClear1X: 8 })
+    const steps = calculateVintageSteps(lateFund, mockScenario, 0, 5, 7)
+
+    expect(steps.yearsToClear1X).toBe(8)
+    expect(steps.realizationPercent).toBe(0) // year 7 < 8, no carry paid yet
+    expect(steps.realizedCarry).toBe(0)
+  })
+
+  it('should fall back to curve-based estimate when the field is NaN', () => {
+    const nanFund = createTestFund({ yearsToClear1X: NaN })
+    const steps = calculateVintageSteps(nanFund, mockScenario, 0, 5, 7)
+
+    // 3x needs 33.3% realization -> ~6.5 years on the standard curve
+    expect(steps.yearsToClear1X).toBeGreaterThan(6)
+    expect(steps.yearsToClear1X).toBeLessThan(7)
+  })
+
+  it('should not pay carry earlier just because the multiple is high', () => {
+    // Previously a 20x fund "cleared 1x" at ~year 1.7 on a fast curve, which is
+    // unrealistic (YC's best-ever fund cleared 1x at ~year 6)
+    const bigScenario = { id: 9, name: '20x', grossReturnMultiple: 20 }
+    const fund = createTestFund({
+      yearsToClear1X: 6,
+      realizationCurve: [...CURVE_PRESETS.fast],
+      scenarios: [bigScenario]
+    })
+    const steps = calculateVintageSteps(fund, bigScenario, 0, 5, 5)
+
+    expect(steps.realizationPercent).toBe(0) // year 5 < 6 despite 20x
+    expect(steps.yourVestedCarry).toBe(0)
+  })
+})
+
+describe('Display mode: DPI (cash) vs TVPI (paper)', () => {
+  it('tvpi mode should show paper carry before any distributions', () => {
+    const dpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 3)
+    const tvpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 3, 'tvpi')
+
+    expect(dpi.realizationPercent).toBe(0)   // before clearing 1x: no cash
+    expect(dpi.yourVestedCarry).toBe(0)
+    expect(tvpi.realizationPercent).toBe(1)  // paper value at assumed multiple
+    expect(tvpi.yourVestedCarry).toBeGreaterThan(0)
+  })
+
+  it('tvpi and dpi should converge at full realization', () => {
+    const dpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 10)
+    const tvpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 10, 'tvpi')
+
+    expect(tvpi.yourVestedCarry).toBeCloseTo(dpi.yourVestedCarry, 6)
+  })
+
+  it('tvpi cells should always be >= dpi cells', () => {
+    const dpi = calculateAllCells([mockFund], { 0: 1 }, 10, 'dpi')
+    const tvpi = calculateAllCells([mockFund], { 0: 1 }, 10, 'tvpi')
+
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 10; c++) {
+        if (dpi[r][c]) {
+          expect(tvpi[r][c]!.total).toBeGreaterThanOrEqual(dpi[r][c]!.total - 1e-9)
+        }
+      }
+    }
   })
 })
 

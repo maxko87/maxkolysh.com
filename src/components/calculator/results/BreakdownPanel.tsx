@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { calculateVintageSteps } from '../../../utils/calculations';
+import { useCalculator } from '../../../hooks/useCalculator';
 import type { CellData } from '../../../types/calculator';
 
 interface BreakdownPanelProps {
@@ -24,6 +25,7 @@ export default function BreakdownPanel({
   funds,
   selectedScenarios,
 }: BreakdownPanelProps) {
+  const { displayMode } = useCalculator();
   const tooltipSidebarRef = useRef<HTMLDivElement>(null);
 
   const singleFundName = funds.length === 1 ? funds[0].name : null;
@@ -68,7 +70,7 @@ export default function BreakdownPanel({
                   key={vIdx}
                   style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', fontSize: '0.85em', marginBottom: '6px', paddingLeft: '12px' }}
                 >
-                  <span style={{ color: 'var(--text-tertiary)' }}>{vintageYear} Vintage ({v.yearsIn}y in, {v.realization}% distributed)</span>
+                  <span style={{ color: 'var(--text-tertiary)' }}>{vintageYear} Vintage ({v.yearsIn}y in, {v.realization}% {displayMode === 'dpi' ? 'distributed' : 'marked at multiple'})</span>
                   <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{formatCurrency(v.amount)}</span>
                 </div>
               );
@@ -108,7 +110,7 @@ export default function BreakdownPanel({
 
             {fb.vintages.map((v, vIdx) => {
               // Use calculateVintageSteps for single source of truth!
-              const breakdown = calculateVintageSteps(fund, scenario, v.vintage - 1, tooltipData.yearsWorked, tooltipData.yearsFromToday);
+              const breakdown = calculateVintageSteps(fund, scenario, v.vintage - 1, tooltipData.yearsWorked, tooltipData.yearsFromToday, displayMode);
               const fundCycle = isNaN(fund.fundCycle) || !isFinite(fund.fundCycle) ? 2 : fund.fundCycle;
               const deploymentYear = baseYear + (v.vintage - 1) * fundCycle;
 

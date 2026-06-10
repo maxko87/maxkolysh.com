@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useMemo } from 'react';
-import type { CalculatorState, CalculatorAction, CellData } from '../types/calculator';
+import type { CalculatorState, CalculatorAction, CellData, DisplayMode } from '../types/calculator';
 import { createDefaultFund, CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../types/calculator';
 import { calculateAllCells } from '../utils/calculations';
 import { loadStateFromHash, compressState } from '../utils/stateCompression';
@@ -240,6 +240,8 @@ interface CalculatorContextType {
   dispatch: React.Dispatch<CalculatorAction>;
   calculations: (CellData | null)[][];
   loadedFromUrl: boolean;
+  displayMode: DisplayMode;
+  setDisplayMode: (mode: DisplayMode) => void;
 }
 
 // Create context
@@ -266,11 +268,12 @@ export function CalculatorProvider({ children }: CalculatorProviderProps) {
   const initialData = useMemo(() => getInitialState(), []);
   const [state, dispatch] = useReducer(calculatorReducer, initialData.state);
   const [loadedFromUrl] = React.useState(initialData.loadedFromUrl);
+  const [displayMode, setDisplayMode] = React.useState<DisplayMode>('dpi');
 
   // Calculate all cells when state changes
   const calculations = useMemo(() => {
-    return calculateAllCells(state.funds, state.selectedScenarios);
-  }, [state.funds, state.selectedScenarios]);
+    return calculateAllCells(state.funds, state.selectedScenarios, 20, displayMode);
+  }, [state.funds, state.selectedScenarios, displayMode]);
 
   // Update URL whenever state changes (React way!)
   // But skip URL update if state is the default state
@@ -292,7 +295,7 @@ export function CalculatorProvider({ children }: CalculatorProviderProps) {
   }, [state]);
 
   return (
-    <CalculatorContext.Provider value={{ state, dispatch, calculations, loadedFromUrl }}>
+    <CalculatorContext.Provider value={{ state, dispatch, calculations, loadedFromUrl, displayMode, setDisplayMode }}>
       {children}
     </CalculatorContext.Provider>
   );

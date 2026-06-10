@@ -4,7 +4,7 @@ import { compressState } from '../../../utils/stateCompression';
 import CustomSelect from '../common/CustomSelect';
 
 function ScenarioSelectors() {
-  const { state, dispatch, calculations } = useCalculator();
+  const { state, dispatch, calculations, displayMode, setDisplayMode } = useCalculator();
   const [showToast, setShowToast] = useState(false);
 
   const handleShare = () => {
@@ -86,7 +86,7 @@ function ScenarioSelectors() {
     <div className="scenario-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: 'var(--spacing-md)' }}>
       {/* Row 1: Explanation text and links */}
       <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.6 }}>
-        The table below shows your projected annual carry based on your assumptions.
+        The table below shows your projected {displayMode === 'dpi' ? 'cumulative carry paid out' : 'paper carry value'} based on your assumptions.
         <br />
         Click any cell to explore the math,
         {' '}<a href="#" onClick={(e) => { e.preventDefault(); handleExportCSV(); }} style={{ color: 'var(--text-primary)' }}>export to CSV,</a>
@@ -95,7 +95,39 @@ function ScenarioSelectors() {
         {showToast && <span style={{ marginLeft: '8px', color: 'var(--accent-primary)' }}>Link copied to clipboard!</span>}
       </p>
 
-      {/* Row 2: Scenarios - only show if at least one fund has multiple scenarios */}
+      {/* Row 2: DPI vs TVPI display mode toggle */}
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Show:</span>
+        <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden' }}>
+          {([
+            { mode: 'dpi' as const, label: 'Cash paid (DPI)' },
+            { mode: 'tvpi' as const, label: 'Paper value (TVPI)' }
+          ]).map(({ mode, label }) => (
+            <button
+              key={mode}
+              onClick={() => setDisplayMode(mode)}
+              style={{
+                padding: '6px 12px',
+                fontSize: '0.85em',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: displayMode === mode ? 600 : 400,
+                backgroundColor: displayMode === mode ? 'var(--accent-primary, #667eea)' : 'transparent',
+                color: displayMode === mode ? '#fff' : 'var(--text-secondary)'
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <span style={{ fontSize: '0.8em', color: 'var(--text-tertiary)' }}>
+          {displayMode === 'dpi'
+            ? 'Carry checks actually received — distributions lag paper marks by years.'
+            : 'Vested carry valued at the assumed multiple — accrued on paper, not yet paid.'}
+        </span>
+      </div>
+
+      {/* Row 3: Scenarios - only show if at least one fund has multiple scenarios */}
       {hasMultipleScenarios && (
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Select Scenario:</span>

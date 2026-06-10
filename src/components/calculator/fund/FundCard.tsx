@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
-import { calculateIRR, calculateMultipleFromIRR, calculateYearsToClear1X } from '../../../utils/calculations';
+import { calculateIRR, calculateMultipleFromIRR, getEffectiveYearsToClear1X } from '../../../utils/calculations';
 import { type DeploymentPreset } from '../../../types/calculator';
 import Tooltip from '../common/Tooltip';
 import NumericInputWithUnit from '../common/NumericInputWithUnit';
@@ -507,8 +507,24 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Years to Return 1x</span>
+                <Tooltip text="Years until LPs have been paid back their capital (DPI reaches 1x) and carry distributions can begin. YC's best-ever fund cleared 1x in ~6 years; most funds take longer."><span className="tooltip-icon">?</span></Tooltip>
+              </div>
+              <div className="form-group">
+                <NumericInputWithUnit
+                  value={isNaN(fund.yearsToClear1X) ? '' : fund.yearsToClear1X}
+                  onChange={(value) => handleFieldChange('yearsToClear1X', value)}
+                  step="0.5"
+                  placeholder="5"
+                  unit="Yrs"
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 'var(--spacing-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
                 <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Distribution Pace</span>
-                <Tooltip text="Pattern of how quickly returns are distributed to LPs"><span className="tooltip-icon">?</span></Tooltip>
+                <Tooltip text="Pattern of how quickly returns are distributed to LPs after the fund clears 1x"><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="curve-presets">
                 {(['conservative', 'standard', 'fast'] as const).map((preset) => (
@@ -530,9 +546,9 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
                     fund.scenarios[0]
                       ? (() => {
                           const fundYears = isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years;
-                          const carryStartYear = calculateYearsToClear1X(
+                          const carryStartYear = getEffectiveYearsToClear1X(
+                            fund,
                             fund.scenarios[0].grossReturnMultiple,
-                            fund.realizationCurve,
                             fundYears
                           );
                           return carryStartYear && isFinite(carryStartYear) && carryStartYear <= fundYears

@@ -1,4 +1,4 @@
-import type { Fund, Scenario, CellData, FundBreakdown, VintageBreakdown, VintageCalculationSteps, Hurdle } from '../types/calculator';
+import type { Fund, Scenario, CellData, DisplayMode, FundBreakdown, VintageBreakdown, VintageCalculationSteps, Hurdle } from '../types/calculator';
 
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
@@ -81,6 +81,16 @@ export function calculateYearsToClear1X(
   }
 
   return 14;
+}
+
+// Resolve the years-to-clear-1X for a fund: the user-set value wins (it's an input
+// in the UI and the URL); fall back to estimating from the realization curve only
+// when the field is blank/invalid.
+export function getEffectiveYearsToClear1X(fund: Fund, multiple: number, fundYears: number): number {
+  if (!isNaN(fund.yearsToClear1X) && isFinite(fund.yearsToClear1X) && fund.yearsToClear1X >= 0) {
+    return fund.yearsToClear1X;
+  }
+  return calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
 }
 
 /**
@@ -289,7 +299,8 @@ export function calculateVintageSteps(
   scenario: Scenario,
   vintageIndex: number,
   yearsWorked: number,
-  yearsFromToday: number
+  yearsFromToday: number,
+  displayMode: DisplayMode = 'dpi'
 ): VintageCalculationSteps {
   // Use default values for any NaN fund fields
   const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
@@ -311,8 +322,12 @@ export function calculateVintageSteps(
 
   // Get deployment and realization percentages
   const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
-  const yearsToClear = calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
-  const realizationPercent = getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
+  const yearsToClear = getEffectiveYearsToClear1X(fund, multiple, fundYears);
+  // 'dpi' counts only carry on cash actually distributed; 'tvpi' values vested carry
+  // at the assumed multiple as soon as capital is deployed (paper, not yet paid)
+  const realizationPercent = displayMode === 'tvpi'
+    ? (deploymentPercent > 0 ? 1 : 0)
+    : getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
 
   // Calculate vesting
   const vestingProgress = Math.min(yearsIntoThisVintage / vestingPeriod, 1);
@@ -383,7 +398,8 @@ export function calculateCell(
   yearsWorked: number,
   yearsFromToday: number,
   funds: Fund[],
-  selectedScenarios: Record<number, number>
+  selectedScenarios: Record<number, number>,
+  displayMode: DisplayMode = 'dpi'
 ): CellData | null {
   if (yearsFromToday < yearsWorked) {
     return null;
@@ -414,7 +430,7 @@ export function calculateCell(
 
       if (vestingProgress > 0 && yearsIntoThisVintage >= cliffPeriod) {
         // Use calculateVintageSteps for all calculations (single source of truth!)
-        const steps = calculateVintageSteps(fund, scenario, vintageIndex, yearsWorked, yearsFromToday);
+        const steps = calculateVintageSteps(fund, scenario, vintageIndex, yearsWorked, yearsFromToday, displayMode);
 
         // Always add vintage breakdown to explain why carry is zero (e.g., 0% realized)
         vintageBreakdowns.push({
@@ -463,14 +479,15 @@ export function calculateCell(
 export function calculateAllCells(
   funds: Fund[],
   selectedScenarios: Record<number, number>,
-  maxYears: number = 20
+  maxYears: number = 20,
+  displayMode: DisplayMode = 'dpi'
 ): (CellData | null)[][] {
   const results: (CellData | null)[][] = [];
 
   for (let yearsWorked = 1; yearsWorked <= maxYears; yearsWorked++) {
     const row: (CellData | null)[] = [];
     for (let yearsFromToday = 1; yearsFromToday <= maxYears; yearsFromToday++) {
-      row.push(calculateCell(yearsWorked, yearsFromToday, funds, selectedScenarios));
+      row.push(calculateCell(yearsWorked, yearsFromToday, funds, selectedScenarios, displayMode));
     }
     results.push(row);
   }

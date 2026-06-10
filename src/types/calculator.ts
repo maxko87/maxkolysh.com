@@ -148,6 +148,10 @@ export type CalculatorAction =
   | { type: 'SET_DEPLOYMENT_PRESET'; payload: { fundId: number; preset: DeploymentPreset } }
   | { type: 'SELECT_SCENARIO'; payload: { fundId: number; scenarioId: number } };
 
+// How the table values carry: 'dpi' = carry cash actually distributed (lags exits),
+// 'tvpi' = vested carry marked at the assumed multiple (paper value, not yet paid)
+export type DisplayMode = 'dpi' | 'tvpi';
+
 // Preset curve types
 export type CurvePreset = 'fast' | 'standard' | 'conservative';
 export type DeploymentPreset = 'linear' | 'fast' | 'fastest';
