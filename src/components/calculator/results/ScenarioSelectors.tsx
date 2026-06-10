@@ -120,11 +120,6 @@ function ScenarioSelectors() {
             </button>
           ))}
         </div>
-        <span style={{ fontSize: '0.8em', color: 'var(--text-tertiary)' }}>
-          {displayMode === 'dpi'
-            ? 'Carry checks actually received — distributions lag paper marks by years.'
-            : 'Vested carry valued at the assumed multiple — accrued on paper, not yet paid.'}
-        </span>
       </div>
 
       {/* Row 3: Scenarios - only show if at least one fund has multiple scenarios */}
