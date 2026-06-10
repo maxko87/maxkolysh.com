@@ -11,9 +11,8 @@ const HISTORIC_FUND_DEFAULTS = {
   carryAllocationPercent: 5,
   vestingPeriod: 5,
   cliffPeriod: 1,
-  realizationCurve: [0, 0.01, 0.02, 0.05, 0.10, 0.15, 0.25, 0.40, 0.60, 0.85, 1.0],
   deploymentCurve: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-  yearsToClear1X: 5,
+  bow: 2.5,
   raiseContinuously: false,
 };
 

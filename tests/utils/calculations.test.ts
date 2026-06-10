@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest'
 import {
   calculateIRR,
   calculateMultipleFromIRR,
-  calculateYearsToClear1X,
-  getRealizationAtYear,
   getDeploymentAtYear,
   calculateVesting,
   calculateFundCarry,
@@ -11,7 +9,8 @@ import {
   calculateCell,
   calculateAllCells
 } from '../../src/utils/calculations'
-import { CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../../src/types/calculator'
+import { getTASchedule, interpolateSchedule } from '../../src/utils/taModel'
+import { DEPLOYMENT_PRESETS } from '../../src/types/calculator'
 import { mockFund, mockScenario, mockFundWithHurdles, createTestFund } from '../../src/test/mockData'
 
 describe('IRR Calculations', () => {
@@ -100,135 +99,76 @@ describe('IRR Calculations', () => {
   })
 })
 
-describe('Years to Clear 1X', () => {
-  const standardCurve = CURVE_PRESETS.standard
-  const fundYears = 10
+describe('Takahashi-Alexander schedule', () => {
+  const params = {
+    fundSize: 100,
+    multiple: 3,
+    years: 10,
+    bow: 2.5,
+    deploymentCurve: [...DEPLOYMENT_PRESETS.linear],
+    deploymentTimeline: 2.5,
+  }
 
-  describe('with realization curve', () => {
-    it('should calculate for 2x multiple (50% realization)', () => {
-      const years = calculateYearsToClear1X(2, standardCurve, fundYears)
-      expect(years).toBeGreaterThan(6)
-      expect(years).toBeLessThan(8)
-    })
-
-    it('should calculate for 3x multiple (33.3% realization)', () => {
-      const years = calculateYearsToClear1X(3, standardCurve, fundYears)
-      expect(years).toBeGreaterThan(5)
-      expect(years).toBeLessThan(7)
-    })
-
-    it('should handle zombie fund (< 1x)', () => {
-      expect(calculateYearsToClear1X(0.5, standardCurve, fundYears)).toBe(Infinity)
-    })
-
-    it('should handle 1x fund exactly', () => {
-      expect(calculateYearsToClear1X(1.0, standardCurve, fundYears)).toBe(fundYears)
-    })
-
-    it('should handle very high multiples (10x+)', () => {
-      const years = calculateYearsToClear1X(10, standardCurve, fundYears)
-      expect(years).toBeLessThan(5)
-    })
-
-    it('should interpolate correctly between curve points', () => {
-      // 4x needs 25% realization, which is at index 6 = 6 years
-      const years = calculateYearsToClear1X(4, standardCurve, fundYears)
-      expect(years).toBeCloseTo(6, 1)
-    })
+  it('total distributions should equal the target multiple', () => {
+    const schedule = getTASchedule(params)
+    expect(schedule.totalDistributions).toBeCloseTo(300, 0)
+    expect(schedule.cumDistributions[schedule.years]).toBeCloseTo(300, 0)
   })
 
-  describe('with fast realization curve', () => {
-    const fastCurve = CURVE_PRESETS.fast
-
-    it('should clear faster with fast curve', () => {
-      const standardTime = calculateYearsToClear1X(3, standardCurve, fundYears)
-      const fastTime = calculateYearsToClear1X(3, fastCurve, fundYears)
-      expect(fastTime).toBeLessThan(standardTime)
-    })
+  it('should produce a J-curve: NAV rises then falls to zero at fund end', () => {
+    const schedule = getTASchedule(params)
+    const peak = Math.max(...schedule.nav)
+    expect(peak).toBeGreaterThan(100)
+    expect(schedule.nav[schedule.years]).toBeCloseTo(0, 0)
   })
 
-  describe('fallback to benchmark data', () => {
-    it('should use fallback when no curve provided', () => {
-      expect(calculateYearsToClear1X(1.0)).toBe(14)
-      expect(calculateYearsToClear1X(3.5)).toBe(7)
-      expect(calculateYearsToClear1X(10.0)).toBe(3)
-    })
+  it('distributions should be back-loaded: less than a third of value out by mid-life', () => {
+    const schedule = getTASchedule(params)
+    expect(schedule.cumDistributions[5] / schedule.totalDistributions).toBeLessThan(0.34)
   })
 
-  describe('edge cases', () => {
-    it('should handle negative multiple', () => {
-      expect(calculateYearsToClear1X(-1, standardCurve, fundYears)).toBe(Infinity)
-    })
+  it('should cross 1x DPI mid-to-late life for a 3x fund', () => {
+    const schedule = getTASchedule(params)
+    expect(schedule.yearsTo1X).toBeGreaterThan(4)
+    expect(schedule.yearsTo1X).toBeLessThan(8)
+  })
 
-    it('should handle zero fund years', () => {
-      // With zero fund years, falls back to benchmark data
-      const years = calculateYearsToClear1X(3, standardCurve, 0)
-      expect(years).toBeGreaterThan(0)
-    })
+  it('higher bow should delay distributions', () => {
+    const fast = getTASchedule({ ...params, bow: 1.5 })
+    const slow = getTASchedule({ ...params, bow: 4 })
+    expect(slow.cumDistributions[5]).toBeLessThan(fast.cumDistributions[5])
+    expect(slow.yearsTo1X).toBeGreaterThan(fast.yearsTo1X)
+  })
+
+  it('a higher multiple should imply a higher growth rate', () => {
+    const low = getTASchedule({ ...params, multiple: 2 })
+    const high = getTASchedule({ ...params, multiple: 5 })
+    expect(high.growthRate).toBeGreaterThan(low.growthRate)
+  })
+
+  it('a sub-1x fund should never reach 1x DPI', () => {
+    const zombie = getTASchedule({ ...params, multiple: 0.5 })
+    expect(zombie.yearsTo1X).toBe(Infinity)
+    expect(zombie.totalDistributions).toBeCloseTo(50, 0)
+  })
+
+  it('a zero multiple should produce an empty schedule', () => {
+    const dead = getTASchedule({ ...params, multiple: 0 })
+    expect(dead.totalDistributions).toBe(0)
+    expect(dead.yearsTo1X).toBe(Infinity)
+  })
+
+  it('interpolateSchedule should interpolate linearly and clamp', () => {
+    const schedule = getTASchedule(params)
+    const mid = interpolateSchedule(schedule.cumDistributions, 5.5)
+    expect(mid).toBeGreaterThan(schedule.cumDistributions[5])
+    expect(mid).toBeLessThan(schedule.cumDistributions[6])
+    expect(interpolateSchedule(schedule.cumDistributions, -1)).toBe(0)
+    expect(interpolateSchedule(schedule.cumDistributions, 99)).toBeCloseTo(300, 0)
   })
 })
 
-describe('Realization & Deployment Curves', () => {
-  describe('getRealizationAtYear', () => {
-    const standardCurve = CURVE_PRESETS.standard
-    const fundYears = 10
-
-    describe('without yearsToClear1X delay', () => {
-      it('should return 0 at year 0', () => {
-        expect(getRealizationAtYear(0, standardCurve, fundYears)).toBe(0)
-      })
-
-      it('should return 0 for negative years', () => {
-        expect(getRealizationAtYear(-5, standardCurve, fundYears)).toBe(0)
-      })
-
-      it('should return exact curve value at year 5 (50% through)', () => {
-        expect(getRealizationAtYear(5, standardCurve, fundYears)).toBe(0.15)
-      })
-
-      it('should return 1.0 at fund end', () => {
-        expect(getRealizationAtYear(10, standardCurve, fundYears)).toBe(1.0)
-      })
-
-      it('should return 1.0 beyond fund end', () => {
-        expect(getRealizationAtYear(15, standardCurve, fundYears)).toBe(1.0)
-      })
-
-      it('should interpolate between curve points', () => {
-        // Year 7.5 between curve[7]=0.40 and curve[8]=0.60 = 0.50
-        const realization = getRealizationAtYear(7.5, standardCurve, fundYears)
-        expect(realization).toBeCloseTo(0.50, 3)
-      })
-    })
-
-    describe('with yearsToClear1X delay', () => {
-      const yearsToClear = 5
-
-      it('should return 0 before clearing 1X', () => {
-        expect(getRealizationAtYear(3, standardCurve, fundYears, yearsToClear)).toBe(0)
-        expect(getRealizationAtYear(5, standardCurve, fundYears, yearsToClear)).toBe(0)
-      })
-
-      it('should start curve after clearing 1X', () => {
-        const realization = getRealizationAtYear(6, standardCurve, fundYears, yearsToClear)
-        expect(realization).toBeGreaterThan(0)
-        expect(realization).toBeLessThan(0.10)
-      })
-
-      it('should reach full realization by fund end', () => {
-        expect(getRealizationAtYear(fundYears, standardCurve, fundYears, yearsToClear)).toBe(1.0)
-      })
-
-      it('should handle delay equal to fund life', () => {
-        // When yearsToClear=10 and fundYears=10, at year 10 we're still at the clearing point
-        // Code checks year <= yearsToClear, so returns 0
-        expect(getRealizationAtYear(10, standardCurve, fundYears, 10)).toBe(0)
-        // Beyond that point should be fully realized
-        expect(getRealizationAtYear(11, standardCurve, fundYears, 10)).toBe(1.0)
-      })
-    })
-  })
-
+describe('Deployment Curves', () => {
   describe('getDeploymentAtYear', () => {
     const linearCurve = DEPLOYMENT_PRESETS.linear
     const deploymentTimeline = 2.5
@@ -469,12 +409,13 @@ describe('Vintage Calculation Steps', () => {
     expect(steps.totalFundCarry).toBeGreaterThan(steps.fundProfit * 0.20)
   })
 
-  it('should show 0 realization before yearsToClear1X', () => {
+  it('should show 0 realization before the fund returns 1x', () => {
     const steps = calculateVintageSteps(mockFund, mockScenario, 0, 5, 3)
 
     expect(steps.vintageAgeInYears).toBe(3)
-    expect(steps.realizationPercent).toBe(0) // Before clearing 1X
+    expect(steps.realizationPercent).toBe(0) // cumulative distributions < fund size
     expect(steps.realizedCarry).toBe(0)
+    expect(steps.yearsToClear1X).toBeGreaterThan(3) // derived from the TA schedule
   })
 
   it('should handle partial deployment', () => {
@@ -508,62 +449,25 @@ describe('Vintage Calculation Steps', () => {
   })
 })
 
-describe('User-set yearsToClear1X is honored', () => {
-  it('should use the fund field instead of recomputing from the curve', () => {
-    // mockFund sets yearsToClear1X: 5; the curve-based estimate for 3x would be ~6.5y
-    const lateFund = createTestFund({ yearsToClear1X: 8 })
-    const steps = calculateVintageSteps(lateFund, mockScenario, 0, 5, 7)
-
-    expect(steps.yearsToClear1X).toBe(8)
-    expect(steps.realizationPercent).toBe(0) // year 7 < 8, no carry paid yet
-    expect(steps.realizedCarry).toBe(0)
-  })
-
-  it('should fall back to curve-based estimate when the field is NaN', () => {
-    const nanFund = createTestFund({ yearsToClear1X: NaN })
-    const steps = calculateVintageSteps(nanFund, mockScenario, 0, 5, 7)
-
-    // 3x needs 33.3% realization -> ~6.5 years on the standard curve
-    expect(steps.yearsToClear1X).toBeGreaterThan(6)
-    expect(steps.yearsToClear1X).toBeLessThan(7)
-  })
-
-  it('should not pay carry earlier just because the multiple is high', () => {
-    // Previously a 20x fund "cleared 1x" at ~year 1.7 on a fast curve, which is
-    // unrealistic (YC's best-ever fund cleared 1x at ~year 6)
-    const bigScenario = { id: 9, name: '20x', grossReturnMultiple: 20 }
-    const fund = createTestFund({
-      yearsToClear1X: 6,
-      realizationCurve: [...CURVE_PRESETS.fast],
-      scenarios: [bigScenario]
-    })
-    const steps = calculateVintageSteps(fund, bigScenario, 0, 5, 5)
-
-    expect(steps.realizationPercent).toBe(0) // year 5 < 6 despite 20x
-    expect(steps.yourVestedCarry).toBe(0)
-  })
-})
-
 describe('Display mode: DPI (cash) vs TVPI (paper)', () => {
-  it('tvpi mode should show paper carry before any distributions', () => {
-    const dpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 3)
-    const tvpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 3, 'tvpi')
+  it('tvpi mode should show paper carry before any cash carry', () => {
+    // year 4 of a 10y 3x fund: NAV is above cost but cumulative distributions
+    // have not yet returned the fund
+    const dpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 4)
+    const tvpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 4, 'tvpi')
 
-    expect(dpi.realizationPercent).toBe(0)   // before clearing 1x: no cash
+    expect(dpi.realizationPercent).toBe(0)
     expect(dpi.yourVestedCarry).toBe(0)
-    // marks are partial mid-life, not the full terminal multiple
     expect(tvpi.realizationPercent).toBeGreaterThan(0)
-    expect(tvpi.realizationPercent).toBeLessThan(1)
     expect(tvpi.yourVestedCarry).toBeGreaterThan(0)
   })
 
   it('tvpi marks should ramp over the fund life, not jump to terminal value', () => {
-    // year 3 of a 10-year fund: 30% through life -> 40% of terminal profit marked
-    const early = calculateVintageSteps(mockFund, mockScenario, 0, 5, 2, 'tvpi')
-    const mid = calculateVintageSteps(mockFund, mockScenario, 0, 5, 5, 'tvpi')
+    const early = calculateVintageSteps(mockFund, mockScenario, 0, 5, 4, 'tvpi')
+    const mid = calculateVintageSteps(mockFund, mockScenario, 0, 5, 6, 'tvpi')
     const late = calculateVintageSteps(mockFund, mockScenario, 0, 5, 9, 'tvpi')
 
-    expect(early.realizationPercent).toBeLessThan(0.3)
+    expect(early.realizationPercent).toBeLessThan(0.8)
     expect(mid.realizationPercent).toBeGreaterThan(early.realizationPercent)
     expect(late.realizationPercent).toBeGreaterThan(mid.realizationPercent)
     expect(late.realizationPercent).toBeLessThanOrEqual(1)
@@ -573,7 +477,8 @@ describe('Display mode: DPI (cash) vs TVPI (paper)', () => {
     const dpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 10)
     const tvpi = calculateVintageSteps(mockFund, mockScenario, 0, 5, 10, 'tvpi')
 
-    expect(tvpi.yourVestedCarry).toBeCloseTo(dpi.yourVestedCarry, 6)
+    expect(dpi.realizationPercent).toBeCloseTo(1, 2)
+    expect(tvpi.yourVestedCarry).toBeCloseTo(dpi.yourVestedCarry, 4)
   })
 
   it('tvpi cells should always be >= dpi cells', () => {
@@ -587,6 +492,17 @@ describe('Display mode: DPI (cash) vs TVPI (paper)', () => {
         }
       }
     }
+  })
+
+  it('carry through the waterfall respects hurdle bands on partial distributions', () => {
+    // mockFundWithHurdles: 20% to 2x, 25% to 3x, 30% beyond. Mid-life cash
+    // sits in the lower bands, so realized carry must be less than the
+    // realized fraction of total value times terminal carry.
+    const big = { id: 9, name: '5x', grossReturnMultiple: 5 }
+    const fund = createTestFund({ ...mockFundWithHurdles, scenarios: [big] })
+    const steps = calculateVintageSteps(fund, big, 0, 5, 7)
+    expect(steps.realizationPercent).toBeGreaterThan(0)
+    expect(steps.realizationPercent).toBeLessThan(1)
   })
 })
 

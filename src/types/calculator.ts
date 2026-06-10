@@ -25,9 +25,8 @@ export interface Fund {
   carryAllocationPercent: number;  // % of total carry allocated to one GP
   vestingPeriod: number;           // Years to vest
   cliffPeriod: number;             // Cliff in years
-  realizationCurve: number[];      // 11 points (0-10 years)
   deploymentCurve: number[];       // 11 points (0-10 years) - % of capital deployed
-  yearsToClear1X: number;          // Years until fund clears 1X (carry starts)
+  bow: number;                     // Takahashi-Alexander bow: how back-loaded distributions are (Yale VC standard: 2.5)
   raiseContinuously: boolean;      // Whether to raise funds continuously
   vintageYear?: number;            // Optional vintage year for historic funds
 }
@@ -60,7 +59,7 @@ export interface VintageCalculationSteps {
   carryAllocationPercent: number;
   vestingProgress: number;
   cliffMet: boolean;
-  yearsToClear1X: number;
+  yearsToClear1X: number;          // derived from the TA schedule: when cumulative distributions cross 1x
   vintageAgeInYears: number;
   yearsIntoThisVintage: number;
 
@@ -117,9 +116,8 @@ export interface CompressedFund {
   ca: number;   // carryAllocationPercent
   vp: number;   // vestingPeriod
   cl: number;   // cliffPeriod
-  rc: number[]; // realizationCurve
   dc: number[]; // deploymentCurve
-  y1x: number;  // yearsToClear1X
+  b?: number;   // bow
   rco: boolean; // raiseContinuously
 }
 
@@ -142,8 +140,6 @@ export type CalculatorAction =
   | { type: 'ADD_SCENARIO'; payload: { fundId: number; scenario: Scenario } }
   | { type: 'REMOVE_SCENARIO'; payload: { fundId: number; scenarioId: number } }
   | { type: 'UPDATE_SCENARIO'; payload: { fundId: number; scenarioId: number; field: keyof Scenario; value: any } }
-  | { type: 'UPDATE_REALIZATION_CURVE'; payload: { fundId: number; curve: number[] } }
-  | { type: 'SET_REALIZATION_PRESET'; payload: { fundId: number; preset: CurvePreset } }
   | { type: 'UPDATE_DEPLOYMENT_CURVE'; payload: { fundId: number; curve: number[] } }
   | { type: 'SET_DEPLOYMENT_PRESET'; payload: { fundId: number; preset: DeploymentPreset } }
   | { type: 'SELECT_SCENARIO'; payload: { fundId: number; scenarioId: number } };
@@ -153,14 +149,7 @@ export type CalculatorAction =
 export type DisplayMode = 'dpi' | 'tvpi';
 
 // Preset curve types
-export type CurvePreset = 'fast' | 'standard' | 'conservative';
 export type DeploymentPreset = 'linear' | 'fast' | 'fastest';
-
-export const CURVE_PRESETS: Record<CurvePreset, number[]> = {
-  fast: [0, 0.03, 0.08, 0.15, 0.25, 0.37, 0.50, 0.64, 0.78, 0.90, 1.0],
-  standard: [0, 0.01, 0.02, 0.05, 0.10, 0.15, 0.25, 0.40, 0.60, 0.85, 1.0],
-  conservative: [0, 0, 0, 0.01, 0.03, 0.05, 0.10, 0.20, 0.40, 0.70, 1.0],
-};
 
 export const DEPLOYMENT_PRESETS: Record<DeploymentPreset, number[]> = {
   linear: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],        // Even deployment
@@ -168,16 +157,13 @@ export const DEPLOYMENT_PRESETS: Record<DeploymentPreset, number[]> = {
   fastest: [0, 0.8, 0.88, 0.92, 0.95, 0.97, 0.98, 0.99, 0.995, 0.998, 1.0], // Fastest - 80% deployed by year 1
 };
 
-// How fast paper marks (TVPI) ramp toward the terminal multiple, as a fraction of
-// terminal profit, scaled over the fund life. Marks lead distributions by years:
-// near-zero in years 0-2, ~40% of terminal profit mid-life, plateau near the end.
-export const MARKUP_CURVE = [0, 0.10, 0.25, 0.40, 0.55, 0.68, 0.78, 0.86, 0.92, 0.97, 1.0];
-
 // Default values
-export const DEFAULT_REALIZATION_CURVE = CURVE_PRESETS.standard;
 export const DEFAULT_DEPLOYMENT_CURVE = DEPLOYMENT_PRESETS.linear;
 export const DEFAULT_DEPLOYMENT_TIMELINE = 2.5;
-export const DEFAULT_YEARS_TO_CLEAR_1X = 5;
+// Takahashi-Alexander bow factor. 2.5 is Yale's published base case for venture
+// capital (Takahashi & Alexander 2002); practitioner range is ~1.5-4. Higher =
+// distributions more back-loaded.
+export const DEFAULT_BOW = 2.5;
 
 // Fund type presets
 export type FundType = 'early-stage-vc' | 'growth-vc' | 'buyout' | 'secondaries' | 'custom';
@@ -192,7 +178,7 @@ export interface FundTypePreset {
     years: number;
     deploymentTimeline: number;
     deploymentPreset: DeploymentPreset;
-    realizationPreset: CurvePreset;
+    bow: number;
     fundCycle: number;
   };
 }
@@ -212,7 +198,7 @@ export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
       years: 12,
       deploymentTimeline: 3,
       deploymentPreset: 'fast',
-      realizationPreset: 'conservative',
+      bow: 3,
       fundCycle: 3,
     },
   },
@@ -230,7 +216,7 @@ export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
       years: 10,
       deploymentTimeline: 2.5,
       deploymentPreset: 'fast',
-      realizationPreset: 'standard',
+      bow: 2.5,
       fundCycle: 2.5,
     },
   },
@@ -248,7 +234,7 @@ export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
       years: 10,
       deploymentTimeline: 3,
       deploymentPreset: 'linear',
-      realizationPreset: 'fast',
+      bow: 2,
       fundCycle: 2,
     },
   },
@@ -266,7 +252,7 @@ export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
       years: 6.5,
       deploymentTimeline: 1.5,
       deploymentPreset: 'fastest',
-      realizationPreset: 'fast',
+      bow: 1.5,
       fundCycle: 2,
     },
   },
@@ -282,7 +268,7 @@ export const FUND_TYPE_PRESETS: Record<FundType, FundTypePreset> = {
       years: 10,
       deploymentTimeline: 2.5,
       deploymentPreset: 'linear',
-      realizationPreset: 'standard',
+      bow: 2.5,
       fundCycle: 2,
     },
   },
@@ -302,10 +288,9 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
         name: 'Base Case',
         grossReturnMultiple: templateFund.scenarios[0]?.grossReturnMultiple || 3
       }],
-      realizationCurve: [...templateFund.realizationCurve],
       deploymentCurve: [...(templateFund.deploymentCurve || DEFAULT_DEPLOYMENT_CURVE)],
       deploymentTimeline: templateFund.deploymentTimeline ?? DEFAULT_DEPLOYMENT_TIMELINE,
-      yearsToClear1X: templateFund.yearsToClear1X ?? DEFAULT_YEARS_TO_CLEAR_1X,
+      bow: templateFund.bow ?? DEFAULT_BOW,
       vintageYear: templateFund.vintageYear ?? currentYear,
     };
   }
@@ -323,10 +308,9 @@ export const createDefaultFund = (id: number, name: string, templateFund?: Fund)
     carryAllocationPercent: 100,
     vestingPeriod: 4,
     cliffPeriod: 1,
-    realizationCurve: [...DEFAULT_REALIZATION_CURVE],
     deploymentCurve: [...DEFAULT_DEPLOYMENT_CURVE],
     deploymentTimeline: DEFAULT_DEPLOYMENT_TIMELINE,
-    yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
+    bow: DEFAULT_BOW,
     raiseContinuously: false,
     vintageYear: currentYear,
   };
@@ -357,9 +341,8 @@ export const createFundFromType = (id: number, name: string, fundType: FundType)
     carryAllocationPercent: 100,
     vestingPeriod: 4,
     cliffPeriod: 1,
-    realizationCurve: [...CURVE_PRESETS[preset.defaults.realizationPreset]],
     deploymentCurve: [...DEPLOYMENT_PRESETS[preset.defaults.deploymentPreset]],
-    yearsToClear1X: DEFAULT_YEARS_TO_CLEAR_1X,
+    bow: preset.defaults.bow,
     raiseContinuously: false,
     vintageYear: currentYear,
   };

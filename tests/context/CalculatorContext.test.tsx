@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { CalculatorState, CalculatorAction } from '../../src/types/calculator'
-import { createDefaultFund, CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../../src/types/calculator'
+import { createDefaultFund, DEPLOYMENT_PRESETS } from '../../src/types/calculator'
 import { mockFund, mockState } from '../../src/test/mockData'
 
 // Extract reducer for testing
@@ -148,29 +148,6 @@ function calculatorReducer(state: CalculatorState, action: CalculatorAction): Ca
                     : s
                 )
               }
-            : f
-        )
-      }
-    }
-
-    case 'UPDATE_REALIZATION_CURVE': {
-      return {
-        ...state,
-        funds: state.funds.map(f =>
-          f.id === action.payload.fundId
-            ? { ...f, realizationCurve: action.payload.curve }
-            : f
-        )
-      }
-    }
-
-    case 'SET_REALIZATION_PRESET': {
-      const curve = CURVE_PRESETS[action.payload.preset]
-      return {
-        ...state,
-        funds: state.funds.map(f =>
-          f.id === action.payload.fundId
-            ? { ...f, realizationCurve: [...curve] }
             : f
         )
       }
@@ -433,45 +410,6 @@ describe('CalculatorContext Reducer', () => {
 
       expect(newState.funds[0].hurdles[0].multiple).toBe(2.5)
       expect(newState.funds[0].hurdles[0].carryPercent).toBe(25) // Other fields unchanged
-    })
-  })
-
-  describe('UPDATE_REALIZATION_CURVE', () => {
-    it('should update realization curve', () => {
-      const newCurve = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-      const action: CalculatorAction = {
-        type: 'UPDATE_REALIZATION_CURVE',
-        payload: { fundId: 0, curve: newCurve }
-      }
-
-      const newState = calculatorReducer(initialState, action)
-
-      expect(newState.funds[0].realizationCurve).toEqual(newCurve)
-    })
-  })
-
-  describe('SET_REALIZATION_PRESET', () => {
-    it('should set preset curve', () => {
-      const action: CalculatorAction = {
-        type: 'SET_REALIZATION_PRESET',
-        payload: { fundId: 0, preset: 'fast' }
-      }
-
-      const newState = calculatorReducer(initialState, action)
-
-      expect(newState.funds[0].realizationCurve).toEqual(CURVE_PRESETS.fast)
-    })
-
-    it('should create a copy of the curve', () => {
-      const action: CalculatorAction = {
-        type: 'SET_REALIZATION_PRESET',
-        payload: { fundId: 0, preset: 'fast' }
-      }
-
-      const newState = calculatorReducer(initialState, action)
-
-      // Verify it's a copy, not a reference
-      expect(newState.funds[0].realizationCurve).not.toBe(CURVE_PRESETS.fast)
     })
   })
 

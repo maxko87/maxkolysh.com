@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useCalculator } from '../../../hooks/useCalculator';
 import type { Fund } from '../../../types/calculator';
-import { calculateIRR, calculateMultipleFromIRR, getEffectiveYearsToClear1X } from '../../../utils/calculations';
-import { type DeploymentPreset } from '../../../types/calculator';
+import { calculateIRR, calculateMultipleFromIRR } from '../../../utils/calculations';
+import { getTASchedule } from '../../../utils/taModel';
+import { type DeploymentPreset, DEFAULT_BOW } from '../../../types/calculator';
 import Tooltip from '../common/Tooltip';
 import NumericInputWithUnit from '../common/NumericInputWithUnit';
 import CurveChart from '../common/CurveChart';
@@ -18,7 +19,6 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
   // Collapse by default if loaded from URL, expand otherwise
   const [isExpanded, setIsExpanded] = useState(!loadedFromUrl);
-  const [selectedPreset, setSelectedPreset] = useState<'standard' | 'conservative' | 'fast'>('standard');
   const [selectedDeploymentPreset, setSelectedDeploymentPreset] = useState<DeploymentPreset>('linear');
 
   const handleRemove = () => {
@@ -35,7 +35,7 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
     years: 10,
     deploymentTimeline: 2.5,
     fundCycle: 2,
-    yearsToClear1X: 5
+    bow: DEFAULT_BOW
   };
 
   const handleFieldChange = (field: keyof Fund, value: any) => {
@@ -72,11 +72,6 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
         }
       });
     }
-  };
-
-  const handlePresetClick = (preset: 'standard' | 'conservative' | 'fast') => {
-    setSelectedPreset(preset);
-    dispatch({ type: 'SET_REALIZATION_PRESET', payload: { fundId: fund.id, preset } });
   };
 
   const handleDeploymentPresetClick = (preset: DeploymentPreset) => {
@@ -507,61 +502,60 @@ function FundCard({ fund, loadedFromUrl = false }: FundCardProps) {
 
             <div style={{ marginBottom: 'var(--spacing-md)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Years to Return 1x</span>
-                <Tooltip text="Years until LPs have been paid back their capital (DPI reaches 1x) and carry distributions can begin. YC's best-ever fund cleared 1x in ~6 years; most funds take longer."><span className="tooltip-icon">?</span></Tooltip>
+                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Distribution Bow</span>
+                <Tooltip text="Takahashi-Alexander bow factor: how back-loaded distributions are. 2.5 is Yale's published base case for venture capital; lower pays out earlier (buyout ~2, secondaries ~1.5), higher later (slow early-stage ~3-4). The chart shows the resulting cumulative distribution schedule and when carry starts (fund returns 1x)."><span className="tooltip-icon">?</span></Tooltip>
               </div>
               <div className="form-group">
                 <NumericInputWithUnit
-                  value={isNaN(fund.yearsToClear1X) ? '' : fund.yearsToClear1X}
-                  onChange={(value) => handleFieldChange('yearsToClear1X', value)}
+                  value={isNaN(fund.bow) ? '' : fund.bow}
+                  onChange={(value) => handleFieldChange('bow', value)}
                   step="0.5"
-                  placeholder="5"
-                  unit="Yrs"
+                  placeholder="2.5"
+                  unit="Bow"
                 />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 'var(--spacing-md)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-xs)', marginBottom: 'var(--spacing-sm)' }}>
-                <span style={{ fontSize: '0.83em', fontWeight: 600, color: 'var(--text-secondary)' }}>Distribution Pace</span>
-                <Tooltip text="Pattern of how quickly returns are distributed to LPs after the fund clears 1x"><span className="tooltip-icon">?</span></Tooltip>
-              </div>
-              <div className="curve-presets">
-                {(['conservative', 'standard', 'fast'] as const).map((preset) => (
-                  <button
-                    key={preset}
-                    className={`btn btn-small curve-preset-btn ${selectedPreset === preset ? 'btn-primary' : ''}`}
-                    onClick={() => handlePresetClick(preset)}
-                  >
-                    {preset.charAt(0).toUpperCase() + preset.slice(1)}
-                  </button>
-                ))}
               </div>
               <div style={{ marginTop: 'var(--spacing-md)', display: 'flex', justifyContent: 'center' }}>
-                <CurveChart
-                  curve={fund.realizationCurve}
-                  timelineYears={isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years}
-                  color="#667eea"
-                  markerLine={
-                    fund.scenarios[0]
-                      ? (() => {
-                          const fundYears = isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years;
-                          const carryStartYear = getEffectiveYearsToClear1X(
-                            fund,
-                            fund.scenarios[0].grossReturnMultiple,
-                            fundYears
-                          );
-                          return carryStartYear && isFinite(carryStartYear) && carryStartYear <= fundYears
-                            ? {
-                                year: carryStartYear,
-                                label: `Carry Y${Math.round(carryStartYear * 10) / 10}`,
-                                color: '#ef4444',
-                              }
-                            : undefined;
-                        })()
-                      : undefined
-                  }
-                />
+                {fund.scenarios[0] && (() => {
+                  const fundYears = isNaN(fund.years) || !isFinite(fund.years) || fund.years <= 0 ? 10 : fund.years;
+                  const fundSize = isNaN(fund.size) || !isFinite(fund.size) ? 200 : fund.size;
+                  const bow = isNaN(fund.bow) || !isFinite(fund.bow) || fund.bow <= 0 ? DEFAULT_BOW : fund.bow;
+                  const deploymentTimeline = isNaN(fund.deploymentTimeline) || !isFinite(fund.deploymentTimeline) ? 2.5 : fund.deploymentTimeline;
+                  const schedule = getTASchedule({
+                    fundSize,
+                    multiple: fund.scenarios[0].grossReturnMultiple,
+                    years: fundYears,
+                    bow,
+                    deploymentCurve: fund.deploymentCurve,
+                    deploymentTimeline,
+                  });
+                  // Sample the cumulative distribution schedule at 11 points for the chart
+                  const total = schedule.totalDistributions || 1;
+                  const curve = Array.from({ length: 11 }, (_, i) => {
+                    const t = (i / 10) * schedule.years;
+                    const lower = Math.floor(t);
+                    const frac = t - lower;
+                    const cumD = lower >= schedule.years
+                      ? schedule.cumDistributions[schedule.years]
+                      : schedule.cumDistributions[lower] + (schedule.cumDistributions[lower + 1] - schedule.cumDistributions[lower]) * frac;
+                    return cumD / total;
+                  });
+                  return (
+                    <CurveChart
+                      curve={curve}
+                      timelineYears={fundYears}
+                      color="#667eea"
+                      markerLine={
+                        isFinite(schedule.yearsTo1X) && schedule.yearsTo1X <= fundYears
+                          ? {
+                              year: schedule.yearsTo1X,
+                              label: `Carry Y${Math.round(schedule.yearsTo1X * 10) / 10}`,
+                              color: '#ef4444',
+                            }
+                          : undefined
+                      }
+                    />
+                  );
+                })()}
               </div>
             </div>
           </>

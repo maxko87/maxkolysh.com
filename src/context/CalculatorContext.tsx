@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useMemo } from 'react';
 import type { CalculatorState, CalculatorAction, CellData, DisplayMode } from '../types/calculator';
-import { createDefaultFund, CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../types/calculator';
+import { createDefaultFund, DEPLOYMENT_PRESETS } from '../types/calculator';
 import { calculateAllCells } from '../utils/calculations';
 import { loadStateFromHash, compressState } from '../utils/stateCompression';
 
@@ -168,29 +168,6 @@ function calculatorReducer(state: CalculatorState, action: CalculatorAction): Ca
                     : s
                 )
               }
-            : f
-        )
-      };
-    }
-
-    case 'UPDATE_REALIZATION_CURVE': {
-      return {
-        ...state,
-        funds: state.funds.map(f =>
-          f.id === action.payload.fundId
-            ? { ...f, realizationCurve: action.payload.curve }
-            : f
-        )
-      };
-    }
-
-    case 'SET_REALIZATION_PRESET': {
-      const curve = CURVE_PRESETS[action.payload.preset];
-      return {
-        ...state,
-        funds: state.funds.map(f =>
-          f.id === action.payload.fundId
-            ? { ...f, realizationCurve: [...curve] }
             : f
         )
       };

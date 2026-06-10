@@ -1,5 +1,6 @@
 import type { Fund, Scenario, CellData, DisplayMode, FundBreakdown, VintageBreakdown, VintageCalculationSteps, Hurdle } from '../types/calculator';
-import { MARKUP_CURVE } from '../types/calculator';
+import { DEFAULT_BOW } from '../types/calculator';
+import { getTASchedule, interpolateSchedule } from './taModel';
 
 // Calculate IRR for a scenario
 export function calculateIRR(multiple: number, years: number): string {
@@ -15,83 +16,6 @@ export function calculateMultipleFromIRR(irrPercent: number, years: number): num
   if (isNaN(irrPercent) || isNaN(years) || years <= 0) return 1;
   const irr = irrPercent / 100;
   return Math.pow(1 + irr, years);
-}
-
-// Calculate years to clear 1X based on gross multiple and realization schedule
-// Finds the year when realization% × returnMultiple = 1.0x (DPI crosses 1.0x)
-export function calculateYearsToClear1X(
-  grossMultiple: number,
-  realizationCurve?: number[],
-  fundYears?: number
-): number {
-  // If we have the realization schedule, calculate precisely
-  if (realizationCurve && fundYears) {
-    // Handle edge cases
-    if (grossMultiple < 1.0) return Infinity; // Zombies never clear
-
-    // Find the year when realization% × returnMultiple = 1.0x
-    // Need: realization% = 1.0 / returnMultiple
-    const targetRealization = 1.0 / grossMultiple;
-
-    if (targetRealization > 1.0) return Infinity; // Can't reach if target > 100%
-
-    // Find what year this realization is reached on the curve
-    for (let i = 0; i < 10; i++) {
-      const yearStart = (i / 10) * fundYears;
-      const yearEnd = ((i + 1) / 10) * fundYears;
-      const realizationStart = realizationCurve[i] ?? 0;
-      const realizationEnd = realizationCurve[i + 1] ?? 1;
-
-      // Check if target realization is between these two points
-      if (realizationStart <= targetRealization && targetRealization <= realizationEnd) {
-        // Linear interpolation to find exact year
-        if (realizationEnd === realizationStart) return yearStart;
-        const fraction = (targetRealization - realizationStart) / (realizationEnd - realizationStart);
-        const result = yearStart + fraction * (yearEnd - yearStart);
-        return result;
-      }
-    }
-
-    // If we haven't found it yet, it's beyond the curve
-    return fundYears;
-  }
-
-  // Fallback: use benchmark data if curve not provided (for backwards compatibility)
-  if (grossMultiple < 1.0) return Infinity;
-  if (grossMultiple >= 10.0) return 3;
-
-  const benchmarks = [
-    { multiple: 1.0, years: 14 },
-    { multiple: 1.3, years: 12 },
-    { multiple: 2.1, years: 10 },
-    { multiple: 3.5, years: 7 },
-    { multiple: 5.0, years: 5 },
-    { multiple: 6.5, years: 4 },
-    { multiple: 8.0, years: 3.5 },
-    { multiple: 10.0, years: 3 }
-  ];
-
-  for (let i = 0; i < benchmarks.length - 1; i++) {
-    const lower = benchmarks[i];
-    const upper = benchmarks[i + 1];
-
-    if (grossMultiple >= lower.multiple && grossMultiple <= upper.multiple) {
-      const ratio = (grossMultiple - lower.multiple) / (upper.multiple - lower.multiple);
-      return lower.years + ratio * (upper.years - lower.years);
-    }
-  }
-
-  return 14;
-}
-
-// Resolve the years-to-clear-1X for a fund: the user-set value wins (it's an input
-// in the UI and the URL); fall back to estimating from the realization curve only
-// when the field is blank/invalid.
-export function getEffectiveYearsToClear1X(fund: Fund, multiple: number, fundYears: number): number {
-  if (!isNaN(fund.yearsToClear1X) && isFinite(fund.yearsToClear1X) && fund.yearsToClear1X >= 0) {
-    return fund.yearsToClear1X;
-  }
-  return calculateYearsToClear1X(multiple, fund.realizationCurve, fundYears);
 }
 
 /**
@@ -202,52 +126,6 @@ export function calculateVesting(
   return totalVesting;
 }
 
-// Get realization percentage at a given year
-// The curve has 11 points (0-10) which are scaled to match the fund's actual life
-// yearsToClear1X delays distributions until DPI = 1.0, then curve progresses normally (no compression)
-export function getRealizationAtYear(
-  year: number,
-  realizationCurve: number[],
-  fundYears: number,
-  yearsToClear1X: number = 0
-): number {
-  if (year <= 0) return 0;
-
-  // No distributions until we clear 1X
-  if (year <= yearsToClear1X) return 0;
-
-  // After clearing 1X, progress through the realization schedule normally
-  // NO COMPRESSION - just shift the curve forward
-  const yearsAfterClearing = year - yearsToClear1X;
-  const remainingYears = fundYears - yearsToClear1X;
-
-  // If we've exceeded the fund life, we're fully realized
-  if (remainingYears <= 0 || yearsAfterClearing >= remainingYears) return 1.0;
-
-  // Map to curve position (0-10 scale)
-  const curveProgress = yearsAfterClearing / remainingYears;
-  const curvePosition = curveProgress * 10;
-
-  // Clamp at end
-  if (curvePosition >= 10) return 1.0;
-
-  // Interpolate on curve
-  const index = Math.floor(curvePosition);
-  const fraction = curvePosition - index;
-
-  const r1 = realizationCurve[Math.min(index, 10)] ?? 0;
-  const r2 = realizationCurve[Math.min(index + 1, 10)] ?? 1;
-
-  return r1 + (r2 - r1) * fraction;
-}
-
-// Get markup percentage at a given year: the fraction of terminal profit reflected
-// in paper marks (TVPI). Calibrated to YC actuals — ES20 had ~37% of terminal
-// profit marked at year 5.5, YC II ~80% at year 8, near-zero in years 0-2.
-export function getMarkupAtYear(year: number, fundYears: number): number {
-  return getRealizationAtYear(year, MARKUP_CURVE, fundYears, 0);
-}
-
 // Get deployment percentage at a given year
 // The curve has 11 points (0-10) which are scaled to match the fund's actual life
 export function getDeploymentAtYear(
@@ -267,37 +145,6 @@ export function getDeploymentAtYear(
   const d2 = deploymentCurve[index + 1] ?? 1;
 
   return d1 + (d2 - d1) * fraction;
-}
-
-// Calculate weighted realization
-export function calculateWeightedRealization(
-  yearsWorked: number,
-  yearsFromToday: number,
-  fundCycle: number,
-  vestingPeriod: number,
-  realizationCurve: number[],
-  fundYears: number,
-  yearsToClear1X: number = 0
-): number {
-  let weightedRealization = 0;
-  let fundStartYear = 0;
-  let fundIndex = 0;
-
-  while (fundStartYear < yearsWorked && fundIndex < 20) {
-    const yearsIntoThisFund = yearsWorked - fundStartYear;
-    const vestingProgress = Math.min(yearsIntoThisFund / vestingPeriod, 1);
-
-    if (vestingProgress > 0) {
-      const yearsSinceFundStart = yearsFromToday - fundStartYear;
-      const realizationPercent = getRealizationAtYear(yearsSinceFundStart, realizationCurve, fundYears, yearsToClear1X);
-      weightedRealization += vestingProgress * realizationPercent;
-    }
-
-    fundStartYear += fundCycle;
-    fundIndex++;
-  }
-
-  return weightedRealization;
 }
 
 // Calculate detailed steps for a single vintage (for math visibility)
@@ -328,15 +175,23 @@ export function calculateVintageSteps(
   const vintageAgeInYears = yearsFromToday - fundStartYear;
   const yearsIntoThisVintage = yearsWorked - fundStartYear;
 
-  // Get deployment and realization percentages
+  const bow = isNaN(fund.bow) || !isFinite(fund.bow) || fund.bow <= 0 ? DEFAULT_BOW : fund.bow;
+
+  // Deployment percentage (also the TA contribution schedule)
   const deploymentPercent = getDeploymentAtYear(vintageAgeInYears, fund.deploymentCurve, deploymentTimeline);
-  const yearsToClear = getEffectiveYearsToClear1X(fund, multiple, fundYears);
-  // 'dpi' counts only carry on cash actually distributed; 'tvpi' counts vested carry
-  // accrued on paper marks, which ramp toward the terminal multiple over the fund
-  // life (companies take a decade-plus to be valued at their eventual exit price)
-  const realizationPercent = displayMode === 'tvpi'
-    ? getMarkupAtYear(vintageAgeInYears, fundYears)
-    : getRealizationAtYear(vintageAgeInYears, fund.realizationCurve, fundYears, yearsToClear);
+
+  // Takahashi-Alexander schedule: NAV marks and cumulative distributions over the
+  // fund life, with growth solved to hit the scenario's terminal multiple
+  const schedule = getTASchedule({
+    fundSize,
+    multiple,
+    years: fundYears,
+    bow,
+    deploymentCurve: fund.deploymentCurve,
+    deploymentTimeline,
+  });
+  const cumDistributions = interpolateSchedule(schedule.cumDistributions, vintageAgeInYears);
+  const navNow = interpolateSchedule(schedule.nav, vintageAgeInYears);
 
   // Calculate vesting
   const vestingProgress = Math.min(yearsIntoThisVintage / vestingPeriod, 1);
@@ -363,6 +218,17 @@ export function calculateVintageSteps(
   // Calculate effective carry rate for display (as decimal, e.g., 0.20 for 20%)
   const effectiveCarryRate = fundProfit > 0 ? totalFundCarry / fundProfit : baseCarryPercent / 100;
 
+  // European waterfall on the TA schedule:
+  // 'dpi' — carry on cash actually distributed to date (zero until cumulative
+  // distributions return the fund); 'tvpi' — carry accrued on total value
+  // (distributions + current NAV marks), i.e. paper carry
+  const carryBasis = displayMode === 'tvpi' ? cumDistributions + navNow : cumDistributions;
+  const { totalCarry: realizedFundCarry } = calculateIncrementalCarry(fundSize, Math.min(carryBasis, grossReturns), baseCarryPercent, sortedHurdles);
+
+  // Fraction of the terminal carry pool realized so far (folds the waterfall's
+  // non-linearity into one number so pool × realization% = realized holds exactly)
+  const realizationPercent = totalFundCarry > 0 ? realizedFundCarry / totalFundCarry : 0;
+
   // Step 7: Calculate your share of carry pool
   const yourCarryPoolShare = totalFundCarry * (carryAllocationPercent / 100);
 
@@ -383,7 +249,7 @@ export function calculateVintageSteps(
     carryAllocationPercent,
     vestingProgress,
     cliffMet,
-    yearsToClear1X: yearsToClear,
+    yearsToClear1X: schedule.yearsTo1X,
     vintageAgeInYears,
     yearsIntoThisVintage,
 

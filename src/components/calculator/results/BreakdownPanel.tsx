@@ -147,7 +147,9 @@ export default function BreakdownPanel({
                       {breakdown.realizationPercent === 0 && breakdown.vintageAgeInYears < breakdown.yearsToClear1X && (
                         <>
                           <span style={{ gridColumn: '1 / -1', fontSize: '0.85em', fontStyle: 'italic' }}>
-                            (No distributions yet - need {(breakdown.yearsToClear1X - breakdown.vintageAgeInYears).toFixed(1)} more years to return 1x fund)
+                            {isFinite(breakdown.yearsToClear1X)
+                              ? `(No carry yet - ${(breakdown.yearsToClear1X - breakdown.vintageAgeInYears).toFixed(1)} more years until the fund returns 1x)`
+                              : '(No carry - the fund never returns 1x at this multiple)'}
                           </span>
                         </>
                       )}

@@ -1,5 +1,5 @@
 import type { CalculatorState, Fund } from '../types/calculator';
-import { CURVE_PRESETS, DEFAULT_REALIZATION_CURVE, DEPLOYMENT_PRESETS, DEFAULT_DEPLOYMENT_CURVE, DEFAULT_DEPLOYMENT_TIMELINE, DEFAULT_YEARS_TO_CLEAR_1X } from '../types/calculator';
+import { DEPLOYMENT_PRESETS, DEFAULT_DEPLOYMENT_CURVE, DEFAULT_DEPLOYMENT_TIMELINE, DEFAULT_BOW } from '../types/calculator';
 
 export function compressState(state: CalculatorState): string {
   try {
@@ -34,18 +34,6 @@ export function compressState(state: CalculatorState): string {
         params.set(`${prefix}_s${sIdx + 1}`, scenario.grossReturnMultiple.toString());
       });
 
-      // Realization schedule: detect preset or store custom
-      const curvePreset = Object.entries(CURVE_PRESETS).find(([_, curve]) =>
-        JSON.stringify(curve) === JSON.stringify(fund.realizationCurve)
-      );
-
-      if (curvePreset) {
-        params.set(`${prefix}_curve`, curvePreset[0]);
-      } else {
-        // Store custom curve as comma-separated values
-        params.set(`${prefix}_curve`, fund.realizationCurve.join(','));
-      }
-
       // Deployment curve: detect preset or store custom
       const deploymentPreset = Object.entries(DEPLOYMENT_PRESETS).find(([_, curve]) =>
         JSON.stringify(curve) === JSON.stringify(fund.deploymentCurve)
@@ -58,8 +46,8 @@ export function compressState(state: CalculatorState): string {
         params.set(`${prefix}_deploy`, fund.deploymentCurve.join(','));
       }
 
-      // Years to clear 1X
-      params.set(`${prefix}_y1x`, fund.yearsToClear1X.toString());
+      // Takahashi-Alexander bow (distribution back-loading)
+      params.set(`${prefix}_bow`, fund.bow.toString());
 
       // Vintage year (only if not current year)
       if (fund.vintageYear !== undefined) {
@@ -113,10 +101,9 @@ export function decompressState(queryString: string): CalculatorState | null {
             carryAllocationPercent: f.ca || 5,
             vestingPeriod: f.vp || 4,
             cliffPeriod: f.cl || 1,
-            realizationCurve: f.rc || [...DEFAULT_REALIZATION_CURVE],
             deploymentCurve: f.dc || [...DEFAULT_DEPLOYMENT_CURVE],
             deploymentTimeline: f.dt ?? DEFAULT_DEPLOYMENT_TIMELINE,
-            yearsToClear1X: f.y1x || DEFAULT_YEARS_TO_CLEAR_1X,
+            bow: f.b || DEFAULT_BOW,
             years: f.fy || 10,
             raiseContinuously: f.rco !== undefined ? f.rco : true
           };
@@ -178,15 +165,6 @@ export function decompressState(queryString: string): CalculatorState | null {
         sIdx++;
       }
 
-      // Parse realization schedule
-      const curveParam = params.get(`${prefix}_curve`) || 'standard';
-      let realizationCurve: number[];
-      if (curveParam in CURVE_PRESETS) {
-        realizationCurve = [...CURVE_PRESETS[curveParam as keyof typeof CURVE_PRESETS]];
-      } else {
-        realizationCurve = curveParam.split(',').map(parseFloat);
-      }
-
       // Parse deployment curve
       const deployParam = params.get(`${prefix}_deploy`) || 'linear';
       let deploymentCurve: number[];
@@ -216,9 +194,8 @@ export function decompressState(queryString: string): CalculatorState | null {
         carryAllocationPercent: parseFloat(params.get(`${prefix}_alloc`) || '5'),
         vestingPeriod: parseFloat(params.get(`${prefix}_vest`) || '4'),
         cliffPeriod: parseFloat(params.get(`${prefix}_cliff`) || '1'),
-        realizationCurve,
         deploymentCurve,
-        yearsToClear1X: parseFloat(params.get(`${prefix}_y1x`) || DEFAULT_YEARS_TO_CLEAR_1X.toString()),
+        bow: parseFloat(params.get(`${prefix}_bow`) || DEFAULT_BOW.toString()),
         raiseContinuously: continuous,
         vintageYear
       };

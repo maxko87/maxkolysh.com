@@ -1,5 +1,5 @@
 import type { Fund, Scenario, CalculatorState } from '../types/calculator'
-import { CURVE_PRESETS, DEPLOYMENT_PRESETS } from '../types/calculator'
+import { DEPLOYMENT_PRESETS } from '../types/calculator'
 
 export const mockScenario: Scenario = {
   id: 1,
@@ -21,9 +21,8 @@ export const mockFund: Fund = {
   carryAllocationPercent: 5,
   vestingPeriod: 4,
   cliffPeriod: 1,
-  realizationCurve: [...CURVE_PRESETS.standard],
   deploymentCurve: [...DEPLOYMENT_PRESETS.linear],
-  yearsToClear1X: 5,
+  bow: 2.5,
   raiseContinuously: true
 }
 
