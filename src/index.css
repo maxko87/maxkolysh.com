@@ -292,6 +292,10 @@ body {
 
 .main-content {
     flex: 1;
+    /* min-width: 0 overrides the flexbox min-width:auto default so the wide
+       results table scrolls inside .results-container instead of pushing the
+       whole page wider than the viewport */
+    min-width: 0;
     background: var(--bg-secondary);
     padding: var(--spacing-2xl);
     display: flex;

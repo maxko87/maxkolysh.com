@@ -245,7 +245,7 @@ export function CalculatorProvider({ children }: CalculatorProviderProps) {
   const initialData = useMemo(() => getInitialState(), []);
   const [state, dispatch] = useReducer(calculatorReducer, initialData.state);
   const [loadedFromUrl] = React.useState(initialData.loadedFromUrl);
-  const [displayMode, setDisplayMode] = React.useState<DisplayMode>('dpi');
+  const [displayMode, setDisplayMode] = React.useState<DisplayMode>('tvpi');
 
   // Calculate all cells when state changes
   const calculations = useMemo(() => {

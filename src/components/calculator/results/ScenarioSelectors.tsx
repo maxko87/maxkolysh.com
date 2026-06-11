@@ -100,8 +100,8 @@ function ScenarioSelectors() {
         <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Show:</span>
         <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '6px', overflow: 'hidden' }}>
           {([
-            { mode: 'dpi' as const, label: 'Cash paid (DPI)' },
-            { mode: 'tvpi' as const, label: 'Paper value (TVPI)' }
+            { mode: 'tvpi' as const, label: 'Paper value (TVPI)' },
+            { mode: 'dpi' as const, label: 'Cash paid (DPI)' }
           ]).map(({ mode, label }) => (
             <button
               key={mode}
