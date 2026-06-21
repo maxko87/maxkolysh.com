@@ -12,6 +12,11 @@ const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-stree
 // Location tolerance: if car moved less than 50m, consider it same spot
 const LOCATION_TOLERANCE_M = 50;
 
+// While a car is online but still driving, re-read its location at most this
+// often (a wake fires an immediate read regardless). Bounds the paid-read cost
+// of a long drive; reads stop entirely once the car is confirmed parked.
+const READ_THROTTLE_MS = 5 * 60 * 1000;
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -34,6 +39,9 @@ interface TeslaUser {
   email: string | null;
   phone: string | null;
   notification_prefs: Record<string, boolean> | null;
+  last_vehicle_state: string | null;
+  location_captured: boolean | null;
+  last_data_read_at: string | null;
 }
 
 interface CleaningSide {
@@ -338,80 +346,90 @@ Deno.serve(async (req) => {
 
         for (const vehicle of vehicles) {
           try {
+            // --- Cost-gated read decision ---
+            // The vehicle LIST call above is free (Tesla cloud cache) and gives
+            // us `state`. The billed call is vehicle_data (~$0.002). A car only
+            // changes parking spot by waking -> driving -> parking, so we spend
+            // a read only when it's online AND (it just woke, or we haven't yet
+            // confirmed it's parked this session). Once parked we stop paying
+            // until it sleeps and wakes again — so sentry/charging cars that sit
+            // online all day cost ~1 read per arrival, not one per poll.
+            const state: string = vehicle.state; // online | asleep | offline
+            const prevState = user.last_vehicle_state ?? null;
+            const captured = user.location_captured === true;
+            const lastReadMs = user.last_data_read_at ? new Date(user.last_data_read_at).getTime() : 0;
+
+            const justWoke = state === "online" && prevState !== "online";
+            const shouldRead =
+              state === "online" &&
+              (justWoke || (!captured && Date.now() - lastReadMs >= READ_THROTTLE_MS));
+
             let lat: number | null = null;
             let lng: number | null = null;
             let shiftState: string | null = null;
             let speed: number | null = null;
+            let didRead = false;
 
-            // 4. Try to get fresh location if car is awake — never wake it
-            if (vehicle.state === "online") {
+            if (shouldRead) {
               try {
                 const vdResp = await teslaGet(
                   `/api/1/vehicles/${vehicle.id}/vehicle_data?endpoints=location_data;drive_state`,
                   accessToken
                 );
-                const vd = vdResp.response;
-                const driveState = vd?.drive_state;
-
+                const driveState = vdResp.response?.drive_state;
                 if (driveState) {
-                  // Keep raw shift_state: null means parked/off, "P" means park,
-                  // "D"/"R"/"N" means driving/moving. Don't coerce null to "P".
+                  didRead = true;
+                  // Parked cars report shift_state null (or "P"); "D"/"R"/"N" = driving.
                   shiftState = driveState.shift_state ?? null;
                   speed = driveState.speed ?? null;
-                  lat = driveState.latitude;
-                  lng = driveState.longitude;
-
-                  console.log(`Vehicle ${vehicle.display_name}: online, shift=${shiftState}, speed=${speed}, lat=${lat}, lng=${lng}`);
-
-                 // Update DB with latest state
-                 await supabase.from("tesla_users").update({
-                   last_checked_at: new Date().toISOString(),
-                   last_shift_state: shiftState,
-                   last_latitude: lat,
-                   last_longitude: lng,
-                   vehicle_name: vehicle.display_name,
-                   updated_at: new Date().toISOString(),
-                 }).eq("id", user.id);
+                  lat = driveState.latitude ?? null;
+                  lng = driveState.longitude ?? null;
+                  console.log(`Vehicle ${vehicle.display_name}: read shift=${shiftState}, speed=${speed}, lat=${lat}, lng=${lng}`);
                 }
               } catch (e: any) {
-                // 408 = car asleep (race condition), other errors = API issue
-                // Either way, fall back to stored location
-                console.log(`Vehicle ${vehicle.display_name}: online but API error (${e.message}), using stored location`);
+                // 408 = car reported online but is actually asleep/unreachable.
+                // Never wake it; just fall back to the stored parked location.
+                console.log(`Vehicle ${vehicle.display_name}: vehicle_data error (${e.message}), skipping read`);
               }
             } else {
-              console.log(`Vehicle ${vehicle.display_name} is ${vehicle.state}, using stored location`);
+              console.log(`Vehicle ${vehicle.display_name}: ${state}${captured ? ", parked (captured)" : ""} — no paid read`);
             }
 
-            // Fall back to stored location if we couldn't get fresh data
-            if (lat === null || lng === null) {
-              lat = user.last_latitude;
-              lng = user.last_longitude;
-              shiftState = user.last_shift_state ?? null;
-              // No speed data available from stored state; null = not moving
-            }
+            // Driving if in a driving gear or moving. Parked cars report null/"P".
+            const isDriving = (shiftState !== null && shiftState !== "P") || (speed !== null && speed > 0);
 
-            // No location at all — user never opened the app or location was never stored
-            if (lat === null || lng === null) {
-              results.push(`${vehicle.display_name}: no location available (car ${vehicle.state}, no stored location)`);
+            // Persist state tracking every run (cheap DB write, no Tesla cost).
+            // Leaving "online" re-arms reads for the next wake cycle; a fresh
+            // parked read sets `captured` so we stop paying while it sits idle.
+            const newCaptured =
+              state !== "online" ? false : (didRead && !isDriving ? true : captured);
+            const trackingUpdate: Record<string, unknown> = {
+              last_vehicle_state: state,
+              location_captured: newCaptured,
+              last_checked_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            if (didRead) {
+              trackingUpdate.last_data_read_at = new Date().toISOString();
+              trackingUpdate.last_shift_state = shiftState;
+              if (vehicle.display_name) trackingUpdate.vehicle_name = vehicle.display_name;
+            }
+            await supabase.from("tesla_users").update(trackingUpdate).eq("id", user.id);
+
+            // Only a FRESH parked read can represent a NEW parking spot. If we
+            // didn't read (asleep, throttled, or already captured), the location
+            // can't have changed since last time — nothing new to notify.
+            if (!didRead || lat === null || lng === null) {
+              results.push(`${vehicle.display_name}: ${state}, no fresh location`);
               continue;
             }
 
-            // If driving, skip cleaning check.
-            // Car is driving if: shift_state is D/R/N (not null or P), OR speed > 0.
-            // shift_state null = parked/off, "P" = park gear. Anything else = moving.
-            const isDriving = (shiftState !== null && shiftState !== "P") || (speed !== null && speed > 0);
             if (isDriving) {
               results.push(`${vehicle.display_name}: driving (shift=${shiftState}, speed=${speed})`);
               continue;
             }
 
-            // Update last_checked_at timestamp
-            await supabase.from("tesla_users").update({
-              last_checked_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            }).eq("id", user.id);
-
-            // 5. Skip if car hasn't moved since last notification
+            // 5. Skip if it's the same spot we already notified about
             if (user.last_latitude && user.last_longitude) {
               const dist = haversineDistance(lat, lng, user.last_latitude, user.last_longitude);
               if (dist < LOCATION_TOLERANCE_M) {
@@ -597,8 +615,11 @@ Deno.serve(async (req) => {
               });
             }
 
-            // Reset last_reminders_sent since location changed, update last_notification_at
+            // Persist the new parking spot, reset reminders for the new location,
+            // and stamp the notification time.
             await supabase.from("tesla_users").update({
+              last_latitude: lat,
+              last_longitude: lng,
               last_notification_at: new Date().toISOString(),
               last_reminders_sent: {},
             }).eq("id", user.id);
