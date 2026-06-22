@@ -12,10 +12,15 @@ const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-stree
 // Location tolerance: if car moved less than 50m, consider it same spot
 const LOCATION_TOLERANCE_M = 50;
 
-// While a car is online but still driving, re-read its location at most this
-// often (a wake fires an immediate read regardless). Bounds the paid-read cost
-// of a long drive; reads stop entirely once the car is confirmed parked.
-const READ_THROTTLE_MS = 5 * 60 * 1000;
+// How often to spend a paid vehicle_data read while a car is ONLINE:
+//  - ACTIVE: car is driving, just woke, or we haven't confirmed a park yet —
+//    read often to catch where it parks.
+//  - PARKED_RECHECK: car is confirmed parked but still online — re-read on a
+//    slower cadence so we still catch a move within the SAME online session
+//    (driver gets in, idles in Park, then drives off without ever sleeping)
+//    while bounding cost for sentry/charging cars that sit online all day.
+const ACTIVE_THROTTLE_MS = 3 * 60 * 1000;
+const PARKED_RECHECK_MS = 15 * 60 * 1000;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -360,9 +365,15 @@ Deno.serve(async (req) => {
             const lastReadMs = user.last_data_read_at ? new Date(user.last_data_read_at).getTime() : 0;
 
             const justWoke = state === "online" && prevState !== "online";
+            const sinceReadMs = Date.now() - lastReadMs;
+            // Read on wake, frequently while not-yet-parked, and on a slower
+            // recheck once parked (to catch a same-session move, e.g. the car
+            // idles in Park at the old spot then drives off).
             const shouldRead =
               state === "online" &&
-              (justWoke || (!captured && Date.now() - lastReadMs >= READ_THROTTLE_MS));
+              (justWoke ||
+                (!captured && sinceReadMs >= ACTIVE_THROTTLE_MS) ||
+                (captured && sinceReadMs >= PARKED_RECHECK_MS));
 
             let lat: number | null = null;
             let lng: number | null = null;
@@ -399,10 +410,13 @@ Deno.serve(async (req) => {
             const isDriving = (shiftState !== null && shiftState !== "P") || (speed !== null && speed > 0);
 
             // Persist state tracking every run (cheap DB write, no Tesla cost).
-            // Leaving "online" re-arms reads for the next wake cycle; a fresh
-            // parked read sets `captured` so we stop paying while it sits idle.
-            const newCaptured =
-              state !== "online" ? false : (didRead && !isDriving ? true : captured);
+            // A driving read CLEARS captured so we keep hunting for the next park;
+            // a parked read SETS it (slows reads to PARKED_RECHECK, not stop);
+            // no read leaves it unchanged; going offline re-arms for next wake.
+            let newCaptured: boolean;
+            if (state !== "online") newCaptured = false;
+            else if (didRead) newCaptured = !isDriving;
+            else newCaptured = captured;
             const trackingUpdate: Record<string, unknown> = {
               last_vehicle_state: state,
               location_captured: newCaptured,
