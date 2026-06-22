@@ -1,0 +1,14 @@
+-- Detect a new parking spot by the matched street SEGMENT, not raw distance.
+--
+-- The 50m (then 30m) "same location" distance tolerance was the wrong signal:
+-- SF cross-streets sit ~30-45m from a corner-parked car, so a move around the
+-- corner to a different street fell inside the tolerance and the app stayed
+-- stuck on the old street. Distance can't separate "GPS jitter on the same
+-- spot" from "moved to the perpendicular street" — they're the same magnitude.
+--
+-- The street dataset gives every block a stable StreetIdentifier
+-- (e.g. "Douglass St, between 23rd St and Elizabeth St"). We now store the last
+-- matched identifier and treat ANY change as a new parking event — exact, no
+-- threshold: an 8m move to a different segment notifies; 25m of jitter on the
+-- same segment never does.
+ALTER TABLE tesla_users ADD COLUMN IF NOT EXISTS last_segment_id text;

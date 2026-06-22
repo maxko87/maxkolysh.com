@@ -9,13 +9,10 @@ const TESLA_TOKEN_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/tok
 const FLEET_API_BASE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
 const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/refs/heads/main/data";
 
-// Location tolerance: if the car moved less than this, treat it as the same
-// spot (avoids re-notifying on GPS jitter). Kept tight because SF blocks are
-// short and cross-streets sit ~30-45m from a corner-parked car — at 50m a move
-// around the corner to the perpendicular street got swallowed and the app
-// stayed stuck on the old street. Parked GPS is stable to ~10m, so 30m
-// distinguishes adjacent streets without re-notifying on noise.
-const LOCATION_TOLERANCE_M = 30;
+// "New parking spot" is decided by the matched street SEGMENT changing (its
+// StreetIdentifier), not by a distance threshold — see the per-vehicle logic
+// below. Distance can't tell GPS jitter apart from a move to the perpendicular
+// street (both ~tens of meters), so it's the wrong signal.
 
 // How often to spend a paid vehicle_data read while a car is ONLINE:
 //  - ACTIVE: car is driving, just woke, or we haven't confirmed a park yet —
@@ -52,6 +49,7 @@ interface TeslaUser {
   last_vehicle_state: string | null;
   location_captured: boolean | null;
   last_data_read_at: string | null;
+  last_segment_id: string | null;
 }
 
 interface CleaningSide {
@@ -103,12 +101,6 @@ async function teslaGet(path: string, token: string): Promise<any> {
     throw new Error(`Tesla API ${path} failed (${resp.status}): ${text}`);
   }
   return resp.json();
-}
-
-function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const pt1 = turf.point([lon1, lat1]);
-  const pt2 = turf.point([lon2, lat2]);
-  return turf.distance(pt1, pt2, { units: "meters" });
 }
 
 function getRelevantCleaning(side: CleaningSide): { start: string; end: string; calendarLink: string | null } | null {
@@ -448,16 +440,12 @@ Deno.serve(async (req) => {
               continue;
             }
 
-            // 5. Skip if it's the same spot we already notified about
-            if (user.last_latitude && user.last_longitude) {
-              const dist = haversineDistance(lat, lng, user.last_latitude, user.last_longitude);
-              if (dist < LOCATION_TOLERANCE_M) {
-                results.push(`${vehicle.display_name}: same location, already notified`);
-                continue;
-              }
-            }
+            // We have a fresh parked GPS fix. Whether it's a NEW spot is decided
+            // by the matched street segment below (StreetIdentifier), not raw
+            // distance — a corner move to a different street can be only ~30m,
+            // inside any jitter tolerance, so distance is the wrong test.
 
-            // 6. Look up street cleaning data
+            // Look up street cleaning data
             if (!user.notify_telegram_chat_id && !user.email && !user.phone) {
               results.push(`${vehicle.display_name}: no notification channel configured`);
               continue;
@@ -526,6 +514,23 @@ Deno.serve(async (req) => {
             const props = nearestFeature.properties;
             const corridor = props.Corridor || "Unknown Street";
             const limits = props.Limits || "";
+
+            // The stable identity of this block segment. A change here — and only
+            // a change here — means the car parked somewhere new.
+            const segmentId: string = props.StreetIdentifier || `${corridor}|${limits}`;
+
+            if (segmentId === (user.last_segment_id ?? null)) {
+              // Same segment as last time: not a new spot. Keep the stored GPS
+              // fresh (so reminders snap off the latest fix) but don't re-notify,
+              // no matter how much the raw coordinates jittered.
+              await supabase.from("tesla_users").update({
+                last_latitude: lat,
+                last_longitude: lng,
+              }).eq("id", user.id);
+              results.push(`${vehicle.display_name}: still on ${corridor}, no change`);
+              continue;
+            }
+
             const sidesObj = props.Sides || {};
             const sideKeys = Object.keys(sidesObj).filter((k: string) => sidesObj[k]);
 
@@ -634,15 +639,16 @@ Deno.serve(async (req) => {
               });
             }
 
-            // Persist the new parking spot, reset reminders for the new location,
-            // and stamp the notification time.
+            // Persist the new parking spot + its segment id, reset reminders for
+            // the new location, and stamp the notification time.
             await supabase.from("tesla_users").update({
               last_latitude: lat,
               last_longitude: lng,
+              last_segment_id: segmentId,
               last_notification_at: new Date().toISOString(),
               last_reminders_sent: {},
             }).eq("id", user.id);
-            results.push(`${vehicle.display_name}: parked on ${corridor}, sent info notification`);
+            results.push(`${vehicle.display_name}: parked on ${corridor} (${segmentId}), sent notification`);
           } catch (vErr: any) {
             console.error(`Vehicle error:`, vErr);
             results.push(`Vehicle ${vehicle.display_name}: ${vErr.message}`);
