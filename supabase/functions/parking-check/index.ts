@@ -9,8 +9,13 @@ const TESLA_TOKEN_URL = "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/tok
 const FLEET_API_BASE = "https://fleet-api.prd.na.vn.cloud.tesla.com";
 const DATA_BASE_URL = "https://raw.githubusercontent.com/kaushalpartani/sf-street-cleaning/refs/heads/main/data";
 
-// Location tolerance: if car moved less than 50m, consider it same spot
-const LOCATION_TOLERANCE_M = 50;
+// Location tolerance: if the car moved less than this, treat it as the same
+// spot (avoids re-notifying on GPS jitter). Kept tight because SF blocks are
+// short and cross-streets sit ~30-45m from a corner-parked car — at 50m a move
+// around the corner to the perpendicular street got swallowed and the app
+// stayed stuck on the old street. Parked GPS is stable to ~10m, so 30m
+// distinguishes adjacent streets without re-notifying on noise.
+const LOCATION_TOLERANCE_M = 30;
 
 // How often to spend a paid vehicle_data read while a car is ONLINE:
 //  - ACTIVE: car is driving, just woke, or we haven't confirmed a park yet —
