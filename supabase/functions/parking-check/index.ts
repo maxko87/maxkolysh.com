@@ -309,6 +309,15 @@ Deno.serve(async (req) => {
     console.log(`Processing ${users.length} user(s)...`);
     const results: string[] = [];
 
+    // Fleet API usage metering for this invocation. Tesla bills every <500
+    // response: the vehicle LIST call and each vehicle_data read are ~$0.002.
+    // We count them so real spend is visible in the tesla_api_usage table
+    // instead of estimated. (Skipped/asleep users cost nothing here.)
+    const FLEET_LIST_COST = 0.002;
+    const FLEET_DATA_COST = 0.002;
+    let listCalls = 0;
+    let dataReads = 0;
+
     for (const user of users as TeslaUser[]) {
       try {
         let accessToken = user.access_token;
@@ -341,7 +350,8 @@ Deno.serve(async (req) => {
           }).eq("id", user.id);
         }
 
-        // 3. Get vehicles
+        // 3. Get vehicles (billed list call)
+        listCalls++;
         const vehiclesResp = await teslaGet("/api/1/vehicles", accessToken);
         const vehicles = vehiclesResp.response || [];
         console.log(`User ${user.tesla_user_id}: ${vehicles.length} vehicle(s)`);
@@ -380,6 +390,8 @@ Deno.serve(async (req) => {
 
             if (shouldRead) {
               try {
+                // Billed read attempt (Tesla bills <500 responses, incl. a 408).
+                dataReads++;
                 const vdResp = await teslaGet(
                   `/api/1/vehicles/${vehicle.id}/vehicle_data?endpoints=location_data;drive_state`,
                   accessToken
@@ -660,10 +672,20 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Record this invocation's billed Fleet API usage so real spend is visible.
+    const estCost = listCalls * FLEET_LIST_COST + dataReads * FLEET_DATA_COST;
+    await supabase.from("tesla_api_usage").insert({
+      users: users.length,
+      list_calls: listCalls,
+      data_reads: dataReads,
+      est_cost_usd: estCost,
+    });
+
+    console.log(`Usage: ${listCalls} list, ${dataReads} reads, ~$${estCost.toFixed(4)}`);
     console.log("Results:", results);
 
     return new Response(
-      JSON.stringify({ success: true, results }),
+      JSON.stringify({ success: true, results, usage: { listCalls, dataReads, estCost } }),
       { status: 200, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   } catch (error: any) {
