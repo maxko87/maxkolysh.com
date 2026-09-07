@@ -20,6 +20,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.16",
     "autoprefixer": "^10.4.23",
@@ -34,11 +35,13 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
     "@turf/turf": "^7.3.4",
+    "lucide-react": "^1.31.0",
     "posthog-js": "^1.310.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.11.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "three": "^0.185.1"
   }
 }

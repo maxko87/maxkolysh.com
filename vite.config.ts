@@ -9,6 +9,12 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        house: 'house/index.html',
+      },
+    },
   },
   resolve: {
     alias: {
