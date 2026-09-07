@@ -1,21 +1,177 @@
-import {useEffect,useRef,useState} from 'react';
-import {Button} from './Button';
-import {Box,Footprints,Layers,ArrowUpRight,Download,ImageIcon,X,Play,Pause} from 'lucide-react';
-import {createHouseViewer,rooms,type HouseViewer} from './model';
-export default function HousePage(){
- const mount=useRef<HTMLDivElement>(null),viewer=useRef<HouseViewer|null>(null);
- const [level,setLevel]=useState(0),[mode,setMode]=useState('dollhouse'),[selected,setSelected]=useState('living'),[panel,setPanel]=useState(false),[tour,setTour]=useState(false),[error,setError]=useState('');
- useEffect(()=>{try{viewer.current=createHouseViewer(mount.current!);}catch{setError('The 3D view needs WebGL. Try a browser with hardware acceleration enabled.');}return()=>viewer.current?.dispose();},[]);
- function enter(id:string){setSelected(id);setMode('walk');viewer.current?.visit(id);}
- function overview(){setMode('dollhouse');setTour(false);viewer.current?.overview();}
- function changeLevel(i:number){setLevel(i);setMode('dollhouse');setTour(false);viewer.current?.setLevel(i);}
- useEffect(()=>{if(!tour)return;const stops=rooms.filter(r=>r.level===level);let i=0;enter(stops[0].id);const timer=setInterval(()=>{i=(i+1)%stops.length;enter(stops[i].id);},6500);return()=>clearInterval(timer);},[tour,level]);
- return <main className="house-app"><header className="topbar"><div className="brand"><Box/><div><h1>716 Douglass</h1><p>A home, in three dimensions</p></div></div><span className="revision">● Appraisal-based · first model</span><Button variant="outline" onClick={async()=>{try{await viewer.current?.download();}catch{setError('Export failed. Please try again.');}}}><Download/><span>Export for Blender</span></Button></header>
- <section className="workspace"><div ref={mount} className="viewport" aria-label="Interactive 3D house model"/><div className="toolbar"><div className="segmented"><Button variant={mode==='dollhouse'?'default':'ghost'} onClick={overview}><Box/>Dollhouse</Button><Button variant={mode==='walk'?'default':'ghost'} onClick={()=>{setTour(false);enter(level?'lower-living':'living');}}><Footprints/>Walk inside</Button></div><Button variant="outline" onClick={()=>setTour(!tour)}>{tour?<Pause/>:<Play/>}{tour?'Pause tour':'Guided tour'}</Button></div>
- <aside className="level-card"><p className="eyebrow">EXPLORE THE HOUSE</p><h2>Welcome home.</h2><p className="intro">Two levels. Familiar spaces.<br/>A new way to look around.</p><div className="levels">{['Main level','Lower level'].map((name,i)=><Button key={name} variant={level===i?'default':'ghost'} onClick={()=>changeLevel(i)}><Layers/><span>{name}<small>Unit {i+1} · {i?'822':'1,244'} sq ft</small></span></Button>)}</div><p className="eyebrow room-heading">JUMP TO A ROOM</p><nav aria-label="Rooms">{rooms.filter(r=>r.level===level).map((r,i)=><Button key={r.id} variant="ghost" className={'room '+(mode==='walk'&&selected===r.id?'active':'')} onClick={()=>{setTour(false);enter(r.id);}}><span className="index">0{i+1}</span>{r.name}<ArrowUpRight/></Button>)}</nav><div className="reference-link"><Button variant="ghost" onClick={()=>setPanel(true)}><ImageIcon/>Photos & original plan<ArrowUpRight/></Button></div></aside>
- <div className="caption"><span className="eyebrow">{mode==='walk'?'INSIDE THE HOUSE':'OPEN ROOF · EXPLORATION VIEW'}</span><h2>{mode==='walk'?rooms.find(r=>r.id===selected)?.name:level?'The lower level':'The main level'}</h2><p>{mode==='walk'?'Drag to look · WASD or arrow keys to move':'Drag to orbit · scroll to zoom · right-drag to pan'}</p></div>
- {mode==='walk'&&<div className="walk-controls">{[['↶','left'],['↑','forward'],['↓','back'],['↷','right']].map(([label,dir])=><Button key={dir} variant="outline" aria-label={dir} onPointerDown={()=>viewer.current?.move(dir,true)} onPointerUp={()=>viewer.current?.move(dir,false)} onPointerLeave={()=>viewer.current?.move(dir,false)}>{label}</Button>)}</div>}
- {error&&<div role="alert" className="error">{error}<a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer">Open original plan</a></div>}</section>
- <footer><span>● Exterior dimensions from the appraisal sketch</span><span>Interior layout, heights & furnishings are approximate</span><Button variant="link" onClick={()=>setPanel(true)}>About this model<ArrowUpRight/></Button></footer>
- {panel&&<div className="modal-backdrop" onClick={()=>setPanel(false)}><section className="reference-panel" role="dialog" aria-modal="true" aria-label="Model references" onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==='Escape')setPanel(false);}}><Button autoFocus className="close" variant="outline" aria-label="Close references" onClick={()=>setPanel(false)}><X/></Button><p className="eyebrow">THE SOURCE MATERIAL</p><h2>Built from your house documents.</h2><p>The measured exterior outlines and room names come from the February 2026 appraisal. Interior walls, doors, windows, heights, alignment between levels, and furnishings are provisional. Colors and the wood ceiling are informed by the photos. This is an explorable first reconstruction, not a survey or a photographic scan.</p><div className="photo-grid">{['living','kitchen','dining'].map(name=><figure key={name}><img src={'/house/references/'+name+'.jpg'} alt={'Appraisal photo of '+name}/><figcaption>{name} · appraisal photo</figcaption></figure>)}</div><a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer"><img className="plan" src="/house/references/floor-plan.jpg" alt="Appraisal sketch of both levels with exterior dimensions"/></a><p>The GLB export uses meters and imports into Blender. Your new photos will help refine this model.</p><Button onClick={()=>setPanel(false)}>Back to the house</Button></section></div>}</main>;
+import { useEffect, useRef, useState } from 'react';
+import { Button } from './Button';
+import { Box, Footprints, Layers, ArrowUpRight, Download, ImageIcon, X, Play, Pause, Camera, ChevronLeft, ChevronRight, Sofa } from 'lucide-react';
+import { createHouseViewer, rooms, type HouseViewer } from './model';
+import { photoReferences, photoUrl, type PhotoReference } from './photoReferences';
+
+export default function HousePage() {
+  const mount = useRef<HTMLDivElement>(null);
+  const viewer = useRef<HouseViewer | null>(null);
+  const [level, setLevel] = useState(0);
+  const [mode, setMode] = useState('dollhouse');
+  const [selected, setSelected] = useState('living');
+  const [panel, setPanel] = useState(false);
+  const [tour, setTour] = useState(false);
+  const [error, setError] = useState('');
+  const [furniture, setFurniture] = useState<'personal' | 'staging'>('personal');
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [comparison, setComparison] = useState<PhotoReference | null>(null);
+  const [opacity, setOpacity] = useState(75);
+
+  useEffect(() => {
+    try { viewer.current = createHouseViewer(mount.current!); }
+    catch { setError('The 3D view needs WebGL. Try a browser with hardware acceleration enabled.'); }
+    return () => viewer.current?.dispose();
+  }, []);
+
+  function enter(id: string) {
+    setSelected(id); setMode('walk'); setPhotoIndex(0); setComparison(null);
+    viewer.current?.visit(id);
+  }
+  function overview() {
+    setMode('dollhouse'); setTour(false); setComparison(null);
+    viewer.current?.overview();
+  }
+  function changeLevel(i: number) {
+    setLevel(i); setSelected(i ? 'lower-living' : 'living'); setMode('dollhouse');
+    setTour(false); setComparison(null); setPhotoIndex(0);
+    viewer.current?.setLevel(i);
+  }
+  function compare(photo: PhotoReference) {
+    if (!photo.roomId) return;
+    const room = rooms.find(r => r.id === photo.roomId);
+    if (!room) return;
+    setTour(false); setPanel(false); setSelected(room.id); setLevel(room.level);
+    setMode('walk'); setComparison(photo);
+    const index = photoReferences.filter(p => p.roomId === room.id).findIndex(p => p.id === photo.id);
+    setPhotoIndex(Math.max(0, index));
+    if (photo.view) viewer.current?.matchPhoto(room.id, photo.view);
+    else viewer.current?.visit(room.id);
+  }
+  function chooseFurniture(value: 'personal' | 'staging') {
+    setFurniture(value); viewer.current?.setFurniture(value);
+  }
+
+  useEffect(() => {
+    if (!tour) return;
+    const stops = rooms.filter(r => r.level === level);
+    let i = 0;
+    enter(stops[0].id);
+    const timer = setInterval(() => { i = (i + 1) % stops.length; enter(stops[i].id); }, 6500);
+    return () => clearInterval(timer);
+  }, [tour, level]);
+
+  useEffect(() => {
+    if (!panel && !comparison) return;
+    const close = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setPanel(false); setComparison(null); }
+    };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, [panel, comparison]);
+
+  const matchedPhotos = photoReferences.filter(p => p.roomId === selected);
+  const activePhoto = matchedPhotos[photoIndex % Math.max(1, matchedPhotos.length)];
+  const roomName = rooms.find(r => r.id === selected)?.name;
+
+  return <main className="house-app">
+    <header className="topbar">
+      <div className="brand"><Box/><div><h1>716 Douglass</h1><p>A home, in three dimensions</p></div></div>
+      <span className="revision">● Your photos · your furniture</span>
+      <Button variant="outline" onClick={async () => {
+        try { await viewer.current?.download(); }
+        catch { setError('Export failed. Please try again.'); }
+      }}><Download/><span>Export for Blender</span></Button>
+    </header>
+
+    <section className="workspace">
+      <div ref={mount} className="viewport" aria-label="Interactive 3D house model"/>
+      {comparison && <div className="photo-overlay" aria-label="Photo comparison overlay">
+        <img src={photoUrl(comparison.id)} alt={comparison.title} style={{ opacity: opacity / 100 }}/>
+        <div className="overlay-controls">
+          <div><strong>{comparison.title}</strong><small>Visual reference · approximate view match</small></div>
+          <label>Photo <input type="range" min="0" max="100" value={opacity} onChange={e => setOpacity(Number(e.target.value))} aria-label="Photo overlay opacity"/><span>{opacity}%</span></label>
+          <Button variant="outline" aria-label="Close photo overlay" onClick={() => setComparison(null)}><X/></Button>
+        </div>
+      </div>}
+
+      <div className="toolbar">
+        <div className="segmented">
+          <Button variant={mode === 'dollhouse' ? 'default' : 'ghost'} onClick={overview}><Box/>Dollhouse</Button>
+          <Button variant={mode === 'walk' ? 'default' : 'ghost'} onClick={() => { setTour(false); enter(level ? 'lower-living' : 'living'); }}><Footprints/>Walk inside</Button>
+        </div>
+        <Button variant="outline" onClick={() => { setComparison(null); setTour(!tour); }}>{tour ? <Pause/> : <Play/>}{tour ? 'Pause tour' : 'Guided tour'}</Button>
+      </div>
+
+      <aside className="level-card">
+        <p className="eyebrow">EXPLORE THE HOUSE</p><h2>Welcome home.</h2>
+        <p className="intro">Your rooms, with the furniture<br/>from your own photographs.</p>
+        <div className="levels">{['Main level', 'Lower level'].map((name, i) =>
+          <Button key={name} variant={level === i ? 'default' : 'ghost'} onClick={() => changeLevel(i)}><Layers/><span>{name}<small>Unit {i + 1} · {i ? '822' : '1,244'} sq ft</small></span></Button>
+        )}</div>
+        <p className="eyebrow room-heading">JUMP TO A ROOM</p>
+        <nav aria-label="Rooms">{rooms.filter(r => r.level === level).map((r, i) =>
+          <Button key={r.id} variant="ghost" className={'room ' + (mode === 'walk' && selected === r.id ? 'active' : '')} onClick={() => { setTour(false); enter(r.id); }}>
+            <span className="index">0{i + 1}</span>{r.name}{photoReferences.some(p => p.roomId === r.id) ? <Camera/> : <ArrowUpRight/>}
+          </Button>
+        )}</nav>
+        <div className="reference-link"><Button variant="ghost" onClick={() => setPanel(true)}><ImageIcon/>Photo map & original plan<ArrowUpRight/></Button></div>
+      </aside>
+
+      {!comparison && <aside className="photo-card">
+        <div className="photo-card-heading"><Camera/><span>YOUR PHOTO MATCH</span></div>
+        {activePhoto ? <>
+          <button className="photo-preview" onClick={() => compare(activePhoto)} aria-label={'Compare ' + activePhoto.title}>
+            <img src={photoUrl(activePhoto.id)} alt={activePhoto.title}/><span>Overlay on model ↗</span>
+          </button>
+          <div className="photo-card-copy"><h3>{activePhoto.title}</h3><p>{activePhoto.date} · {activePhoto.confidence === 'High' ? 'Room matched' : 'Likely room match'}</p></div>
+          <div className="photo-card-nav">
+            <Button variant="ghost" aria-label="Previous room photo" disabled={matchedPhotos.length < 2} onClick={() => setPhotoIndex((photoIndex + matchedPhotos.length - 1) % matchedPhotos.length)}><ChevronLeft/></Button>
+            <span>{photoIndex % matchedPhotos.length + 1} / {matchedPhotos.length}</span>
+            <Button variant="ghost" aria-label="Next room photo" disabled={matchedPhotos.length < 2} onClick={() => setPhotoIndex((photoIndex + 1) % matchedPhotos.length)}><ChevronRight/></Button>
+          </div>
+        </> : <div className="photo-card-copy"><h3>{roomName}</h3><p>No photo confidently assigned yet. This room still uses approximate staging.</p><Button variant="link" onClick={() => setPanel(true)}>See unplaced references</Button></div>}
+      </aside>}
+
+      {level === 0 && <div className="furniture-switch">
+        <Sofa/><Button variant={furniture === 'personal' ? 'default' : 'ghost'} onClick={() => chooseFurniture('personal')}>Your furniture</Button>
+        <Button variant={furniture === 'staging' ? 'default' : 'ghost'} onClick={() => chooseFurniture('staging')}>Original staging</Button>
+      </div>}
+      <div className="caption">
+        <span className="eyebrow">{mode === 'walk' ? 'INSIDE THE HOUSE' : 'OPEN ROOF · EXPLORATION VIEW'}</span>
+        <h2>{mode === 'walk' ? roomName : level ? 'The lower level' : 'The main level'}</h2>
+        <p>{mode === 'walk' ? 'Drag to look · WASD or arrow keys to move' : 'Drag to orbit · scroll to zoom · right-drag to pan'}</p>
+      </div>
+      {mode === 'walk' && <div className="walk-controls">{[['↶', 'left'], ['↑', 'forward'], ['↓', 'back'], ['↷', 'right']].map(([label, dir]) =>
+        <Button key={dir} variant="outline" aria-label={dir} onPointerDown={() => viewer.current?.move(dir, true)} onPointerUp={() => viewer.current?.move(dir, false)} onPointerLeave={() => viewer.current?.move(dir, false)}>{label}</Button>
+      )}</div>}
+      {error && <div role="alert" className="error">{error}<a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer">Open original plan</a></div>}
+    </section>
+
+    <footer><span>● Furniture informed by your Apple Photos</span><span>Dimensions & photo alignment approximate</span><Button variant="link" onClick={() => setPanel(true)}>Photo map<ArrowUpRight/></Button></footer>
+
+    {panel && <div className="modal-backdrop" onClick={() => setPanel(false)}>
+      <section className="reference-panel" role="dialog" aria-modal="true" aria-label="Photo map and model references" onClick={e => e.stopPropagation()}>
+        <Button autoFocus className="close" variant="outline" aria-label="Close references" onClick={() => setPanel(false)}><X/></Button>
+        <p className="eyebrow">YOUR HOUSE, THROUGH YOUR PHOTOS</p><h2>Your photos, mapped to rooms.</h2>
+        <p>Ten selected photos from March–August 2026 connect the model to your actual furniture. The living room, dining room and kitchen are strong matches. The front office is a likely match; the bedroom, garden and handwritten sketch remain unassigned to a specific modeled room.</p>
+        <p>The 3D furniture captures visible shape, color and placement. Sizes and camera angles are estimated; photo overlays are visual references, not a calibrated 3D scan. Older and newer views are dated so changes in furniture remain visible.</p>
+        <div className="mapped-photos">{photoReferences.map(photo =>
+          <article key={photo.id} className="mapped-photo">
+            <a href={photoUrl(photo.id)} target="_blank" rel="noreferrer"><img loading="lazy" src={photoUrl(photo.id)} alt={photo.title}/></a>
+            <div className="mapped-photo-content"><span className={'match-label ' + (photo.confidence === 'Unplaced' ? 'unplaced' : '')}>{photo.confidence === 'Unplaced' ? 'Position unconfirmed' : photo.confidence + ' confidence'} · {photo.date}</span>
+              <h3>{photo.title}</h3><p>{photo.evidence}</p>
+              {photo.furniture.length > 0 && <p className="furniture-list">{photo.furniture.join(' · ')}</p>}
+              {photo.roomId && <Button variant="outline" onClick={() => compare(photo)}><Camera/>Show in room<ArrowUpRight/></Button>}
+            </div>
+          </article>
+        )}</div>
+        <h2>The original floor outline.</h2>
+        <p>Exterior dimensions come from the February 2026 appraisal. Interior walls, openings, heights and alignment between floors remain approximate. Unconfirmed photos have not been used to relocate a bedroom or change measured dimensions.</p>
+        <a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer"><img className="plan" loading="lazy" src="/house/references/floor-plan.jpg" alt="Appraisal sketch of both levels"/></a>
+        <p>Export for Blender includes the selected furniture layer, with both levels in meters.</p>
+        <Button onClick={() => setPanel(false)}>Back to the house</Button>
+      </section>
+    </div>}
+  </main>;
 }

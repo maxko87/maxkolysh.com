@@ -1,14 +1,16 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
+import {addPersonalFurniture} from './personalFurniture';
 const F=.3048;
 export const rooms=[
 {id:'living',name:'Living room',level:0,x:20,z:55},
 {id:'dining',name:'Dining room',level:0,x:22,z:44},
 {id:'kitchen',name:'Kitchen & nook',level:0,x:14,z:16},
-{id:'front-bed',name:'Front bedroom',level:0,x:9,z:54},
+{id:'front-bed',name:'Front office',level:0,x:8,z:51},
 {id:'rear-bed',name:'Rear bedroom',level:0,x:9,z:29},
 {id:'side-bed',name:'Side bedroom',level:0,x:16,z:31},
+{id:'hallway',name:'Main hallway',level:0,x:12.2,z:31},
 {id:'lower-living',name:'Living & dining',level:1,x:12,z:39},
 {id:'lower-kitchen',name:'Kitchen',level:1,x:17,z:29},
 {id:'lower-bed',name:'Front bedroom',level:1,x:16,z:55},
@@ -44,8 +46,10 @@ export function createHouseViewer(container:HTMLDivElement){
  function bath(g:T.Object3D,x:number,z:number,w:number,d:number){box(g,'Bathroom tile',x,.04,z,w,.08,d,stone);box(g,'Vanity',x+w/2-1,1.4,z-d/2+1.3,1.6,2.8,2.2,sage);box(g,'Basin',x+w/2-1,2.9,z-d/2+1.3,1.8,.17,2.4,trim);box(g,'Shower tray',x,.16,z+d/2-1.6,w-.3,.3,3,trim);box(g,'Shower glass',x,3.4,z+d/2-3,w-.3,6.5,.08,glass);cyl(g,x-w/2+1.2,.7,z-d/2+1.5,.65,1.4,trim);}
  groups.forEach((g,i)=>{slab(g,outlines[i],wood);for(let x=.25;x<25;x+=.48)for(let z=.6;z<61;z+=5)if(inside(x,z,outlines[i])&&inside(x,z+4.8,outlines[i]))box(g,'Floor seam',x,.008,z+2.4,.014,.006,4.8,walnut);outlines[i].forEach((p,k)=>{const q=outlines[i][(k+1)%outlines[i].length];wall(i,(p[0]+q[0])/2,(p[1]+q[1])/2,Math.max(.35,Math.abs(p[0]-q[0])),Math.max(.35,Math.abs(p[1]-q[1])));});});
  wall(0,10.7,47,.3,22,52);wall(0,10.7,28,.3,16,27);wall(0,13.8,27.5,.3,15,28);wall(0,5.35,48,10.7,.3,8.5);wall(0,7.3,40,6.6,.3,8.5);wall(0,7.3,32,6.6,.3,8.5);wall(0,19.4,35,11.2,.3,15.6);wall(0,14.5,20,21,.3,12.1);
- bed(groups[0],5,53.5);bed(groups[0],5.2,25);bed(groups[0],19.8,26.2);bath(groups[0],5.4,44,10.2,7.5);bath(groups[0],7.3,36,6.2,7.4);
- rug(groups[0],19.1,53.3,7.4,9);sofa(groups[0],15.3,53);box(groups[0],'Coffee table',19.2,1.35,52,2.7,.3,3.3,stone);box(groups[0],'Table plinth',19.2,.7,52,1.5,1.3,2,stone);plant(groups[0],23,58.5);plant(groups[0],23,38);dining(groups[0],19.5,40.6);kitchen(groups[0],16,1.3,9.2,9);dining(groups[0],7.4,12.5);
+ const staging=new T.Group();staging.name='Appraisal-style staging';groups[0].add(staging);
+ bed(staging,5,53.5);bed(groups[0],5.2,25);bed(groups[0],19.8,26.2);bath(groups[0],5.4,44,10.2,7.5);bath(groups[0],7.3,36,6.2,7.4);
+ rug(staging,19.1,53.3,7.4,9);sofa(staging,15.3,53);box(staging,'Coffee table',19.2,1.35,52,2.7,.3,3.3,stone);box(staging,'Table plinth',19.2,.7,52,1.5,1.3,2,stone);plant(staging,23,58.5);plant(staging,23,38);dining(staging,19.5,40.6);kitchen(groups[0],16,1.3,9.2,9);dining(staging,7.4,12.5);
+ const personal=addPersonalFurniture(groups[0]);staging.visible=false;
  win(0,19.7,60.7,5.6);win(0,16,.3,5.2);win(0,20.7,7,5,true);
  for(let x=14;x<25;x+=.52){const o=box(ceilings[0],'Sloped wood ceiling — inferred',x,10.2+(25-x)*.26,46.5,.51,.16,23,wood);o.rotation.z=-.255;}
  [41,53].forEach(z=>{const light=new T.PointLight(0xffd89b,30,6,2);light.position.set(19*F,8*F,z*F);groups[0].add(light);cyl(ceilings[0],19,8.8,z,.7,.55,cream);});
@@ -57,14 +61,16 @@ export function createHouseViewer(container:HTMLDivElement){
  function setLevel(i:number){active=i;groups.forEach((g,j)=>g.visible=i===j);overview();}
  function look(){camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
  function visit(id:string){const r=rooms.find(v=>v.id===id);if(!r)return;active=r.level;groups.forEach((g,j)=>g.visible=j===active);walking=true;orbit.enabled=false;viewWalls(true);yaw=0;pitch=0;camera.fov=72;camera.updateProjectionMatrix();camera.position.set(r.x*F,5.35*F,r.z*F);look();}
+ function setFurniture(kind:'personal'|'staging'){personal.visible=kind==='personal';staging.visible=kind==='staging';}
+ function matchPhoto(roomId:string,view:{x:number;z:number;yaw:number;pitch:number;fov:number}){visit(roomId);camera.position.set(view.x*F,5.35*F,view.z*F);yaw=view.yaw;pitch=view.pitch;camera.fov=view.fov;camera.updateProjectionMatrix();look();}
  function move(dir:string,on:boolean){if(on)pressed.add(dir);else pressed.delete(dir);}
  const keys:Record<string,string>={KeyW:'forward',ArrowUp:'forward',KeyS:'back',ArrowDown:'back',KeyA:'strafe-left',KeyD:'strafe-right',ArrowLeft:'left',ArrowRight:'right'};
- const keydown=(e:KeyboardEvent)=>{if(walking&&keys[e.code]){e.preventDefault();move(keys[e.code],true);}},keyup=(e:KeyboardEvent)=>move(keys[e.code],false),clear=()=>{pressed.clear();dragging=false;};
+ const keydown=(e:KeyboardEvent)=>{if(e.target instanceof HTMLElement&&e.target.closest('input,textarea,select,[contenteditable="true"],[role="dialog"]'))return;if(walking&&keys[e.code]){e.preventDefault();move(keys[e.code],true);}},keyup=(e:KeyboardEvent)=>move(keys[e.code],false),clear=()=>{pressed.clear();dragging=false;};
  const down=(e:PointerEvent)=>{if(!walking)return;dragging=true;lastX=e.clientX;lastY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId);},pointer=(e:PointerEvent)=>{if(!dragging||!walking)return;yaw-=(e.clientX-lastX)*.004;pitch=T.MathUtils.clamp(pitch-(e.clientY-lastY)*.003,-1.1,1.1);lastX=e.clientX;lastY=e.clientY;look();},up=()=>dragging=false;
  renderer.domElement.addEventListener('pointerdown',down);renderer.domElement.addEventListener('pointermove',pointer);renderer.domElement.addEventListener('pointerup',up);window.addEventListener('keydown',keydown);window.addEventListener('keyup',keyup);window.addEventListener('blur',clear);
  const resize=new ResizeObserver(()=>{const w=container.clientWidth,h=container.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();});resize.observe(container);setLevel(0);let previous=performance.now();
  function allowed(x:number,z:number){return (inside(x,z,outlines[active])||(active===1&&x>4.5&&x<20.5&&z>6.5&&z<20))&&!blockers[active].some(b=>Math.abs(x-b.x)<b.w/2+.28&&Math.abs(z-b.z)<b.d/2+.28);}
  renderer.setAnimationLoop(()=>{const now=performance.now(),dt=Math.min((now-previous)/1000,.04);previous=now;if(walking){if(pressed.has('left'))yaw+=dt*1.1;if(pressed.has('right'))yaw-=dt*1.1;const f=(pressed.has('forward')?1:0)-(pressed.has('back')?1:0),s=(pressed.has('strafe-right')?1:0)-(pressed.has('strafe-left')?1:0),x=camera.position.x/F,z=camera.position.z/F,speed=dt*7,nx=x+(-Math.sin(yaw)*f+Math.cos(yaw)*s)*speed,nz=z+(-Math.cos(yaw)*f-Math.sin(yaw)*s)*speed;if(allowed(nx,z))camera.position.x=nx*F;if(allowed(camera.position.x/F,nz))camera.position.z=nz*F;look();}else orbit.update();renderer.render(scene,camera);});
  async function download(){const saved=groups.map(g=>g.visible);groups.forEach((g,i)=>{g.visible=true;g.position.y=i?-10.5*F:0;walls[i].forEach(o=>{o.scale.y=1;o.position.y=o.userData.fullHeight/2*F;});ceilings[i].visible=true;});try{const glb=await new GLTFExporter().parseAsync(model,{binary:true});const url=URL.createObjectURL(new Blob([glb as ArrayBuffer],{type:'model/gltf-binary'}));const a=document.createElement('a');a.href=url;a.download='716-douglass-first-model.glb';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}finally{groups.forEach((g,i)=>{g.position.y=0;g.visible=saved[i];});viewWalls(walking);}}
- return {setLevel,overview,visit,move,download,dispose(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();window.removeEventListener('keydown',keydown);window.removeEventListener('keyup',keyup);window.removeEventListener('blur',clear);scene.traverse(o=>{if(o instanceof T.Mesh){o.geometry.dispose();(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});renderer.dispose();renderer.domElement.remove();}};
+ return {setLevel,overview,visit,move,download,setFurniture,matchPhoto,dispose(){renderer.setAnimationLoop(null);resize.disconnect();orbit.dispose();window.removeEventListener('keydown',keydown);window.removeEventListener('keyup',keyup);window.removeEventListener('blur',clear);scene.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.Line){o.geometry.dispose();(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());}});renderer.dispose();renderer.domElement.remove();}};
 }

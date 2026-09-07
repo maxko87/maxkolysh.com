@@ -1,0 +1,44 @@
+.level-card { max-height: calc(100% - 45px); overflow-y: auto; }
+.photo-card { position: absolute; right: 25px; top: 85px; width: 235px; border: 1px solid #ffffffad; border-radius: 13px; overflow: hidden; background: #fafaf4ed; box-shadow: 0 8px 30px #233d2510; backdrop-filter: blur(10px); }
+.photo-card-heading { display: flex; align-items: center; gap: 8px; padding: 13px 14px; font-size: 9px; letter-spacing: .12em; color: #70836b; }
+.photo-card-heading svg { width: 14px; height: 14px; }
+.photo-preview { display: block; position: relative; width: 100%; border: 0; padding: 0; background: #dedfd5; }
+.photo-preview img { width: 100%; height: 160px; object-fit: cover; display: block; }
+.photo-preview span { position: absolute; bottom: 8px; left: 8px; padding: 5px 8px; background: #fcfaf1ed; border-radius: 5px; font-size: 9px; color: #364b3b; }
+.photo-card-copy { padding: 13px 14px 3px; }
+.photo-card-copy h3 { font-size: 12px; line-height: 1.5; font-weight: 500; }
+.photo-card-copy p { font-size: 10px; color: #7f897b; margin: 5px 0; line-height: 1.6; }
+.photo-card-nav { display: flex; justify-content: space-between; align-items: center; padding: 0 5px 5px; }
+.photo-card-nav span { font-size: 10px; color: #7c8777; }
+.furniture-switch { position: absolute; left: 310px; bottom: 128px; display: flex; gap: 4px; align-items: center; padding: 4px 5px; background: #fafaf5e8; border: 1px solid #d9ddd4; border-radius: 10px; }
+.furniture-switch > svg { width: 15px; height: 15px; margin: 0 7px; color: #6d8065; }
+.furniture-switch button { font-size: 10px; height: 29px; }
+.photo-overlay { position: absolute; left: 292px; right: 20px; top: 78px; bottom: 180px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.photo-overlay > img { width: 100%; height: 100%; object-fit: contain; }
+.overlay-controls { pointer-events: auto; position: absolute; left: 0; right: 0; bottom: -49px; display: flex; align-items: center; gap: 12px; background: #f9f9f1ed; padding: 9px 12px; border-radius: 9px; box-shadow: 0 4px 20px #1b33211c; }
+.overlay-controls strong { display: block; font-size: 11px; font-weight: 500; }
+.overlay-controls small { display: block; font-size: 9px; color: #77836d; margin-top: 3px; }
+.overlay-controls label { display: flex; align-items: center; gap: 7px; font-size: 10px; margin-left: auto; }
+.overlay-controls input { width: 100px; accent-color: #334c3f; }
+.overlay-controls label span { width: 30px; }
+.mapped-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 25px 0 35px; }
+.mapped-photo { border: 1px solid #dce1d6; border-radius: 10px; overflow: hidden; background: #fffdf7; }
+.mapped-photo > a { display: block; background: #e9e7df; }
+.mapped-photo img { width: 100%; height: 240px; object-fit: contain; display: block; }
+.mapped-photo-content { padding: 17px; }
+.match-label { font-size: 9px; color: #627c59; }
+.match-label.unplaced { color: #927649; }
+.mapped-photo h3 { font: normal 20px Georgia,serif; margin: 9px 0; }
+.mapped-photo p { font-size: 11px!important; margin: 9px 0; }
+.mapped-photo .furniture-list { color: #424e3b!important; }
+.mapped-photo button { font-size: 11px; margin-top: 8px; }
+@media(max-width:1100px) { .photo-card { width: 190px; right: 18px; }.photo-preview img { height: 135px; } }
+@media(max-width:800px) { .photo-card { width: 150px; }.photo-card-heading { padding: 9px; font-size: 8px; gap: 5px; }.photo-preview img { height: 112px; }.photo-card-copy { padding: 8px 10px 0; }.photo-card-copy h3 { font-size: 10px; }.photo-card-copy p { font-size: 9px; }.overlay-controls { flex-wrap: wrap; }.overlay-controls label { margin-left: 0; } }
+@media(max-width:700px) {
+ .level-card { max-height: calc(100% - 225px); }.photo-card { top: 80px; right: 12px; width: 145px; }
+ .photo-card-heading { font-size: 7px; }.photo-card-copy p { line-height: 1.35; }.photo-card-nav button { height: 26px; }.photo-card-nav { padding-bottom: 2px; }
+ .furniture-switch { left: 16px; bottom: 123px; }.furniture-switch button { font-size: 9px; }.furniture-switch > svg { margin: 0 2px; }
+ .photo-overlay { left: 185px; right: 9px; top: 78px; bottom: 222px; }.overlay-controls { left: auto; width: 170px; bottom: -72px; padding: 7px; gap: 5px; }.overlay-controls strong { font-size: 9px; }.overlay-controls small { font-size: 8px; }.overlay-controls input { width: 60px; }.overlay-controls button { height: 25px; padding: 0 5px; }
+ .mapped-photos { grid-template-columns: 1fr; }.mapped-photo img { height: 260px; }.mapped-photo-content { padding: 14px; }
+ .walk-controls { bottom: 78px; }.caption p { max-width: 200px; }
+}
