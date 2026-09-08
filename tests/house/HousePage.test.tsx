@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import HousePage from '../../src/house/HousePage';
 import { photoReferences } from '../../src/house/photoReferences';
-import { rooms } from '../../src/house/model';
+import { overviewFov, rooms } from '../../src/house/model';
+import { compactQuery } from '../../src/house/useCompactLayout';
 
 const viewer = vi.hoisted(() => ({
   dispose: vi.fn(), visit: vi.fn(), overview: vi.fn(), setLevel: vi.fn(),
@@ -14,7 +15,109 @@ vi.mock('../../src/house/model', async importOriginal => {
   return { ...original, createHouseViewer: () => viewer };
 });
 beforeEach(() => vi.clearAllMocks());
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
+describe('House on a phone', () => {
+  function compactScreen() {
+    let notify = () => {};
+    const query = { matches: true, addEventListener: vi.fn((_event, callback: () => void) => { notify = callback; }), removeEventListener: vi.fn() };
+    const matchMedia = vi.fn(() => query);
+    vi.stubGlobal('matchMedia', matchMedia);
+    return { query, matchMedia, resize: (matches: boolean) => act(() => { query.matches = matches; notify(); }) };
+  }
+
+  it('starts with an unobstructed model and closes the room sheet after a room selection', () => {
+    const device = compactScreen();
+    render(<HousePage />);
+    expect(device.matchMedia).toHaveBeenCalledWith(compactQuery);
+    expect(screen.queryByRole('navigation', {name: 'Rooms'})).not.toBeInTheDocument();
+    const toggle = screen.getByRole('button', {name: /Rooms & options/});
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(toggle);
+    expect(screen.getByRole('dialog', {name: 'Rooms & options'})).toHaveFocus();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(false);
+    fireEvent.click(screen.getByRole('button', {name: /Front office/}));
+    expect(viewer.visit).toHaveBeenLastCalledWith('front-bed');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(toggle).toHaveFocus();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(true);
+    expect(screen.getByRole('button', {name: 'strafe-left'})).toBeInTheDocument();
+  });
+
+  it('keeps both floors, furniture layers and reference photos available inside the sheet', () => {
+    compactScreen();
+    render(<HousePage />);
+    fireEvent.click(screen.getByRole('button', {name: /Rooms & options/}));
+    fireEvent.click(screen.getByRole('button', {name: /Lower level/}));
+    expect(viewer.setLevel).toHaveBeenLastCalledWith(1);
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Provisional lower level'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', {name: 'Original staging'}));
+    expect(viewer.setFurniture).toHaveBeenLastCalledWith('staging');
+    fireEvent.click(screen.getByRole('button', {name: /Photo map & original plan/}));
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(screen.getByRole('dialog', {name: 'Photo map and model references'})).toBeInTheDocument();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(false);
+  });
+
+  it('traps sheet focus, dismisses on Escape, and restores the desktop controls on resize', () => {
+    const device = compactScreen();
+    const {unmount} = render(<HousePage />);
+    fireEvent.click(screen.getByRole('button', {name: /Rooms & options/}));
+    fireEvent.keyDown(window, {key: 'Tab'});
+    expect(screen.getByRole('button', {name: 'Close rooms and options'})).toHaveFocus();
+    fireEvent.keyDown(window, {key: 'Escape'});
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(true);
+    device.resize(false);
+    expect(screen.queryByRole('button', {name: /Rooms & options/})).not.toBeInTheDocument();
+    expect(screen.getByRole('navigation', {name: 'Rooms'})).toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Your furniture'})).toBeInTheDocument();
+    unmount();
+    expect(device.query.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+  });
+
+  it('releases touch movement on cancellation and capture loss, and supports a keyboard', () => {
+    compactScreen();
+    render(<HousePage />);
+    fireEvent.click(screen.getByRole('button', {name: 'Walk inside'}));
+    const forward = screen.getByRole('button', {name: 'forward'});
+    fireEvent.pointerDown(forward, {pointerId: 1});
+    expect(viewer.move).toHaveBeenLastCalledWith('forward', true);
+    fireEvent.pointerCancel(forward, {pointerId: 1});
+    expect(viewer.move).toHaveBeenLastCalledWith('forward', false);
+    fireEvent.pointerDown(forward, {pointerId: 2});
+    fireEvent.lostPointerCapture(forward, {pointerId: 2});
+    expect(viewer.move).toHaveBeenLastCalledWith('forward', false);
+    fireEvent.keyDown(forward, {key: ' '});
+    expect(viewer.move).toHaveBeenLastCalledWith('forward', true);
+    fireEvent.keyUp(forward, {key: ' '});
+    expect(viewer.move).toHaveBeenLastCalledWith('forward', false);
+  });
+
+  it('opens the photo walk from the compact toolbar and returns to the model', () => {
+    compactScreen();
+    render(<HousePage />);
+    fireEvent.click(screen.getByRole('button', {name: 'Photo walk'}));
+    expect(screen.getByRole('dialog', {name: 'Photo walk'})).toBeInTheDocument();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(false);
+    fireEvent.click(screen.getByRole('button', {name: 'Next photo walk stop'}));
+    fireEvent.click(screen.getByRole('button', {name: 'Return to 3D'}));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(true);
+  });
+
+  it('preserves horizontal framing on portrait screens without changing desktop framing', () => {
+    for (const aspect of [320 / 640, 390 / 788, 768 / 968]) {
+      const vertical = overviewFov(aspect) * Math.PI / 180;
+      const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * aspect) * 180 / Math.PI;
+      expect(horizontal).toBeCloseTo(42);
+      expect(overviewFov(aspect)).toBeGreaterThan(42);
+    }
+    expect(overviewFov(844 / 334)).toBeCloseTo(42);
+    expect(overviewFov(0)).toBeLessThan(180);
+  });
+});
 
 describe('House photo references', () => {
   it('only assigns references to existing rooms and keeps uncertain locations unplaced', () => {

@@ -1,0 +1,114 @@
+.explore-panel { display: contents; }
+
+/* Match useCompactLayout.ts. Keep the desktop model and panels unchanged. */
+@media (max-width: 900px), (max-height: 500px) and (pointer: coarse) {
+  .house-app { height: 100dvh; min-height: 0; }
+  .house-app .house-button { min-height: 44px; }
+  .topbar { height: calc(56px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left)); }
+  .brand { gap: 9px; }
+  .brand h1 { font-size: 22px; }
+  .brand p, .brand > svg, .revision, .topbar button span, .house-app > footer { display: none; }
+  .topbar > button { width: 44px; }
+  .toolbar { z-index: 2; top: 8px; left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); transform: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .toolbar .segmented { display: contents; }
+  .toolbar .house-button { height: 52px; min-width: 0; padding: 5px 2px; flex-direction: column; gap: 4px; font-size: 12px; border: 1px solid var(--border); box-shadow: 0 2px 10px #233d2510; }
+  .toolbar .house-button[data-variant="ghost"] { background: #fafaf6ed; }
+  .toolbar .house-button svg { width: 18px; height: 18px; }
+  .mobile-room-toggle { position: absolute; z-index: 5; left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: auto; min-height: 56px; display: flex; align-items: center; gap: 12px; padding: 9px 14px; color: var(--foreground); background: #fafaf6f5; border: 1px solid #d3dacd; border-radius: 14px; box-shadow: 0 4px 25px #233d2520; text-align: left; }
+  .mobile-room-toggle span { flex: 1; min-width: 0; }
+  .mobile-room-toggle strong { display: block; font-size: 14px; font-weight: 600; }
+  .mobile-room-toggle small { display: block; margin-top: 4px; color: #68745f; font-size: 12px; }
+  .mobile-room-toggle > svg { width: 21px; height: 21px; flex: none; }
+  .mobile-room-toggle > svg:last-child { transform: rotate(-90deg); transition: transform .15s; }
+  .mobile-room-toggle[aria-expanded="true"] > svg:last-child { transform: rotate(90deg); }
+  .explore-backdrop { position: absolute; inset: 0; z-index: 3; background: #17241a55; }
+  .explore-panel { display: block; position: absolute; z-index: 4; left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right)); bottom: calc(80px + env(safe-area-inset-bottom)); max-height: calc(100% - 90px - env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; background: #fafaf4; border: 1px solid #e1e5dc; border-radius: 18px; box-shadow: 0 10px 50px #13281930; padding: 0 12px 12px; scroll-padding: 66px 0 12px; }
+  .explore-header { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 0; background: #fafaf4; border-bottom: 1px solid var(--border); }
+  .explore-header h2 { font: normal 23px Georgia, serif; }
+  .explore-header button { width: 44px; }
+  .level-card { position: static; width: 100%; max-height: none; overflow: visible; padding: 12px 0; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; background: transparent; }
+  .level-card > h2, .level-card > .eyebrow:first-child, .level-card .intro { display: none; }
+  .levels { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .levels button { min-width: 0; height: 60px; padding: 8px; gap: 8px; }
+  .levels span { font-size: 13px; }
+  .levels small { font-size: 10px; }
+  .room-heading { margin: 18px 6px 6px !important; font-size: 10px; }
+  .level-card nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .level-card .room { height: auto; min-height: 48px; min-width: 0; padding: 8px; gap: 7px; font-size: 13px; white-space: normal; text-align: left; }
+  .room .index { display: none; }
+  .room svg { flex: none; }
+  .reference-link { margin-top: 12px; padding-top: 6px; }
+  .reference-link button { font-size: 12px; min-height: 44px; }
+  .furniture-switch { position: static; margin: 0 0 12px; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; }
+  .furniture-switch > svg { display: none; }
+  .furniture-switch .house-button { min-width: 0; padding: 7px 5px; font-size: 12px; white-space: normal; height: auto; }
+  .photo-card { position: static; width: 100%; box-shadow: none; backdrop-filter: none; border: 1px solid var(--border); }
+  .photo-card-heading { font-size: 10px; padding: 12px; }
+  .photo-preview img { height: 180px; }
+  .photo-preview span { font-size: 12px; padding: 8px; }
+  .photo-card-copy { padding: 12px 12px 0; }
+  .photo-card-copy h3 { font-size: 14px; }
+  .photo-card-copy p { font-size: 12px; line-height: 1.5; }
+  .photo-walk-launch { font-size: 13px; margin: 8px 12px; padding: 0 12px; }
+  .photo-card-nav { padding: 0 8px 8px; }
+  .photo-card-nav button { width: 44px; }
+  .photo-card-nav span { font-size: 12px; }
+  .caption { left: max(14px, env(safe-area-inset-left)); bottom: calc(84px + env(safe-area-inset-bottom)); max-width: calc(100% - 30px); padding: 8px; border-radius: 10px; background: #f9f8f3d9; }
+  .caption h2 { font-size: 22px; margin: 5px 0; }
+  .caption p { font-size: 12px; line-height: 1.5; max-width: none; }
+  .caption .eyebrow { font-size: 8px; letter-spacing: .1em; }
+  .workspace:has(.walk-controls) .caption { max-width: calc(100% - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)); }
+  .workspace:has(.walk-controls) .caption h2 { font-size: 19px; }
+  .walk-controls { right: max(12px, env(safe-area-inset-right)); bottom: calc(84px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(3, 48px); gap: 6px; }
+  .walk-controls button { width: 48px; height: 48px; font-size: 24px; user-select: none; -webkit-user-select: none; }
+  .room-photo-marker { width: 44px; height: 44px; }
+  .workspace:has(.explore-backdrop) > .caption, .workspace:has(.explore-backdrop) > .walk-controls { visibility: hidden; }
+  .workspace:has(.photo-overlay) > :is(.toolbar, .mobile-room-toggle, .caption, .walk-controls) { visibility: hidden; }
+  .photo-overlay { inset: 8px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; z-index: 6; }
+  .photo-overlay > img { min-height: 0; }
+  .overlay-controls { position: static; width: auto; display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 4px 10px; padding: 10px 12px; }
+  .overlay-controls > div { grid-column: 1; }
+  .overlay-controls strong { font-size: 13px; }
+  .overlay-controls small { font-size: 11px; line-height: 1.5; }
+  .overlay-controls label { grid-column: 1; margin: 0; font-size: 12px; min-width: 0; min-height: 44px; }
+  .overlay-controls input { width: 100%; min-width: 0; height: 44px; }
+  .overlay-controls > button { grid-column: 2; grid-row: 1 / 3; align-self: start; width: 44px; }
+  .photo-walk { position: fixed; inset: 0; z-index: 100; display: grid; grid-template-areas: 'header' 'image' 'tools' 'navigation'; grid-template-rows: auto minmax(0, 1fr) auto auto; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  .photo-walk-image { grid-area: image; position: relative; inset: auto; min-width: 0; min-height: 0; }
+  .photo-walk-header { grid-area: header; position: static; padding: 10px 12px; gap: 8px; background: #101b18e8; }
+  .photo-walk-header > div { min-width: 0; }
+  .photo-walk-header h2 { font-size: 20px; margin: 5px 0; }
+  .photo-walk-header span { font-size: 10px; letter-spacing: .03em; }
+  .photo-walk-header p { max-width: none; font-size: 10px; line-height: 1.5; }
+  .photo-walk-header > button { width: 44px; }
+  .photo-walk-header > button span { display: none; }
+  .photo-walk-tools { grid-area: tools; position: static; max-width: none; border-radius: 0; padding: 8px 12px; gap: 5px; flex-wrap: nowrap; background: #17261ff2; font-size: 12px; }
+  .photo-walk .house-button { min-height: 44px; }
+  .photo-walk-tools > button { width: 44px; padding: 0; }
+  .photo-walk-tools label { width: auto; min-width: 0; flex: 1; flex-direction: column; gap: 0; font-size: 10px; margin: 0 0 0 5px; }
+  .photo-walk-tools input { width: 100%; min-width: 0; height: 30px; }
+  .photo-walk-bottom { grid-area: navigation; position: static; min-width: 0; padding: 4px 12px 8px; background: #101b18f2; }
+  .photo-walk-navigation { gap: 8px; margin: 0 auto 6px; }
+  .photo-walk-navigation p { max-width: none; font-size: 10px; line-height: 1.4; margin-top: 3px; }
+  .photo-walk-navigation button { min-width: 44px; padding: 0 10px; }
+  .photo-walk-navigation button span { display: none; }
+  .photo-walk-rooms { gap: 6px; overscroll-behavior-x: contain; }
+  .photo-walk-rooms button { min-height: 44px; padding: 8px 12px; font-size: 12px; }
+  .modal-backdrop { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  .reference-panel { height: 100%; max-height: 100%; border-radius: 0; padding: 18px; overscroll-behavior: contain; }
+  .reference-panel .close { position: sticky; float: right; top: 0; right: 0; z-index: 1; width: 44px; }
+  .reference-panel > .eyebrow { padding-top: 12px; max-width: calc(100% - 60px); }
+  .reference-panel h2 { font-size: 26px; clear: both; }
+  .mapped-photos { grid-template-columns: 1fr; }
+  .error { left: 12px; right: 12px; top: 75px; max-width: none; font-size: 14px; }
+}
+
+@media (max-height: 500px) and (max-width: 900px), (max-height: 500px) and (pointer: coarse) {
+  .photo-walk { grid-template-areas: 'header header' 'image tools' 'image navigation'; grid-template-columns: minmax(0, 1fr) 260px; grid-template-rows: auto auto minmax(0, 1fr); }
+  .photo-walk-header h2 { font-size: 17px; }
+  .photo-walk-header p { display: none; }
+  .photo-walk-tools { padding: 6px; gap: 3px; }
+  .photo-walk-tools > button { width: 40px; }
+  .photo-walk-bottom { overflow-y: auto; padding: 4px 8px; }
+  .caption .eyebrow { display: none; }
+}

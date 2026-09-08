@@ -56,7 +56,7 @@ export function PhotoWalk({ photo, onSelect, onClose }: {
       if (!drag.current) return;
       const rect=e.currentTarget.getBoundingClientRect(), limitX=rect.width*(zoom-1)/2,limitY=rect.height*(zoom-1)/2;
       setPan({x:Math.max(-limitX,Math.min(limitX,drag.current.px+e.clientX-drag.current.x)),y:Math.max(-limitY,Math.min(limitY,drag.current.py+e.clientY-drag.current.y))});
-    }} onPointerUp={() => {drag.current=null;}} onPointerCancel={() => {drag.current=null;}}>
+    }} onPointerUp={() => {drag.current=null;}} onPointerCancel={() => {drag.current=null;}} onLostPointerCapture={() => {drag.current=null;}}>
       {!failed && <img key={photo.id} src={photoUrl(photo.id)} alt={photo.title} draggable={false}
         onLoad={() => setLoaded(true)} onError={() => setFailed(true)}
         style={{opacity:loaded ? opacity/100 : 0,transform:`translate(${pan.x}px, ${pan.y}px) scale(${zoom})`}}/>}

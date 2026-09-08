@@ -4,12 +4,17 @@ import { Box, Footprints, Layers, ArrowUpRight, Download, ImageIcon, X, Play, Pa
 import { createHouseViewer, rooms, type HouseViewer } from './model';
 import { photoReferences, photoUrl, photoWalkStops, type PhotoReference } from './photoReferences';
 import { PhotoWalk } from './PhotoWalk';
+import { useCompactLayout } from './useCompactLayout';
 
 const firstRoomPhoto=(id:string,kind:'personal'|'staging')=>photoWalkStops.find(p=>p.roomId===id&&(p.source==='listing')===(kind==='staging'))??photoWalkStops.find(p=>p.roomId===id);
 
 export default function HousePage() {
   const mount = useRef<HTMLDivElement>(null);
   const viewer = useRef<HouseViewer | null>(null);
+  const compact = useCompactLayout();
+  const [roomsOpen, setRoomsOpen] = useState(false);
+  const drawer = useRef<HTMLDivElement>(null);
+  const roomToggle = useRef<HTMLButtonElement>(null);
   const [level, setLevel] = useState(0);
   const [mode, setMode] = useState('dollhouse');
   const [selected, setSelected] = useState('living');
@@ -32,18 +37,36 @@ export default function HousePage() {
     return () => viewer.current?.dispose();
   }, []);
 
-  useEffect(() => { viewer.current?.setInputEnabled(!walkPhoto && !comparison && !panel); }, [walkPhoto, comparison, panel]);
+  useEffect(() => { viewer.current?.setInputEnabled(!walkPhoto && !comparison && !panel && !(compact && roomsOpen)); }, [walkPhoto, comparison, panel, compact, roomsOpen]);
+
+  useEffect(() => {
+    if (!compact || !roomsOpen) return;
+    setTour(false);
+    drawer.current?.focus();
+    const key = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setRoomsOpen(false);
+      if (event.key !== 'Tab') return;
+      const controls = [...(drawer.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input, a') ?? [])];
+      const first = controls[0], last = controls.at(-1);
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === drawer.current)) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === drawer.current)) { event.preventDefault(); first?.focus(); }
+    };
+    window.addEventListener('keydown', key);
+    return () => { window.removeEventListener('keydown', key); roomToggle.current?.focus(); };
+  }, [compact, roomsOpen]);
+
+  function showReferences() { setRoomsOpen(false); setPanel(true); }
 
   function openPhotoWalk(photo: PhotoReference) {
     compare(photo); setComparison(null); setWalkPhoto(photo);
   }
 
   function enter(id: string) {
-    setSelected(id); setMode('walk'); setPhotoIndex(0); setComparison(null);
+    setSelected(id); setMode('walk'); setPhotoIndex(0); setComparison(null); setRoomsOpen(false);
     viewer.current?.visit(id);
   }
   function overview() {
-    setMode('dollhouse'); setTour(false); setComparison(null);
+    setMode('dollhouse'); setTour(false); setComparison(null); setRoomsOpen(false);
     viewer.current?.overview();
   }
   function changeLevel(i: number) {
@@ -55,7 +78,7 @@ export default function HousePage() {
     if (!photo.roomId) return;
     const room = rooms.find(r => r.id === photo.roomId);
     if (!room) return;
-    setTour(false); setPanel(false); setSelected(room.id); setLevel(room.level);
+    setTour(false); setPanel(false); setRoomsOpen(false); setSelected(room.id); setLevel(room.level);
     setMode('walk'); setComparison(photo);
     const kind=photo.source==='listing'?'staging':'personal';
     chooseFurniture(kind);
@@ -89,12 +112,16 @@ export default function HousePage() {
   const matchedPhotos = photoReferences.filter(p => p.roomId === selected && (p.source==='listing')===(furniture==='staging'));
   const activePhoto = matchedPhotos[photoIndex % Math.max(1, matchedPhotos.length)];
   const roomName = rooms.find(r => r.id === selected)?.name;
+  const furnitureControls = <div className="furniture-switch">
+    <Sofa/><Button variant={furniture === 'personal' ? 'default' : 'ghost'} onClick={() => {setComparison(null);chooseFurniture('personal');}}>{level?'Provisional lower level':'Your furniture'}</Button>
+    <Button variant={furniture === 'staging' ? 'default' : 'ghost'} onClick={() => {setComparison(null);chooseFurniture('staging');}}>Original staging</Button>
+  </div>;
 
   return <main className="house-app">
     <header className="topbar">
       <div className="brand"><Box/><div><h1>716 Douglass</h1><p>A home, in three dimensions</p></div></div>
       <span className="revision">● Updated from your September walkthrough</span>
-      <Button variant="outline" onClick={async () => {
+      <Button variant="outline" aria-label="Export for Blender" onClick={async () => {
         try { await viewer.current?.download(); }
         catch { setError('Export failed. Please try again.'); }
       }}><Download/><span>Export for Blender</span></Button>
@@ -113,13 +140,16 @@ export default function HousePage() {
 
       <div className="toolbar">
         <div className="segmented">
-          <Button variant={mode === 'dollhouse' ? 'default' : 'ghost'} onClick={overview}><Box/>Dollhouse</Button>
-          <Button variant={mode === 'walk' ? 'default' : 'ghost'} onClick={() => { setTour(false); enter(level ? 'lower-living' : 'living'); }}><Footprints/>Walk inside</Button>
+          <Button aria-label="Dollhouse" variant={mode === 'dollhouse' ? 'default' : 'ghost'} onClick={overview}><Box/>{compact ? '3D' : 'Dollhouse'}</Button>
+          <Button aria-label="Walk inside" variant={mode === 'walk' ? 'default' : 'ghost'} onClick={() => { setTour(false); enter(level ? 'lower-living' : 'living'); }}><Footprints/>{compact ? 'Walk' : 'Walk inside'}</Button>
         </div>
-        <Button variant="outline" disabled={!firstRoomPhoto(selected,furniture)} onClick={() => openPhotoWalk(firstRoomPhoto(selected,furniture)!)}><Camera/>Photo walk</Button>
-        <Button variant="outline" onClick={() => { setComparison(null); setTour(!tour); }}>{tour ? <Pause/> : <Play/>}{tour ? 'Pause tour' : 'Guided tour'}</Button>
+        <Button aria-label="Photo walk" variant="outline" disabled={!firstRoomPhoto(selected,furniture)} onClick={() => openPhotoWalk(firstRoomPhoto(selected,furniture)!)}><Camera/>{compact ? 'Photos' : 'Photo walk'}</Button>
+        <Button aria-label={tour ? 'Pause tour' : 'Guided tour'} variant="outline" onClick={() => { setComparison(null); setRoomsOpen(false); setTour(!tour); }}>{tour ? <Pause/> : <Play/>}{compact ? (tour ? 'Pause' : 'Tour') : (tour ? 'Pause tour' : 'Guided tour')}</Button>
       </div>
 
+      {compact && roomsOpen && <div className="explore-backdrop" onClick={() => setRoomsOpen(false)}/>}
+      {(!compact || roomsOpen) && <div className="explore-panel" id="house-options" ref={drawer} tabIndex={compact ? -1 : undefined} role={compact ? 'dialog' : undefined} aria-modal={compact ? true : undefined} aria-label={compact ? 'Rooms & options' : undefined}>
+      {compact && <div className="explore-header"><h2>Rooms & options</h2><Button variant="ghost" aria-label="Close rooms and options" onClick={() => setRoomsOpen(false)}><X/></Button></div>}
       <aside className="level-card">
         <p className="eyebrow">EXPLORE THE HOUSE</p><h2>Welcome home.</h2>
         <p className="intro">Your plan, photos & walkthrough.<br/>Click a ◎ to enter a real photo.</p>
@@ -132,9 +162,10 @@ export default function HousePage() {
             <span className="index">0{i + 1}</span>{r.name}{photoReferences.some(p => p.roomId === r.id) ? <Camera/> : <ArrowUpRight/>}
           </Button>
         )}</nav>
-        <div className="reference-link"><Button variant="ghost" onClick={() => setPanel(true)}><ImageIcon/>Photo map & original plan<ArrowUpRight/></Button></div>
+        <div className="reference-link"><Button variant="ghost" onClick={showReferences}><ImageIcon/>Photo map & original plan<ArrowUpRight/></Button></div>
       </aside>
 
+      {compact && furnitureControls}
       {!comparison && <aside className="photo-card">
         <div className="photo-card-heading"><Camera/><span>YOUR PHOTO MATCH</span></div>
         {activePhoto ? <>
@@ -148,20 +179,19 @@ export default function HousePage() {
             <span>{photoIndex % matchedPhotos.length + 1} / {matchedPhotos.length}</span>
             <Button variant="ghost" aria-label="Next room photo" disabled={matchedPhotos.length < 2} onClick={() => setPhotoIndex((photoIndex + 1) % matchedPhotos.length)}><ChevronRight/></Button>
           </div>
-        </> : <div className="photo-card-copy"><h3>{roomName}</h3><p>No photo confidently assigned yet for {furniture==='staging'?'the original staging':'your current arrangement'}. This room remains provisional.</p><Button variant="link" onClick={() => setPanel(true)}>See references</Button></div>}
+        </> : <div className="photo-card-copy"><h3>{roomName}</h3><p>No photo confidently assigned yet for {furniture==='staging'?'the original staging':'your current arrangement'}. This room remains provisional.</p><Button variant="link" onClick={showReferences}>See references</Button></div>}
       </aside>}
+      </div>}
 
-      <div className="furniture-switch">
-        <Sofa/><Button variant={furniture === 'personal' ? 'default' : 'ghost'} onClick={() => {setComparison(null);chooseFurniture('personal');}}>{level?'Provisional lower level':'Your furniture'}</Button>
-        <Button variant={furniture === 'staging' ? 'default' : 'ghost'} onClick={() => {setComparison(null);chooseFurniture('staging');}}>Original staging</Button>
-      </div>
+      {!compact && furnitureControls}
+      {compact && <button ref={roomToggle} className="mobile-room-toggle" aria-expanded={roomsOpen} aria-controls={roomsOpen ? 'house-options' : undefined} onClick={() => setRoomsOpen(!roomsOpen)}><Layers/><span><strong>Rooms & options</strong><small>{level ? 'Lower' : 'Main'} level · {roomName}</small></span><ChevronRight/></button>}
       <div className="caption">
         <span className="eyebrow">{mode === 'walk' ? 'INSIDE THE HOUSE' : 'OPEN ROOF · EXPLORATION VIEW'}</span>
         <h2>{mode === 'walk' ? roomName : level ? 'The lower level' : 'The main level'}</h2>
-        <p>{mode === 'walk' ? 'Drag to look · WASD or arrow keys to move' : 'Drag to orbit · scroll to zoom · right-drag to pan'}</p>
+        <p>{compact ? (mode === 'walk' ? 'Drag to look · hold arrows to move' : 'Drag to rotate · pinch to zoom') : (mode === 'walk' ? 'Drag to look · WASD or arrow keys to move' : 'Drag to orbit · scroll to zoom · right-drag to pan')}</p>
       </div>
-      {mode === 'walk' && <div className="walk-controls">{[['↶', 'left'], ['↑', 'forward'], ['↓', 'back'], ['↷', 'right']].map(([label, dir]) =>
-        <Button key={dir} variant="outline" aria-label={dir} onPointerDown={() => viewer.current?.move(dir, true)} onPointerUp={() => viewer.current?.move(dir, false)} onPointerLeave={() => viewer.current?.move(dir, false)}>{label}</Button>
+      {mode === 'walk' && <div className="walk-controls">{(compact ? [['↶', 'left'], ['↑', 'forward'], ['↷', 'right'], ['←', 'strafe-left'], ['↓', 'back'], ['→', 'strafe-right']] : [['↶', 'left'], ['↑', 'forward'], ['↓', 'back'], ['↷', 'right']]).map(([label, dir]) =>
+        <Button key={dir} variant="outline" aria-label={dir} onPointerDown={e => { e.preventDefault(); e.currentTarget.setPointerCapture?.(e.pointerId); viewer.current?.move(dir, true); }} onPointerUp={() => viewer.current?.move(dir, false)} onPointerCancel={() => viewer.current?.move(dir, false)} onLostPointerCapture={() => viewer.current?.move(dir, false)} onBlur={() => viewer.current?.move(dir, false)} onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); viewer.current?.move(dir, true); } }} onKeyUp={e => { if (e.key === ' ' || e.key === 'Enter') viewer.current?.move(dir, false); }}>{label}</Button>
       )}</div>}
       {error && <div role="alert" className="error">{error}<a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer">Open original plan</a></div>}
       {walkPhoto && <PhotoWalk photo={walkPhoto} onSelect={openPhotoWalk} onClose={() => setWalkPhoto(null)}/>}
