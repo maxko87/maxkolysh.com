@@ -36,6 +36,8 @@ export const partitions: WallSpec[][] = [
     [6.6,14.6,5.2,.32], [9.2,17.3,.32,5.4],
     [8.15,20,8.3,.32,6.5,2.8],
     [10.3,17.6,2.2,.32], [11.4,18.8,.32,2.4],
+    // Reach-in closet: solid toward the hall; access only from the spare bedroom.
+    [15.4,18.85,.32,2.3],
     [18.2,17.7,5.6,.32], [18.2,20,5.6,.32,18.2,2.8],
   ],
   [

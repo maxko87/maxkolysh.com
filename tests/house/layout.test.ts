@@ -4,6 +4,17 @@ import { partitions, rooms } from '../../src/house/layout';
 import { addPersonalFurniture } from '../../src/house/personalFurniture';
 
 describe('Recovered interior plan', () => {
+  it('closes the spare-room closet toward the hall while preserving its bedroom doorway',()=>{
+    const solidAt=(x:number,z:number)=>partitions[0].some(([wx,wz,w,d,door,gap=3])=>{
+      if(Math.abs(x-wx)>w/2||Math.abs(z-wz)>d/2)return false;
+      return door===undefined||Math.abs((w>d?x:z)-door)>=gap/2;
+    });
+    for(const z of [17.75,18.2,18.85,19.5,19.95])expect(solidAt(15.4,z)).toBe(true);
+    expect(solidAt(18.2,17.7)).toBe(true);
+    expect(solidAt(18.2,20)).toBe(false);
+    // The room entrance from the main hall stays separate from the closet.
+    expect(solidAt(15.4,22.1)).toBe(false);
+  });
   it('keeps door openings inside their wall runs and room jumps clear of partitions', () => {
     for (const [level, walls] of partitions.entries()) {
       const blockers: {x:number;z:number;w:number;d:number}[]=[];
