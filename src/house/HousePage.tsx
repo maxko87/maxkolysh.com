@@ -77,7 +77,7 @@ export default function HousePage() {
   return <main className="house-app">
     <header className="topbar">
       <div className="brand"><Box/><div><h1>716 Douglass</h1><p>A home, in three dimensions</p></div></div>
-      <span className="revision">● Your photos · your furniture</span>
+      <span className="revision">● Revised from the interior floor plan</span>
       <Button variant="outline" onClick={async () => {
         try { await viewer.current?.download(); }
         catch { setError('Export failed. Please try again.'); }
@@ -105,7 +105,7 @@ export default function HousePage() {
 
       <aside className="level-card">
         <p className="eyebrow">EXPLORE THE HOUSE</p><h2>Welcome home.</h2>
-        <p className="intro">Your rooms, with the furniture<br/>from your own photographs.</p>
+        <p className="intro">Interior plan + your photographs.<br/>A closer reconstruction.</p>
         <div className="levels">{['Main level', 'Lower level'].map((name, i) =>
           <Button key={name} variant={level === i ? 'default' : 'ghost'} onClick={() => changeLevel(i)}><Layers/><span>{name}<small>Unit {i + 1} · {i ? '822' : '1,244'} sq ft</small></span></Button>
         )}</div>
@@ -148,13 +148,15 @@ export default function HousePage() {
       {error && <div role="alert" className="error">{error}<a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer">Open original plan</a></div>}
     </section>
 
-    <footer><span>● Furniture informed by your Apple Photos</span><span>Dimensions & photo alignment approximate</span><Button variant="link" onClick={() => setPanel(true)}>Photo map<ArrowUpRight/></Button></footer>
+    <footer><span>● Interior layout revised · {photoReferences.length} references</span><span>Dimensions & photo alignment approximate</span><Button variant="link" onClick={() => setPanel(true)}>Photo map<ArrowUpRight/></Button></footer>
 
     {panel && <div className="modal-backdrop" onClick={() => setPanel(false)}>
       <section className="reference-panel" role="dialog" aria-modal="true" aria-label="Photo map and model references" onClick={e => e.stopPropagation()}>
         <Button autoFocus className="close" variant="outline" aria-label="Close references" onClick={() => setPanel(false)}><X/></Button>
         <p className="eyebrow">YOUR HOUSE, THROUGH YOUR PHOTOS</p><h2>Your photos, mapped to rooms.</h2>
-        <p>Ten selected photos from March–August 2026 connect the model to your actual furniture. The living room, dining room and kitchen are strong matches. The front office is a likely match; the bedroom, garden and handwritten sketch remain unassigned to a specific modeled room.</p>
+        <p>{photoReferences.length} selected references, including a recovered February floor plan and available video stills. The wider search reviewed 558 additional candidates beyond the first location-tagged set. The plan establishes room connections; the photographs establish furniture and finishes.</p>
+        <div className="revision-notes"><h3>What changed in this reconstruction</h3><p>Corrected office doorway and cabinet wall, bathroom boundaries, rear-bedroom hall, closets and open lower living area. Added the pitched cedar ceiling, skylight, real window openings, front entry and rear deck/garden.</p><p>Bedroom furniture, the exercise room and “Lefty/Righty” measurements still need exact room confirmation. Interior dimensions and garden scale remain approximate.</p></div>
+        <a href={photoUrl('interior-plan')} target="_blank" rel="noreferrer"><img className="interior-plan" src={photoUrl('interior-plan')} alt="Recovered listing floor plan showing interior rooms, doors, closets and garden"/></a>
         <p>The 3D furniture captures visible shape, color and placement. Sizes and camera angles are estimated; photo overlays are visual references, not a calibrated 3D scan. Older and newer views are dated so changes in furniture remain visible.</p>
         <div className="mapped-photos">{photoReferences.map(photo =>
           <article key={photo.id} className="mapped-photo">
@@ -167,7 +169,7 @@ export default function HousePage() {
           </article>
         )}</div>
         <h2>The original floor outline.</h2>
-        <p>Exterior dimensions come from the February 2026 appraisal. Interior walls, openings, heights and alignment between floors remain approximate. Unconfirmed photos have not been used to relocate a bedroom or change measured dimensions.</p>
+        <p>Exterior dimensions come from the February 2026 appraisal. Interior topology now follows the recovered listing plan above; its positions are scaled approximately to this outline. Heights and alignment between floors are still estimated. Unconfirmed bedroom photographs have not been used to relocate a room.</p>
         <a href="/house/references/floor-plan.jpg" target="_blank" rel="noreferrer"><img className="plan" loading="lazy" src="/house/references/floor-plan.jpg" alt="Appraisal sketch of both levels"/></a>
         <p>Export for Blender includes the selected furniture layer, with both levels in meters.</p>
         <Button onClick={() => setPanel(false)}>Back to the house</Button>

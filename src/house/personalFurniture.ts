@@ -145,7 +145,7 @@ export function addPersonalFurniture(parent: T.Group) {
   archedMirror(24.7, 45.1, 2, 6.6, -Math.PI / 2);
   archedMirror(24.7, 58.1, 2.3, 7, -Math.PI / 2);
 
-  const bar = group('Rounded black bar cabinet', 14.6, 42.5, Math.PI / 2);
+  const bar = group('Rounded black bar cabinet', 12.4, 42.5, Math.PI / 2);
   box(bar, 'Rounded cabinet top', 0, 3.3, 0, 4.5, .16, 1.5, leather, .12);
   box(bar, 'Cabinet back', 0, 1.9, -.65, 4.3, 2.5, .12, leather);
   for (const s of [-1, 1]) box(bar, 'Cabinet side', s * 2.1, 1.9, 0, .15, 2.5, 1.4, leather);
@@ -154,21 +154,24 @@ export function addPersonalFurniture(parent: T.Group) {
   for (const x of [-1.5, 1.5]) cylinder(bar, x, .38, 0, .045, .7, metal);
   for (const x of [-1.3, -.3, .7]) cylinder(bar, x, 3.63, 0, .16, .6, surface('#4b6555', .3));
 
-  // The room opposite the living room is now used as an office.
+  // Listing plan labels the built-in/Murphy-bed wall on the outer side,
+  // not the front window wall used in the first reconstruction.
   const office = group('Front office — photo-informed placement', 0, 0);
+  office.position.set(57.2 * FT, 0, 47 * FT);
+  office.rotation.y = -Math.PI / 2;
   box(office, 'Navy built-in cabinet back', 5.4, 4, 57.2, 8.1, 8, .16, navy);
   for (const x of [1.4, 3.3, 7.4, 9.5]) box(office, 'Cabinet divider', x, 4, 56.6, .14, 8, 1.25, navy);
   for (const x of [2.35, 8.45]) for (const y of [1.4, 3, 4.6, 6.2, 7.9]) box(office, 'Navy open shelf', x, y, 56.6, 1.9, .12, 1.25, navy);
   box(office, 'Navy cabinet doors', 5.35, 3.2, 56, 4, 6.4, .14, navy);
   for (const x of [5.2, 5.5]) box(office, 'Brass cabinet handle', x, 3.5, 55.9, .05, 1.4, .07, brass);
   for (let i = 0; i < 5; i++) box(office, 'Books', 8.4, 1.5 + i * .13, 56.4, 1.15, .1, .8, surface(i % 2 ? '#c2b7a1' : '#6a6d69'));
-  const desk = group('Walnut desk with monitor', 2, 52.5, Math.PI / 2);
+  const desk = group('Walnut desk with monitor', 5.8, 56, Math.PI);
   box(desk, 'Rounded walnut desk surface', 0, 2.5, 0, 5.4, .22, 2.7, walnut, .11);
   for (const s of [-1, 1]) box(desk, 'Desk leg', s * 2.2, 1.25, 0, .3, 2.5, 2.2, walnut);
   box(desk, 'Monitor riser', 0, 2.82, -.5, 2.2, .45, .7, woodEdge, .09);
   box(desk, 'Blank monitor', 0, 3.95, -.65, 2.5, 1.5, .12, screen, .04);
   box(desk, 'Keyboard', 0, 2.67, .35, 1.4, .06, .5, linen);
-  const chair = group('Cream padded office chair', 4.7, 52.5, -Math.PI / 2);
+  const chair = group('Cream padded office chair', 5.8, 53.5, 0);
   cylinder(chair, 0, .7, 0, .09, 1.3, metal);
   for (let i = 0; i < 5; i++) {
     const leg = box(chair, 'Swivel base', 0, .2, 0, .1, .13, 2.3, metal);
@@ -184,5 +187,26 @@ export function addPersonalFurniture(parent: T.Group) {
   box(coffee, 'Coffee dispenser', 0, 3.9, .65, .48, .35, .15, metal);
   box(coffee, 'Drip tray', 0, 3.25, .2, 1.2, .06, 1.2, metal);
   cylinder(coffee, 0, 3.46, .55, .14, .32, brass);
+  const nook = group('Round pale kitchen table — cooking-video reference', 7.4, 10.8);
+  cylinder(nook, 0, 2.5, 0, 1.85, .17, linen);
+  cylinder(nook, 0, 1.25, 0, .18, 2.5, woodEdge);
+  cylinder(nook, 0, .15, 0, 1, .2, woodEdge);
+  for(const s of [-1,1]) {
+    const seat=group('Kitchen nook chair', 7.4, 10.8+s*2.5, s>0?Math.PI:0);
+    box(seat,'Cream chair seat',0,1.55,0,1.65,.22,1.65,linen,.08);
+    box(seat,'Curved pale chair back',0,2.2,-.68,1.7,1.15,.18,linen,.08);
+    for(const x of [-.6,.6])for(const z of [-.6,.6])box(seat,'Timber leg',x,.75,z,.15,1.5,.15,woodEdge);
+  }
+  const patio = group('Garden bistro set — approximate photo placement', 12, -11);
+  const blue=surface('#278fc1',.45),yellow=surface('#bcac26');
+  cylinder(patio,0,2.35,0,1.15,.09,blue);
+  for(const s of [-1,1])box(patio,'Folding table leg',s*.65,1.15,0,.08,2.3,1.45,blue).rotation.z=s*.25;
+  for(const s of [-1,1]) {
+    box(patio,'Blue bistro seat',s*2.3,1.5,0,1.25,.1,1.3,blue);
+    box(patio,'Blue bistro back',s*2.3,2.3,-.65,1.25,.65,.08,blue);
+    for(const z of [-.5,.5])box(patio,'Bistro chair legs',s*2.3,.75,z,1.1,1.5,.07,blue);
+    cylinder(patio,s*4.4,1,4.6,.72,2,yellow);
+  }
+  sofa(20,-12,5.8,-Math.PI/2);
   return layer;
 }

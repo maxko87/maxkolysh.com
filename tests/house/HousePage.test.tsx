@@ -43,7 +43,7 @@ describe('House photo references', () => {
     expect(viewer.setFurniture).toHaveBeenLastCalledWith('personal');
     fireEvent.click(screen.getByRole('button', { name: /Front office/ }));
     expect(viewer.visit).toHaveBeenCalledWith('front-bed');
-    expect(screen.getByText(/Likely room match/)).toBeInTheDocument();
+    expect(screen.getByText(/2026-06-17 · Room matched/)).toBeInTheDocument();
   });
 
   it('shows an honest empty state on the lower level', () => {
