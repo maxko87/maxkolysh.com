@@ -53,7 +53,7 @@ describe('House photo references', () => {
     expect(viewer.setLevel).toHaveBeenCalledWith(1);
     expect(screen.getByText(/No photo confidently assigned yet/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Your furniture' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', {name:'Photo walk'})).toBeDisabled();
+    expect(screen.getByRole('button', {name:'Provisional lower level'})).toBeInTheDocument();
   });
 
   it('does not provide a room-placement action for unplaced bedroom photos', () => {
@@ -95,5 +95,22 @@ describe('House photo references', () => {
     fireEvent.click(within(dialog).getByRole('button',{name:'Next photo walk stop'}));
     expect(within(dialog).getByRole('img')).toBeInTheDocument();
     expect(within(dialog).getByRole('status')).toHaveTextContent('Loading');
+  });
+
+  it('shows listing references for original staging and never labels them current downstairs',()=>{
+    render(<HousePage/>);
+    fireEvent.click(screen.getByRole('button',{name:'Original staging'}));
+    expect(screen.getByRole('heading',{name:'Listing · white sofa and checked rug'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Photo walk'}));
+    expect(screen.getByRole('dialog',{name:'Photo walk'})).toHaveTextContent('Listing · white sofa');
+    const photoDialog=screen.getByRole('dialog',{name:'Photo walk'});
+    fireEvent.click(within(photoDialog).getByRole('button',{name:'Front office'}));
+    expect(photoDialog).toHaveTextContent('Listing · oval desk and Murphy-bed wall');
+    expect(viewer.setFurniture).toHaveBeenLastCalledWith('staging');
+    fireEvent.keyDown(window,{key:'Escape'});
+    fireEvent.click(screen.getByRole('button',{name:/Lower level/}));
+    expect(screen.getByRole('heading',{name:'Listing · lower living room'})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Provisional lower level'}));
+    expect(screen.getByText(/No photo confidently assigned yet for your current arrangement/)).toBeInTheDocument();
   });
 });

@@ -5,6 +5,8 @@ import { createHouseViewer, rooms, type HouseViewer } from './model';
 import { photoReferences, photoUrl, photoWalkStops, type PhotoReference } from './photoReferences';
 import { PhotoWalk } from './PhotoWalk';
 
+const firstRoomPhoto=(id:string,kind:'personal'|'staging')=>photoWalkStops.find(p=>p.roomId===id&&(p.source==='listing')===(kind==='staging'))??photoWalkStops.find(p=>p.roomId===id);
+
 export default function HousePage() {
   const mount = useRef<HTMLDivElement>(null);
   const viewer = useRef<HouseViewer | null>(null);
@@ -19,11 +21,12 @@ export default function HousePage() {
   const [comparison, setComparison] = useState<PhotoReference | null>(null);
   const [opacity, setOpacity] = useState(75);
   const [walkPhoto, setWalkPhoto] = useState<PhotoReference | null>(null);
+  const furnitureSelection=useRef<'personal'|'staging'>('personal');
 
   useEffect(() => {
     try { viewer.current = createHouseViewer(mount.current!, {
       roomIds: [...new Set(photoWalkStops.map(p => p.roomId!))],
-      onSelect: id => openPhotoWalk(photoWalkStops.find(p => p.roomId===id)!),
+      onSelect: id => openPhotoWalk(firstRoomPhoto(id,furnitureSelection.current)!),
     }); }
     catch { setError('The 3D view needs WebGL. Try a browser with hardware acceleration enabled.'); }
     return () => viewer.current?.dispose();
@@ -54,13 +57,15 @@ export default function HousePage() {
     if (!room) return;
     setTour(false); setPanel(false); setSelected(room.id); setLevel(room.level);
     setMode('walk'); setComparison(photo);
-    const index = photoReferences.filter(p => p.roomId === room.id).findIndex(p => p.id === photo.id);
+    const kind=photo.source==='listing'?'staging':'personal';
+    chooseFurniture(kind);
+    const index = photoReferences.filter(p => p.roomId === room.id && (p.source==='listing')===(kind==='staging')).findIndex(p => p.id === photo.id);
     setPhotoIndex(Math.max(0, index));
     if (photo.view) viewer.current?.matchPhoto(room.id, photo.view);
     else viewer.current?.visit(room.id);
   }
   function chooseFurniture(value: 'personal' | 'staging') {
-    setFurniture(value); viewer.current?.setFurniture(value);
+    furnitureSelection.current=value;setFurniture(value); setPhotoIndex(0); viewer.current?.setFurniture(value);
   }
 
   useEffect(() => {
@@ -81,7 +86,7 @@ export default function HousePage() {
     return () => window.removeEventListener('keydown', close);
   }, [panel, comparison]);
 
-  const matchedPhotos = photoReferences.filter(p => p.roomId === selected);
+  const matchedPhotos = photoReferences.filter(p => p.roomId === selected && (p.source==='listing')===(furniture==='staging'));
   const activePhoto = matchedPhotos[photoIndex % Math.max(1, matchedPhotos.length)];
   const roomName = rooms.find(r => r.id === selected)?.name;
 
@@ -111,7 +116,7 @@ export default function HousePage() {
           <Button variant={mode === 'dollhouse' ? 'default' : 'ghost'} onClick={overview}><Box/>Dollhouse</Button>
           <Button variant={mode === 'walk' ? 'default' : 'ghost'} onClick={() => { setTour(false); enter(level ? 'lower-living' : 'living'); }}><Footprints/>Walk inside</Button>
         </div>
-        <Button variant="outline" disabled={!photoWalkStops.some(p => p.roomId===selected)} onClick={() => openPhotoWalk(photoWalkStops.find(p => p.roomId===selected)!)}><Camera/>Photo walk</Button>
+        <Button variant="outline" disabled={!firstRoomPhoto(selected,furniture)} onClick={() => openPhotoWalk(firstRoomPhoto(selected,furniture)!)}><Camera/>Photo walk</Button>
         <Button variant="outline" onClick={() => { setComparison(null); setTour(!tour); }}>{tour ? <Pause/> : <Play/>}{tour ? 'Pause tour' : 'Guided tour'}</Button>
       </div>
 
@@ -137,19 +142,19 @@ export default function HousePage() {
             <img src={photoUrl(activePhoto.id)} alt={activePhoto.title}/><span>Overlay on model ↗</span>
           </button>
           <div className="photo-card-copy"><h3>{activePhoto.title}</h3><p>{activePhoto.date} · {activePhoto.confidence === 'High' ? 'Room matched' : 'Likely room match'}</p></div>
-          <Button className="photo-walk-launch" variant="outline" onClick={() => openPhotoWalk(photoWalkStops.find(p => p.roomId===selected)!)}><Camera/>Enter photo walk</Button>
+          <Button className="photo-walk-launch" variant="outline" onClick={() => openPhotoWalk(firstRoomPhoto(selected,furniture)!)}><Camera/>Enter photo walk</Button>
           <div className="photo-card-nav">
             <Button variant="ghost" aria-label="Previous room photo" disabled={matchedPhotos.length < 2} onClick={() => setPhotoIndex((photoIndex + matchedPhotos.length - 1) % matchedPhotos.length)}><ChevronLeft/></Button>
             <span>{photoIndex % matchedPhotos.length + 1} / {matchedPhotos.length}</span>
             <Button variant="ghost" aria-label="Next room photo" disabled={matchedPhotos.length < 2} onClick={() => setPhotoIndex((photoIndex + 1) % matchedPhotos.length)}><ChevronRight/></Button>
           </div>
-        </> : <div className="photo-card-copy"><h3>{roomName}</h3><p>No photo confidently assigned yet. This room still uses approximate staging.</p><Button variant="link" onClick={() => setPanel(true)}>See unplaced references</Button></div>}
+        </> : <div className="photo-card-copy"><h3>{roomName}</h3><p>No photo confidently assigned yet for {furniture==='staging'?'the original staging':'your current arrangement'}. This room remains provisional.</p><Button variant="link" onClick={() => setPanel(true)}>See references</Button></div>}
       </aside>}
 
-      {level === 0 && <div className="furniture-switch">
-        <Sofa/><Button variant={furniture === 'personal' ? 'default' : 'ghost'} onClick={() => chooseFurniture('personal')}>Your furniture</Button>
-        <Button variant={furniture === 'staging' ? 'default' : 'ghost'} onClick={() => chooseFurniture('staging')}>Original staging</Button>
-      </div>}
+      <div className="furniture-switch">
+        <Sofa/><Button variant={furniture === 'personal' ? 'default' : 'ghost'} onClick={() => {setComparison(null);chooseFurniture('personal');}}>{level?'Provisional lower level':'Your furniture'}</Button>
+        <Button variant={furniture === 'staging' ? 'default' : 'ghost'} onClick={() => {setComparison(null);chooseFurniture('staging');}}>Original staging</Button>
+      </div>
       <div className="caption">
         <span className="eyebrow">{mode === 'walk' ? 'INSIDE THE HOUSE' : 'OPEN ROOF · EXPLORATION VIEW'}</span>
         <h2>{mode === 'walk' ? roomName : level ? 'The lower level' : 'The main level'}</h2>
@@ -169,7 +174,7 @@ export default function HousePage() {
         <Button autoFocus className="close" variant="outline" aria-label="Close references" onClick={() => setPanel(false)}><X/></Button>
         <p className="eyebrow">YOUR HOUSE, THROUGH YOUR PHOTOS</p><h2>Your photos, mapped to rooms.</h2>
         <p>{photoReferences.length} selected references, including a recovered February floor plan and available video stills. The wider search reviewed 558 additional candidates beyond the first location-tagged set. The plan establishes room connections; the photographs establish furniture and finishes.</p>
-        <div className="revision-notes"><h3>What changed in this reconstruction</h3><p>The September walkthrough adds 18 connected photo stops and confirms the primary bedroom, spare room, kitchen laundry cupboard, nook bench, dining bench, office desk wall and both bathroom finishes. Photo walk links these real views over the estimated 3D camera, with zoom and a fade-to-model control.</p><p>The exercise room, older dark-bedroom photograph and “Lefty/Righty” measurements still need exact room confirmation. Interior dimensions, camera alignment and garden scale remain approximate. The lower level was not shown in this video.</p></div>
+        <div className="revision-notes"><h3>What changed in this reconstruction</h3><p>The September walkthrough contributes 18 current-house views; the listing tour adds 11 original-staging views. Furniture and photo navigation now stay in their selected era. Window openings have been rechecked, including both primary-bedroom windows and the front bay; the recessed main shower and bathroom starting direction are corrected. Trees outside are illustrative.</p><p>The exercise room, older dark-bedroom photograph and “Lefty/Righty” measurements still need exact room confirmation. Interior dimensions, camera alignment and garden scale remain approximate. Downstairs listing photos show the original staging only; the current lower-level arrangement is still unconfirmed.</p></div>
         <a href={photoUrl('interior-plan')} target="_blank" rel="noreferrer"><img className="interior-plan" src={photoUrl('interior-plan')} alt="Recovered listing floor plan showing interior rooms, doors, closets and garden"/></a>
         <p>The 3D furniture captures visible shape, color and placement. Sizes and camera angles are estimated; photo overlays are visual references, not a calibrated 3D scan. Older and newer views are dated so changes in furniture remain visible.</p>
         <div className="mapped-photos">{photoReferences.map(photo =>

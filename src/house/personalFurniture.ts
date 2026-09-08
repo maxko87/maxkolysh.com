@@ -268,28 +268,45 @@ export function addPersonalFurniture(parent: T.Group) {
   }
   const woodBath=group('Wood-paneled bathroom — walkthrough finishes',0,0);
   box(woodBath,'Dark bathroom tile',7.75,.035,36.6,7.1,.06,5.8,tile);
-  // Wood lining follows the north and west solid walls; the dining doorway stays open.
+  // The exterior bathroom window must cut the wood lining as well as the plaster.
   for(let y=.28;y<8.4;y+=.48) {
     box(woodBath,'Horizontal wood wall board',7.75,y,33.72,7.1,.45,.07,bathWood);
-    box(woodBath,'Horizontal wood wall board',4.22,y,36.6,.07,.45,5.8,bathWood);
+    if(y+.225>3.2&&y-.225<7.8){
+      box(woodBath,'Horizontal wood wall board',4.22,y,33.975,.07,.45,.55,bathWood);
+      box(woodBath,'Horizontal wood wall board',4.22,y,38.025,.07,.45,2.95,bathWood);
+    }else box(woodBath,'Horizontal wood wall board',4.22,y,36.6,.07,.45,5.8,bathWood);
   }
   box(woodBath,'Gray floating two-drawer vanity',9.4,1.8,34.75,2.8,2.1,1.8,bathGray,.03);
   box(woodBath,'Integrated white sink',9.4,2.94,34.75,2.9,.2,1.9,linen,.03);
   box(woodBath,'Basin inset',9.4,3.05,34.75,1.8,.03,1.2,gray,.1);
   box(woodBath,'Frameless vanity mirror',9.4,5.1,33.85,2.8,3.1,.04,mirror);
   toilet(woodBath,5.5,35.1);
-  box(woodBath,'Shower base',7.3,.12,38.8,5.2,.2,1.7,linen);
-  box(woodBath,'Shower screen',7.3,3.4,37.95,5.2,6.6,.06,showerGlass);
+  const mainShower=group('Main bathroom recessed shower',0,0,0,woodBath);
+  box(mainShower,'Main shower dark tile base',6.6,.12,41.45,4.8,.2,3.05,tile);
+  box(mainShower,'Main shower tiled back wall',6.6,3.8,42.87,4.8,7.6,.08,tile);
+  box(mainShower,'Main shower tiled side wall',4.23,3.8,41.45,.08,7.6,3.05,tile);
+  // Fine horizontal tile joints make this visibly a shower, not a nearly invisible pane.
+  for(let y=.25;y<7.6;y+=.25)box(mainShower,'Shower tile joint',6.6,y,42.82,4.8,.015,.01,bathGray);
+  box(mainShower,'Main shower curb',6.6,.22,39.88,4.8,.4,.28,tile);
+  box(mainShower,'Main shower fixed glass panel',5.15,3.9,39.87,1.7,7.25,.06,showerGlass);
+  box(mainShower,'Main shower glass door',7.43,3.9,39.87,2.8,7.25,.06,showerGlass);
+  for(const x of [4.27,6.03,8.89])box(mainShower,'Main shower glass edge',x,3.9,39.87,.035,7.25,.075,metal);
+  box(mainShower,'Main shower chrome handle',6.28,3.65,39.73,.08,1.15,.12,metal);
+  cylinder(mainShower,6.6,5.5,42.62,.04,3.5,metal);
+  box(mainShower,'Main shower overhead arm',6.6,7.23,42.2,.08,.08,.85,metal);
+  cylinder(mainShower,6.6,7.18,41.8,.38,.08,metal);
+  box(mainShower,'Main shower mixer',6.6,3.7,42.68,.4,.55,.1,metal,.04);
+  box(mainShower,'Main shower drain',6.6,.235,41.7,.4,.02,.4,metal);
   const officeBath=group('Office bathroom — white and natural wood',0,0);
   box(officeBath,'Office dark floor tile',4,.035,43,7.6,.06,5.6,tile);
   box(officeBath,'Wood floating vanity',1.1,1.65,43,1.7,2,3.3,woodEdge);
   box(officeBath,'White vessel sink',1.1,2.95,43,1.65,.6,1.7,linen,.06);
   box(officeBath,'Vessel basin inset',1.1,3.26,43,1.3,.025,1.35,gray,.05);
-  box(officeBath,'Upper wood cupboard',.55,6,41.6,.7,3,1.3,woodEdge);
-  box(officeBath,'Office bathroom mirror',.3,5,43.2,.04,3,1.8,mirror);
+  box(officeBath,'Upper wood cupboard',.55,6,43.55,.7,3,1.1,woodEdge);
+  box(officeBath,'Office bathroom mirror',.3,5,44.9,.04,3,1.5,mirror);
   toilet(officeBath,2.7,40.9);
-  box(officeBath,'Office shower tray',6.15,.12,43,3,.2,5.4,linen);
-  box(officeBath,'Office glass shower enclosure',4.65,3.5,43,.06,6.8,5.4,showerGlass);
+  box(officeBath,'Office shower tray',6.15,.12,44.65,3,.2,2.65,linen);
+  box(officeBath,'Office glass shower enclosure',4.65,3.5,44.65,.06,6.8,2.65,showerGlass);
   box(officeBath,'Chrome shower door handle',4.57,3.5,44.2,.08,1.2,.09,metal);
   const patio = group('Garden bistro set — approximate photo placement', 12, -11);
   const blue=surface('#278fc1',.45),yellow=surface('#bcac26');

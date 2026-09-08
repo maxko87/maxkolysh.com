@@ -1,4 +1,5 @@
 import { walkthroughPhotos } from './walkthroughPhotos';
+import { stagingPhotos } from './stagingPhotos';
 
 export type PhotoReference = {
   id: string;
@@ -8,7 +9,7 @@ export type PhotoReference = {
   confidence: 'High' | 'Likely' | 'Unplaced';
   evidence: string;
   furniture: string[];
-  source?: 'walkthrough';
+  source?: 'walkthrough' | 'listing';
   time?: number;
   view?: { x: number; z: number; yaw: number; pitch: number; fov: number };
 };
@@ -36,6 +37,7 @@ export const photoReferences: PhotoReference[] = [
   { id: 'office-sliding-door', title: 'Video reference · office sliding door', roomId: 'front-bed', date: '2026-05-15', confidence: 'High', evidence: 'The video preview shows a tall frosted panel in a wood frame beside the front entry. Added this opening and panel instead of the generic doorway.', furniture: ['Frosted wood-framed sliding door'], view: {x:15,z:49,yaw:Math.PI/2,pitch:0,fov:72} },
   { id: 'kitchen-sink', title: 'Video reference · sink and garden window', roomId: 'kitchen', date: '2026-05-10', confidence: 'High', evidence: 'Cooking-video preview establishes the sink beneath the garden-facing window and the adjacent range. Only the available still preview was used, not a reconstructed video scan.', furniture: ['White farmhouse sink', 'Gas range'] },
   ...walkthroughPhotos,
+  ...stagingPhotos,
 ];
 
 /** The continuous video route first; older room photographs remain reachable. */

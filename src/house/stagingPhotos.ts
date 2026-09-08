@@ -1,0 +1,14 @@
+import type {PhotoReference} from './photoReferences';
+export const stagingPhotos:PhotoReference[] = [
+  {id:'staging-living',title:'Listing · white sofa and checked rug',roomId:'living',time:7,view:{x:12,z:51,yaw:-Math.PI/2,pitch:-.1,fov:70},furniture:['White sofa','Gray checked rug','Two sculptural white tables','Upholstered stool','Paired gray-blue prints']},
+  {id:'staging-bay',title:'Listing · bay console and accent chair',roomId:'living',time:13,view:{x:20,z:52,yaw:Math.PI,pitch:0,fov:70},furniture:['Walnut console','Twin black-shade lamps','Cream wood-frame accent chair']},
+  {id:'staging-bedroom',title:'Listing · primary bedroom',roomId:'rear-bed',time:15,view:{x:9,z:25,yaw:Math.PI/2,pitch:0,fov:70},furniture:['Tall channel-tufted headboard','Pale bedding','Taupe throw','Two small framed prints']},
+  {id:'staging-office',title:'Listing · oval desk and Murphy-bed wall',roomId:'front-bed',time:27,view:{x:8,z:50,yaw:2.35,pitch:-.1,fov:70},furniture:['Oval walnut desk','Bentwood chair','Cream rug','Navy Murphy-bed wall']},
+  {id:'staging-bath',title:'Listing · recessed shower and wood window',roomId:'main-bath',time:37,view:{x:10,z:37.1,yaw:2.05,pitch:-.1,fov:70},furniture:['Dark tiled shower recess','Glass door','Wood-framed frosted window']},
+  {id:'staging-kitchen',title:'Listing · kitchen before move-in',roomId:'kitchen',time:43,view:{x:13,z:13,yaw:-.15,pitch:0,fov:70},furniture:['White cabinetry','Sink window','Stainless appliances']},
+  {id:'staging-garden',title:'Listing · rear garden seating',roomId:'deck',time:47,view:{x:7,z:1,yaw:0,pitch:-.2,fov:70},furniture:['Dark outdoor lounge seating','Yellow planters','Low pale table']},
+  {id:'staging-lower-kitchen',title:'Listing · lower honey-wood kitchen',roomId:'lower-kitchen',time:51,view:{x:15,z:28,yaw:-.8,pitch:0,fov:70},furniture:['Honey-wood cabinets','Gray-green worktop','Stainless range']},
+  {id:'staging-lower-living',title:'Listing · lower living room',roomId:'lower-living',time:55,view:{x:14,z:32,yaw:1.8,pitch:-.1,fov:70},furniture:['White sofa','Blue-gray rug','Low round coffee table','Long teal artwork','Round dark dining table']},
+  {id:'staging-lower-bedroom',title:'Listing · lower left bedroom',roomId:'lower-bed-2',time:57,view:{x:12,z:49,yaw:2.5,pitch:0,fov:70},furniture:['Pale upholstered bed','Taupe bedding','Dark scatter cushions']},
+  {id:'staging-lower-bay',title:'Listing · lower bay bedroom',roomId:'lower-bed',time:59,view:{x:20,z:50,yaw:Math.PI,pitch:0,fov:70},furniture:['Bed beneath the bay','Dark bed throw','Striped pillows']},
+].map(p=>({...p,date:'Listing era · date unknown',source:'listing',confidence:'High',evidence:'Owner-supplied 1:27 listing tour. This is original staging, not evidence of the current arrangement. Video times, sizes and camera alignment are approximate.'}));

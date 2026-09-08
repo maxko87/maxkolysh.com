@@ -14,8 +14,9 @@ export function PhotoWalk({ photo, onSelect, onClose }: {
   const [opacity, setOpacity] = useState(100);
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const index = photoWalkStops.findIndex(p => p.id === photo.id);
-  const step = (delta: number) => onSelect(photoWalkStops[(index + delta + photoWalkStops.length) % photoWalkStops.length]);
+  const stops=photoWalkStops.filter(p=>(p.source==='listing')===(photo.source==='listing'));
+  const index = stops.findIndex(p => p.id === photo.id);
+  const step = (delta: number) => onSelect(stops[(index + delta + stops.length) % stops.length]);
   const reset = () => { setZoom(1); setPan({x:0,y:0}); };
 
   useEffect(() => { reset(); setFailed(false); setLoaded(false); }, [photo.id]);
@@ -42,7 +43,7 @@ export function PhotoWalk({ photo, onSelect, onClose }: {
   });
   // Preload only adjacent stops, not the entire photograph collection.
   useEffect(() => {
-    for (const d of [-1,1]) { const img=new Image(); img.src=photoUrl(photoWalkStops[(index+d+photoWalkStops.length)%photoWalkStops.length].id); }
+    for (const d of [-1,1]) { const img=new Image(); img.src=photoUrl(stops[(index+d+stops.length)%stops.length].id); }
   }, [index]);
   const room = rooms.find(r => r.id === photo.roomId);
 
@@ -62,7 +63,7 @@ export function PhotoWalk({ photo, onSelect, onClose }: {
       {(!loaded || failed) && <p className="photo-walk-status" role="status">{failed ? 'This photo could not load. Try the next view.' : 'Loading photo…'}</p>}
     </div>
     <header className="photo-walk-header">
-      <div><span><Camera/> PHOTO WALK · {room?.name}</span><h2 aria-live="polite">{photo.title}</h2>
+      <div><span><Camera/> {photo.source==='listing'?'ORIGINAL STAGING':'PHOTO WALK'} · {room?.name}</span><h2 aria-live="polite">{photo.title}</h2>
         <p>{photo.date}{photo.time!==undefined ? ` · video ${Math.floor(photo.time/60)}:${String(Math.floor(photo.time%60)).padStart(2,'0')}` : ' · photo archive'} · estimated viewpoint</p></div>
       <Button variant="outline" onClick={onClose} aria-label="Return to 3D"><X/><span>3D model</span></Button>
     </header>
@@ -76,11 +77,11 @@ export function PhotoWalk({ photo, onSelect, onClose }: {
     <div className="photo-walk-bottom">
       <div className="photo-walk-navigation">
         <Button variant="outline" onClick={() => step(-1)} aria-label="Previous photo walk stop"><ArrowLeft/><span>Back</span></Button>
-        <div><strong>{index+1} / {photoWalkStops.length}</strong><p>Real stills, not 360° · zoom, then drag to inspect</p></div>
+        <div><strong>{index+1} / {stops.length}</strong><p>Real stills, not 360° · zoom, then drag to inspect</p></div>
         <Button variant="outline" onClick={() => step(1)} aria-label="Next photo walk stop"><span>Next view</span><ArrowRight/></Button>
       </div>
-      <nav className="photo-walk-rooms" aria-label="Photo walk rooms">{rooms.filter(r => photoWalkStops.some(p => p.roomId===r.id)).map(r =>
-        <button key={r.id} aria-current={photo.roomId===r.id ? 'location' : undefined} onClick={() => onSelect(photoWalkStops.find(p => p.roomId===r.id)!)}>{r.name}</button>
+      <nav className="photo-walk-rooms" aria-label="Photo walk rooms">{rooms.filter(r => stops.some(p => p.roomId===r.id)).map(r =>
+        <button key={r.id} aria-current={photo.roomId===r.id ? 'location' : undefined} onClick={() => onSelect(stops.find(p => p.roomId===r.id)!)}>{r.name}</button>
       )}</nav>
     </div>
   </section>;

@@ -14,7 +14,7 @@ export const walkthroughPhotos: PhotoReference[] = [
   {id:'walk-shelves',title:'Spare room · shelving',roomId:'side-bed',time:41,view:{x:18,z:27,yaw:Math.PI,pitch:-.12,fov:70},furniture:['Tall walnut bookcase','Storage baskets']},
   {id:'walk-dining',title:'Dining bench and arched mirror',roomId:'dining',time:50.5,view:{x:20,z:40,yaw:0,pitch:-.12,fov:70},furniture:['Walnut table','Bench with pale throw','Cream chairs','Arched mirror']},
   {id:'walk-ceiling',title:'Living and dining · cedar ceiling',roomId:'living',time:54,view:{x:16,z:41,yaw:-2.8,pitch:.25,fov:75},furniture:['Pitched cedar ceiling','Brass chandelier']},
-  {id:'walk-wood-bath',title:'Wood-paneled bathroom',roomId:'main-bath',time:62,view:{x:10,z:37,yaw:.9,pitch:-.15,fov:70},furniture:['Horizontal wood walls','Gray floating vanity','White toilet']},
+  {id:'walk-wood-bath',title:'Wood-paneled bathroom',roomId:'main-bath',time:62,view:{x:10,z:37.1,yaw:2.05,pitch:-.15,fov:70},furniture:['Horizontal wood walls','Frosted wood-framed window','Recessed glass shower']},
   {id:'walk-living',title:'Living room · current seating',roomId:'living',time:72,view:{x:15,z:44,yaw:-2.75,pitch:-.1,fov:75},furniture:['White sofas','Walnut coffee table','Leather lounge chair']},
   {id:'walk-office',title:'Office · desk and navy cabinets',roomId:'front-bed',time:84.5,view:{x:10,z:49,yaw:2.3,pitch:-.12,fov:70},furniture:['Navy Murphy-bed cabinetry','Cream office chair']},
   {id:'walk-desk',title:'Office · desk beside the window',roomId:'front-bed',time:86,view:{x:5,z:52,yaw:-2.1,pitch:-.2,fov:70},furniture:['Walnut desk','Blank monitor','Taupe curtains']},

@@ -3,6 +3,9 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
 import {addPersonalFurniture} from './personalFurniture';
 import {rooms,partitions} from './layout';
+import {openingsOnWall,solidWallRuns,type WindowSpec} from './windows';
+import {addExteriorTrees} from './exteriorTrees';
+import {addOriginalStaging} from './originalStaging';
 export {rooms} from './layout';
 const F=.3048;
 type Rect={x:number,z:number,w:number,d:number};
@@ -43,18 +46,47 @@ export function createHouseViewer(container:HTMLDivElement, photoMarkers?: {room
  // True window cutouts: the previous panes sat in front of opaque exterior walls.
  function exterior(i:number,p:number[],q:number[]){
   const horizontal=p[1]===q[1],fixed=horizontal?p[1]:p[0],lo=Math.min(horizontal?p[0]:p[1],horizontal?q[0]:q[1]),hi=Math.max(horizontal?p[0]:p[1],horizontal?q[0]:q[1]);
-  const windows=i?[[true,61,20,5.7],[true,58,8.5,5],[false,25,53.5,5],[false,4,29.5,9]]:[[true,61,20,6.5],[true,58,5.7,5],[true,0,16,4.6],[false,21,7.8,3.6],[false,0,26,4.8],[false,25,27,4.8]];
-  const opening=windows.find(v=>v[0]===horizontal&&v[1]===fixed&&(v[2] as number)>lo&&(v[2] as number)<hi);
+  if(i===0){
+   const openings=openingsOnWall(p,q);
+   if(openings.length){
+    for(const run of solidWallRuns(lo,hi,openings))wall(0,horizontal?run.center:fixed,horizontal?fixed:run.center,horizontal?run.width:.35,horizontal?.35:run.width);
+    for(const opening of openings)addWindow(opening);
+    return;
+   }
+  }
+  const windows=[[true,61,20,5.7],[true,58,8.5,5],[false,25,53.5,5],[false,4,29.5,9]];
+  const opening=i===1?windows.find(v=>v[0]===horizontal&&v[1]===fixed&&(v[2] as number)>lo&&(v[2] as number)<hi):undefined;
   const entrance=i===0&&horizontal&&fixed===56&&lo===11;
   const deckDoor=i===0&&horizontal&&fixed===5.5&&lo===4;
   if(opening){const center=opening[2] as number,width=opening[3] as number;wall(i,horizontal?(lo+hi)/2:fixed,horizontal?fixed:(lo+hi)/2,horizontal?hi-lo:.35,horizontal?.35:hi-lo,center,width);box(groups[i],'Window sill wall',horizontal?center:fixed,.65,horizontal?fixed:center,horizontal?width:.35,1.3,horizontal?.35:width,plaster);blockers[i].push({x:horizontal?center:fixed,z:horizontal?fixed:center,w:horizontal?width:.35,d:horizontal?.35:width});win(i,horizontal?center:fixed,horizontal?fixed:center,width,!horizontal);}
   else wall(i,(p[0]+q[0])/2,(p[1]+q[1])/2,Math.max(.35,Math.abs(p[0]-q[0])),Math.max(.35,Math.abs(p[1]-q[1])),entrance?12.5:deckDoor?7.2:undefined,deckDoor?4.2:3);
  }
+ function addWindow(w:WindowSpec){
+  const alongX=w.axis==='x',x=alongX?w.center:w.fixed,z=alongX?w.fixed:w.center;
+  const g=new T.Group();g.name=`Window ${w.id}`;g.userData={roomId:w.roomId,basis:'Walkthrough + listing plan; dimensions estimated'};groups[0].add(g);
+  const frame=w.finish==='wood'?walnut:trim;
+  const pane=new T.MeshStandardMaterial({color:w.frosted?'#d5e3dc':'#d6eaf0',transparent:true,opacity:w.frosted?.68:.13,roughness:w.frosted?.85:.12,depthWrite:false});
+  box(g,'Glazing — actual opening',x,w.sill+w.height/2,z,alongX?w.width:.035,w.height,alongX?.035:w.width,pane).castShadow=false;
+  box(g,'Window sill wall',x,w.sill/2,z,alongX?w.width:.35,w.sill,alongX?.35:w.width,plaster);
+  box(ceilings[0],'Window header wall',x,(w.sill+w.height+10.3)/2,z,alongX?w.width:.35,10.3-w.sill-w.height,alongX?.35:w.width,plaster);
+  blockers[0].push({x,z,w:alongX?w.width:.35,d:alongX?.35:w.width});
+  for(const y of [w.sill,w.sill+w.height*.5,w.sill+w.height])box(g,'Sash rail',x,y,z,alongX?w.width+.16:.23,.11,alongX?.23:w.width+.16,frame);
+  for(const s of [-1,1])box(g,'Window jamb',x+(alongX?s*w.width/2:0),w.sill+w.height/2,z+(alongX?0:s*w.width/2),alongX?.13:.26,w.height+.15,alongX?.26:.13,frame);
+  box(g,'Projecting window sill',x,w.sill-.09,z,alongX?w.width+.3:.65,.15,alongX?.65:w.width+.3,frame);
+  if(w.roomId==='rear-bed'){
+   // Open dark curtains frame both windows rather than concealing the glazing.
+   for(const s of [-1,1])for(let fold=0;fold<4;fold++)box(ceilings[0],'Primary bedroom open curtain',x+s*(w.width/2+.12+fold*.07),4.25,z+(w.id==='primary-rear'?.3:-.3),.1,8.1,.12,mat(fold%2?'#293238':'#343d43'));
+  }
+ }
  groups.forEach((g,i)=>{slab(g,outlines[i],wood);for(let x=.25;x<25;x+=.48)for(let z=.6;z<61;z+=5)if(inside(x,z,outlines[i])&&inside(x,z+4.8,outlines[i]))box(g,'Floor seam',x,.008,z+2.4,.014,.006,4.8,walnut);outlines[i].forEach((p,k)=>exterior(i,p,outlines[i][(k+1)%outlines[i].length]));partitions[i].forEach(args=>wall(i,...args));});
- const staging=new T.Group();staging.name='Appraisal-style staging';groups[0].add(staging);
- bed(staging,5,53.5);bed(staging,5.2,26);bed(staging,20.2,27);bath(staging,4,43,7.6,5.6);bath(staging,7.75,36.6,7.1,5.8);
- rug(staging,19.1,53.3,7.4,9);sofa(staging,15.3,53);box(staging,'Coffee table',19.2,1.35,52,2.7,.3,3.3,stone);box(staging,'Table plinth',19.2,.7,52,1.5,1.3,2,stone);plant(staging,23,58.5);plant(staging,23,38);dining(staging,19.5,40.6);kitchen(groups[0],16,1.3,9.2,9);dining(staging,7.4,12.5);
- const personal=addPersonalFurniture(groups[0]);staging.visible=false;
+ kitchen(groups[0],16,1.3,9.2,9);
+ const personal=addPersonalFurniture(groups[0]);
+ const fixtures=new T.Group();fixtures.name='Shared built-ins and main bathrooms';groups[0].add(fixtures);
+ for(const name of ['Front office — photo-informed placement','Kitchen stacked laundry cupboard','Wood-paneled bathroom — walkthrough finishes','Office bathroom — white and natural wood']){
+  const fixture=personal.getObjectByName(name);if(fixture)fixtures.add(fixture);
+ }
+ const [staging,lowerStaging]=addOriginalStaging(groups[0],groups[1]);staging.visible=lowerStaging.visible=false;
+ const lowerProvisional=new T.Group();lowerProvisional.name='Lower furniture — current arrangement unconfirmed';groups[1].add(lowerProvisional);
  box(groups[0],'White front door',12.5,3.6,56,2.8,7.2,.18,trim);
  box(groups[0],'Front door glass',12.5,5.25,55.89,1.25,1.7,.03,glass);
  box(groups[0],'Front door black handle',13.5,3.25,55.85,.12,.85,.13,dark);
@@ -76,19 +108,20 @@ export function createHouseViewer(container:HTMLDivElement, photoMarkers?: {room
  cyl(ceilings[0],20.5,11.7,39.6,.025,5.5,walnut);for(let i=0;i<6;i++){const a=i*Math.PI/3,x=20.5+Math.cos(a)*1.8,z=39.6+Math.sin(a)*1.8;cyl(ceilings[0],x,9.2,z,.25,.7,cream);box(ceilings[0],'Chandelier arm',(20.5+x)/2,8.75,(39.6+z)/2,.08,.08,1.8,walnut).rotation.y=a;}
  box(ceilings[0],'Attic access panel',16,12.45,34.15,2.6,4.8,.13,trim);
  slab(groups[1],[[4,6],[21,6],[21,20],[4,20]],stone);wall(1,4,13,.35,14,10);wall(1,21,13,.35,14);wall(1,12.5,6,17,.35);
- bed(groups[1],8.6,53);bed(groups[1],20,55);bath(groups[1],21,40.7,7.5,9.8);rug(groups[1],9.5,34.4,8,8);sofa(groups[1],6,34);box(groups[1],'Coffee table',10,1.3,34,2.5,.25,3.8,stone);dining(groups[1],9.7,25.2);kitchen(groups[1],20,21.5,8,9);box(groups[1],'Washer',11.2,1.55,41.8,2.4,3.1,2.5,trim);box(groups[1],'Dryer',11.2,4.7,41.8,2.4,3.1,2.5,trim);plant(groups[1],5.5,22);for(let j=0;j<3;j++)box(groups[1],'Storage shelving',19,1.4+j*1.9,12,2,.14,8,walnut);
+ bed(lowerProvisional,8.6,53);bed(lowerProvisional,20,55);bath(groups[1],21,40.7,7.5,9.8);rug(lowerProvisional,9.5,34.4,8,8);sofa(lowerProvisional,6,34);box(lowerProvisional,'Coffee table',10,1.3,34,2.5,.25,3.8,stone);dining(lowerProvisional,9.7,25.2);kitchen(lowerProvisional,20,21.5,8,9);box(groups[1],'Washer',11.2,1.55,41.8,2.4,3.1,2.5,trim);box(groups[1],'Dryer',11.2,4.7,41.8,2.4,3.1,2.5,trim);plant(lowerProvisional,5.5,22);for(let j=0;j<3;j++)box(groups[1],'Storage shelving',19,1.4+j*1.9,12,2,.14,8,walnut);
  // Exterior deck location is supplied by the saved listing plan; garden size is illustrative.
  slab(groups[0],[[4,5.5],[11,5.5],[11,-1],[4,-1]],walnut);
  box(groups[0],'Deck railing',4,1.6,2.2,.12,3.2,6.4,dark);box(groups[0],'Deck railing',10.9,1.6,2.2,.12,3.2,6.4,dark);
  slab(groups[0],[[0,-1],[25,-1],[25,-21],[0,-21]],mat('#9f8b78'));
  for(const [x,z] of [[2,-4],[23,-5],[3,-18],[22,-18],[15,-19]])plant(groups[0],x,z);
+ addExteriorTrees(groups[0]);
  box(scene,'Display ground',12,-.9,30,130,.3,140,mat('#e6e5de'));
- function viewWalls(full:boolean){walls[active].forEach(o=>{const h=o.userData.fullHeight;o.scale.y=full?1:.28;o.position.y=(full?h/2:h*.14)*F;});ceilings[active].visible=full;personal.traverse(o=>{if(o.name==='Horizontal wood wall board')o.visible=full;});}
+ function viewWalls(full:boolean){walls[active].forEach(o=>{const h=o.userData.fullHeight;o.scale.y=full?1:.28;o.position.y=(full?h/2:h*.14)*F;});ceilings[active].visible=full;fixtures.traverse(o=>{if(o.name==='Horizontal wood wall board'||o.name.includes('shower tiled')||o.name==='Shower tile joint')o.visible=full;});}
  function overview(){walking=false;pressed.clear();orbit.enabled=true;viewWalls(false);camera.fov=42;camera.updateProjectionMatrix();camera.position.set((active?38:42)*F,(active?65:82)*F,(active?91:98)*F);orbit.target.set(11*F,0,(active?30:21)*F);orbit.update();}
  function setLevel(i:number){active=i;groups.forEach((g,j)=>g.visible=i===j);overview();}
  function look(){camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
- function visit(id:string){const r=rooms.find(v=>v.id===id);if(!r)return;active=r.level;groups.forEach((g,j)=>g.visible=j===active);walking=true;orbit.enabled=false;viewWalls(true);yaw=0;pitch=0;camera.fov=72;camera.updateProjectionMatrix();camera.position.set(r.x*F,5.35*F,r.z*F);look();}
- function setFurniture(kind:'personal'|'staging'){personal.visible=kind==='personal';staging.visible=kind==='staging';}
+ function visit(id:string){const r=rooms.find(v=>v.id===id);if(!r)return;active=r.level;groups.forEach((g,j)=>g.visible=j===active);walking=true;pressed.clear();orbit.enabled=false;viewWalls(true);yaw=r.yaw??0;pitch=r.pitch??0;camera.fov=72;camera.updateProjectionMatrix();camera.position.set(r.x*F,5.35*F,r.z*F);look();}
+ function setFurniture(kind:'personal'|'staging'){personal.visible=lowerProvisional.visible=kind==='personal';staging.visible=lowerStaging.visible=kind==='staging';}
  function matchPhoto(roomId:string,view:{x:number;z:number;yaw:number;pitch:number;fov:number}){visit(roomId);camera.position.set(view.x*F,5.35*F,view.z*F);yaw=view.yaw;pitch=view.pitch;camera.fov=view.fov;camera.updateProjectionMatrix();look();}
  function setInputEnabled(enabled:boolean){inputEnabled=enabled;pressed.clear();dragging=false;orbit.enabled=enabled&&!walking;}
  function move(dir:string,on:boolean){if(on&&inputEnabled)pressed.add(dir);else pressed.delete(dir);}
