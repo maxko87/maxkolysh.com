@@ -7,6 +7,7 @@ import { rooms } from '../../src/house/model';
 const viewer = vi.hoisted(() => ({
   dispose: vi.fn(), visit: vi.fn(), overview: vi.fn(), setLevel: vi.fn(),
   setFurniture: vi.fn(), matchPhoto: vi.fn(), move: vi.fn(), download: vi.fn(),
+  setInputEnabled: vi.fn(),
 }));
 vi.mock('../../src/house/model', async importOriginal => {
   const original = await importOriginal<typeof import('../../src/house/model')>();
@@ -21,7 +22,7 @@ describe('House photo references', () => {
       if (photo.roomId) expect(rooms.some(room => room.id === photo.roomId)).toBe(true);
       if (photo.confidence === 'Unplaced') expect(photo.roomId).toBeNull();
     }
-    expect(photoReferences.find(photo => photo.id === 'bedroom-dressers')?.roomId).toBeNull();
+    expect(photoReferences.find(photo => photo.id === 'bedroom-dressers')?.roomId).toBe('rear-bed');
   });
 
   it('matches the selected photo viewpoint and exposes adjustable opacity', () => {
@@ -52,14 +53,47 @@ describe('House photo references', () => {
     expect(viewer.setLevel).toHaveBeenCalledWith(1);
     expect(screen.getByText(/No photo confidently assigned yet/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Your furniture' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', {name:'Photo walk'})).toBeDisabled();
   });
 
   it('does not provide a room-placement action for unplaced bedroom photos', () => {
     render(<HousePage />);
     fireEvent.click(screen.getByRole('button', { name: /Photo map & original plan/ }));
-    const heading = screen.getByRole('heading', { name: 'Bedroom · dressers and blue prints' });
+    const heading = screen.getByRole('heading', { name: 'Bedroom · dark bedding and art ledge' });
     expect(within(heading.closest('article')!).queryByRole('button')).not.toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('walks through real photographs, jumps between rooms and restores 3D controls', () => {
+    render(<HousePage/>);
+    fireEvent.click(screen.getByRole('button',{name:'Photo walk'}));
+    const dialog=screen.getByRole('dialog',{name:'Photo walk'});
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(false);
+    fireEvent.click(within(dialog).getByRole('button',{name:'Kitchen & nook'}));
+    expect(within(dialog).getByRole('heading',{name:'Kitchen nook'})).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('button',{name:'Next photo walk stop'}));
+    expect(within(dialog).getByRole('heading',{name:'Out to the rear deck'})).toBeInTheDocument();
+    fireEvent.keyDown(dialog,{key:'ArrowLeft'});
+    expect(within(dialog).getByRole('heading',{name:'Kitchen nook'})).toBeInTheDocument();
+    const img=within(dialog).getByRole('img');fireEvent.load(img);
+    fireEvent.change(within(dialog).getByRole('slider'),{target:{value:'35'}});
+    expect(img).toHaveStyle({opacity:'.35'});
+    fireEvent.click(within(dialog).getByRole('button',{name:'Zoom in'}));
+    expect(img).toHaveStyle({transform:'translate(0px, 0px) scale(1.5)'});
+    fireEvent.keyDown(dialog,{key:'Escape'});
+    expect(screen.queryByRole('dialog',{name:'Photo walk'})).not.toBeInTheDocument();
+    expect(viewer.setInputEnabled).toHaveBeenLastCalledWith(true);
+  });
+
+  it('shows a recoverable photo-load failure and resets it at the next stop', () => {
+    render(<HousePage/>);
+    fireEvent.click(screen.getByRole('button',{name:'Photo walk'}));
+    const dialog=screen.getByRole('dialog',{name:'Photo walk'});
+    fireEvent.error(within(dialog).getByRole('img'));
+    expect(within(dialog).getByRole('status')).toHaveTextContent('could not load');
+    fireEvent.click(within(dialog).getByRole('button',{name:'Next photo walk stop'}));
+    expect(within(dialog).getByRole('img')).toBeInTheDocument();
+    expect(within(dialog).getByRole('status')).toHaveTextContent('Loading');
   });
 });

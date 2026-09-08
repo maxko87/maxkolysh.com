@@ -34,6 +34,10 @@ describe('Recovered interior plan', () => {
     const position=cabinet.getWorldPosition(new T.Vector3());
     expect(position.x/.3048).toBeLessThan(1.5);
     expect(position.z/.3048).toBeGreaterThan(47);
+    for(const name of ['Kitchen stacked laundry cupboard','Kitchen L-shaped fluted banquette','Primary bedroom — video-confirmed room','Pair of dark dressers and blue prints','Spare room — drying and storage, no inferred bed','Wood-paneled bathroom — walkthrough finishes','Office bathroom — white and natural wood']) expect(parent.getObjectByName(name)).toBeDefined();
+    const desk=parent.getObjectByName('Walnut desk with monitor')!;
+    expect(desk.position.x/.3048).toBe(8.5);
+    expect(desk.rotation.y).toBe(-Math.PI/2);
     layer.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.Line){o.geometry.dispose();for(const material of Array.isArray(o.material)?o.material:[o.material])material.dispose();}});
   });
 });

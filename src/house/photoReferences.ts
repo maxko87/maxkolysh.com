@@ -1,3 +1,5 @@
+import { walkthroughPhotos } from './walkthroughPhotos';
+
 export type PhotoReference = {
   id: string;
   title: string;
@@ -6,6 +8,8 @@ export type PhotoReference = {
   confidence: 'High' | 'Likely' | 'Unplaced';
   evidence: string;
   furniture: string[];
+  source?: 'walkthrough';
+  time?: number;
   view?: { x: number; z: number; yaw: number; pitch: number; fov: number };
 };
 
@@ -16,7 +20,7 @@ export const photoReferences: PhotoReference[] = [
   { id: 'dining-bar', title: 'Dining room · bar and office doorway', roomId: 'dining', date: '2026-06-21', confidence: 'High', evidence: 'The doorway reveals the same navy cabinetry seen in the office photos; the hall opening is beside it.', furniture: ['Black rounded bar cabinet', 'Black leather lounge chair', 'Walnut dining table', 'Cream dining chairs'], view: { x: 22, z: 41.5, yaw: 1.25, pitch: .12, fov: 78 } },
   { id: 'kitchen-current', title: 'Kitchen · refrigerator and coffee station', roomId: 'kitchen', date: '2026-08-06', confidence: 'High', evidence: 'White cabinetry, brass hardware, scalloped backsplash and stainless refrigerator match the main kitchen.', furniture: ['Black espresso machine', 'Stainless French-door refrigerator', 'White pantry cabinetry'], view: { x: 14, z: 14, yaw: -.9, pitch: 0, fov: 72 } },
   { id: 'office-chair', title: 'Front office · chair and built-ins', roomId: 'front-bed', date: '2026-06-17', confidence: 'High', evidence: 'The listing plan marks a Murphy-bed wall in the front room. Navy built-ins and the sliding doorway link this room to the living area. Desk placement remains estimated.', furniture: ['Cream padded swivel chair', 'Navy built-in shelves', 'Walnut desk', 'Taupe curtains'], view: { x: 8.5, z: 51, yaw: 2.3, pitch: -.08, fov: 72 } },
-  { id: 'bedroom-dressers', title: 'Bedroom · dressers and blue prints', roomId: null, date: '2026-06-20', confidence: 'Unplaced', evidence: 'The bedroom is recognizable, but the photos do not yet establish which bedroom on the plan. Furniture is recorded without assigning a position.', furniture: ['Two dark dressers with brass pulls', 'Two blue Van Gogh prints', 'Low bed with white bedding'] },
+  { id: 'bedroom-dressers', title: 'Bedroom · dressers and blue prints', roomId: 'rear-bed', date: '2026-06-20', confidence: 'High', evidence: 'The September walkthrough connects this bedroom to the left side of the hall and its walk-in closet. The same pair of blue prints and dark dressers is visible at 0:30.', furniture: ['Two dark dressers with brass pulls', 'Two blue Van Gogh prints', 'Low bed with white bedding'] },
   { id: 'hallway', title: 'Main hall · toward the living room', roomId: 'hallway', date: '2026-03-30', confidence: 'High', evidence: 'The hallway terminates at the rounded black bar cabinet and front living area.', furniture: [] },
   { id: 'garden', title: 'Rear garden', roomId: 'deck', date: '2026-04-15', confidence: 'High', evidence: 'The newly recovered listing plan connects the kitchen to a rear deck and garden. Garden extent and planting positions are illustrative.', furniture: ['Yellow planter', 'Fern and bamboo planters'] },
   { id: 'measurement-sketch', title: 'Handwritten room measurements', roomId: null, date: '2026-03-19', confidence: 'Unplaced', evidence: 'The sketch labels two rooms “Lefty” and “Righty”. Their correspondence to the appraisal needs confirmation before using these dimensions.', furniture: [] },
@@ -31,6 +35,10 @@ export const photoReferences: PhotoReference[] = [
   { id: 'hall-to-kitchen', title: 'Video reference · dining through hall to kitchen', roomId: 'hallway', date: '2026-08-30', confidence: 'High', evidence: 'A locally available video preview shows the continuous route from dining, over the hall threshold, toward the kitchen. This supports removing the guessed cross-wall.', furniture: ['Hall runner', 'Black bar cabinet'], view: {x:13.5,z:38,yaw:0,pitch:0,fov:65} },
   { id: 'office-sliding-door', title: 'Video reference · office sliding door', roomId: 'front-bed', date: '2026-05-15', confidence: 'High', evidence: 'The video preview shows a tall frosted panel in a wood frame beside the front entry. Added this opening and panel instead of the generic doorway.', furniture: ['Frosted wood-framed sliding door'], view: {x:15,z:49,yaw:Math.PI/2,pitch:0,fov:72} },
   { id: 'kitchen-sink', title: 'Video reference · sink and garden window', roomId: 'kitchen', date: '2026-05-10', confidence: 'High', evidence: 'Cooking-video preview establishes the sink beneath the garden-facing window and the adjacent range. Only the available still preview was used, not a reconstructed video scan.', furniture: ['White farmhouse sink', 'Gas range'] },
+  ...walkthroughPhotos,
 ];
+
+/** The continuous video route first; older room photographs remain reachable. */
+export const photoWalkStops = [...walkthroughPhotos, ...photoReferences.filter(p => p.roomId && p.source !== 'walkthrough')];
 
 export const photoUrl = (id: string) => `/house/photos/${id}.jpg`;
