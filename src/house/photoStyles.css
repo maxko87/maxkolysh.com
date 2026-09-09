@@ -35,7 +35,7 @@
 .interior-plan { display: block; width: 100%; max-height: 700px; object-fit: contain; margin: 25px auto; background: white; border-radius: 8px; }
 .revision-notes { padding: 18px 22px; border-left: 3px solid #6d8065; background: #edf0e7; margin-top: 22px; }
 .revision-notes h3 { font: normal 22px Georgia,serif; }
-.room-photo-marker { position:absolute; width:36px; height:36px; border:2px solid #faf8ec; border-radius:50%; background:#334c3fee; color:#fff9df; font-size:25px; box-shadow:0 3px 12px #11271d55; transform:translate(-50%,-50%); }
+.room-photo-marker { position:absolute; width:30px; height:30px; border:2px solid #faf8ec; border-radius:50%; background:#334c3fee; color:#fff9df; font-size:21px; box-shadow:0 2px 7px #11271d44; transform:translate(-50%,-50%); }
 .photo-walk-launch { margin:7px 14px; font-size:12px; }
 .photo-walk { position:absolute; inset:0; z-index:30; isolation:isolate; color:#fffdf3; outline:none; }
 .workspace:has(.photo-walk) > :not(.photo-walk):not(.viewport) { visibility:hidden; }

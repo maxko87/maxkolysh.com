@@ -61,7 +61,9 @@
   .workspace:has(.walk-controls) .caption h2 { font-size: 19px; }
   .walk-controls { right: max(12px, env(safe-area-inset-right)); bottom: calc(84px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(3, 48px); gap: 6px; }
   .walk-controls button { width: 48px; height: 48px; font-size: 24px; user-select: none; -webkit-user-select: none; }
-  .room-photo-marker { width: 44px; height: 44px; }
+  /* Small visible dots; the transparent surround retains a 44px tap target. */
+  .room-photo-marker { width: 24px; height: 24px; padding: 0; border-width: 1px; font-size: 17px; line-height: 22px; }
+  .room-photo-marker::after { content: ''; position: absolute; width: 44px; height: 44px; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; }
   .workspace:has(.explore-backdrop) > .caption, .workspace:has(.explore-backdrop) > .walk-controls { visibility: hidden; }
   .workspace:has(.photo-overlay) > :is(.toolbar, .mobile-room-toggle, .caption, .walk-controls) { visibility: hidden; }
   .photo-overlay { inset: 8px max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; z-index: 6; }
